@@ -10,7 +10,7 @@
 
 .slick-header-button {
   display: inline-block;
-  float: right;
+  float: left;
   vertical-align: top;
   margin: 1px;
   /**

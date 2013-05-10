@@ -3,18 +3,57 @@
 <head>
 
  <meta charset="utf-8" />
-  <title>jQuery UI Tabs - Default functionality</title>
+  <title>Oinoi</title>
   
   <link rel="stylesheet" href="../libs/jquery/plugins/uniform/themes/default/css/uniform.default.css" media="screen" />
-  
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
   <link href="../libs/nvd3/src/nv.d3.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="../libs/jquery/demos/demos.css" />
+  <link rel="stylesheet" href="../libs/slickgrid/slick.grid.css" type="text/css"/>
+  <link rel="stylesheet" href="../libs/slickgrid/examples/examples.css" type="text/css"/>
+  <link rel="stylesheet" href="../libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
+  <link rel="stylesheet" href="../libs/slickgrid/plugins/slick.headerbuttons.css" type="text/css"/>
   
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
   <script src="../libs/jquery/plugins/uniform/jquery.uniform.js"></script>
  
-  <link rel="stylesheet" href="../libs/jquery/demos/demos.css" />
+   <style>
+    /**
+     * Style the drop-down menu here since the plugin stylesheet mostly contains structural CSS.
+     */
+
+    .slick-header-menu {
+      border: 1px solid #718BB7;
+      background: #f0f0f0;
+      padding: 2px;
+      -moz-box-shadow: 2px 2px 2px silver;
+      -webkit-box-shadow: 2px 2px 2px silver;
+      min-width: 100px;
+      z-index: 20;
+    }
+
+
+    .slick-header-menuitem {
+      padding: 2px 4px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+    }
+
+    .slick-header-menuitem:hover {
+      border-color: silver;
+      background: white;
+    }
+
+    .slick-header-menuitem-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+    }
+
+    .icon-help {
+      background-image: url(../images/help.png);
+    }
+  </style>
   <script>
   $(function() {
     $( "#tabs" ).tabs();
@@ -102,9 +141,7 @@
   
   </script>
 
-  <link rel="stylesheet" href="../libs/slickgrid/slick.grid.css" type="text/css"/>
   
-  <link rel="stylesheet" href="../libs/slickgrid/examples/examples.css" type="text/css"/>
   
 </head>
 
@@ -205,6 +242,12 @@
 	
 	<div><svg id="myd3Chart"></svg></div>
 
+	<ul id="contextMenu" style="display:none;position:absolute">
+		<li data="Low">Sort</li>
+		<li data="Medium">Delete</li>
+		<li data="High">Create new colum</li>
+</ul>
+
 <script src="../libs/nvd3/lib/d3.v2.js"></script>
 <script src="../libs/nvd3/nv.d3.js"></script>
 <script src="../libs/nvd3/src/models/pie.js"></script>
@@ -274,23 +317,15 @@ nv.addGraph(function() {
 
 
 <script src="../libs/jquery/plugins/jquery.event.drag-2.2.js"></script>
-
+<script src="../libs/slickgrid/slick.editors.js"></script>
 <script src="../libs/slickgrid/slick.core.js"></script>
 <script src="../libs/slickgrid/slick.grid.js"></script>
+<script src="../libs/slickgrid/plugins/slick.headermenu.js"></script>
+<script src="../libs/slickgrid/plugins/slick.headerbuttons.js"></script>
 
 <script>
   var grid;
-  /*
-  var columns = [
-    {id: "id", name: "", field: "id", width: 20},
-    {id: "title", name: "Title", field: "title"},
-    {id: "duration", name: "Duration", field: "duration"},
-    {id: "%", name: "% Complete", field: "percentComplete"},
-    {id: "start", name: "Start", field: "start"},
-    {id: "finish", name: "Finish", field: "finish"},
-    {id: "effort-driven", name: "Effort Driven", field: "effortDriven"}
-  ];
-  */
+  
   var columns = [
     {id: "Rank", name: "Rank", field: "Rank"},
     {id: "Name", name: "Name", field: "Name"},
@@ -300,9 +335,14 @@ nv.addGraph(function() {
   ];
 
   var options = {
-    enableCellNavigation: true,
+	editable: true,
+    enableAddRow: false,
+    asyncEditorLoading: false,
+	enableCellNavigation: true,
     enableColumnReorder: true
+	
   };
+
 
   
     var data = 
@@ -659,6 +699,9 @@ nv.addGraph(function() {
 	}
 ]
 	
+
+
+
 	/*
     for (var i = 0; i < 500; i++) {
       data[i] = {
@@ -671,10 +714,88 @@ nv.addGraph(function() {
         effortDriven: (i % 5 == 0)
       };
     }
+	
 	*/
-  $(function () {
-    grid = new Slick.Grid("#myGrid", data, columns, options);
-  })
+
+  grid = new Slick.Grid("#myGrid", data, columns, options);
+  
+  // Add  & customize the menu header
+  
+  for (var i = 0; i < columns.length; i++) {
+    columns[i].header = {
+	   buttons: [
+      {
+        image: "../images/help.png",
+        showOnHover: true,
+        tooltip: "This button only appears on hover.",
+        handler: function(e) {
+          alert('Help');
+        }
+      }
+    ],
+	  
+	  menu: {
+        items: [
+          {
+            iconImage: "../images/sort-asc.gif",
+            title: "Sort Ascending",
+            command: "sort-asc"
+          },
+          {
+            iconImage: "../images/sort-desc.gif",
+            title: "Sort Descending",
+            command: "sort-desc"
+          },
+          {
+            title: "Hide Column",
+            command: "hide",
+            disabled: true,
+            tooltip: "Can't hide this column"
+          },
+          {
+            iconCssClass: "icon-help",
+            title: "Help",
+            command: "help"
+          }
+        ]
+		
+      }
+    }};
+  
+
+  
+  //HeaderMenu Plugin
+  var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
+  headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
+      var menu = args.menu;
+
+      // We can add or modify the menu here, or cancel it by returning false.
+      var i = menu.items.length;
+      menu.items.push({
+        title: "Menu item " + i,
+        command: "item" + i
+      });
+    });
+	
+	 headerMenuPlugin.onCommand.subscribe(function(e, args) {
+      alert("Command: " + args.command);
+    });
+
+   grid.registerPlugin(headerMenuPlugin); 
+	
+	//HeaderButton Plugin
+	var headerButtonsPlugin = new Slick.Plugins.HeaderButtons();
+
+    headerButtonsPlugin.onCommand.subscribe(function(e, args) {
+      var column = args.column;
+      var button = args.button;
+      var command = args.command;
+	  
+	 }); 
+	 grid.registerPlugin(headerButtonsPlugin);
+	 
+	 
+	
 </script>
 
 </body>
