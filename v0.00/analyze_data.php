@@ -716,6 +716,7 @@ nv.addGraph(function() {
     }
 	
 	*/
+  columns[columns.length] = {id: "__dummy__", name: "", field: "__dummy__"};
 
   grid = new Slick.Grid("#myGrid", data, columns, options);
   
@@ -727,15 +728,25 @@ nv.addGraph(function() {
       {
         image: "../images/help.png",
         showOnHover: true,
-        tooltip: "This button only appears on hover.",
+		command: "rename",
+        tooltip: "Rename column"
+		/*,
         handler: function(e) {
           alert('Help');
         }
+		*/
       }
     ],
 	  
 	  menu: {
         items: [
+		  {
+			title: "Copy",
+			command: "copy",
+			disabled: false,
+			tootlip: "Create a copy of this column"
+		  }
+		/*
           {
             iconImage: "../images/sort-asc.gif",
             title: "Sort Ascending",
@@ -757,6 +768,7 @@ nv.addGraph(function() {
             title: "Help",
             command: "help"
           }
+		  */
         ]
 		
       }
@@ -765,7 +777,9 @@ nv.addGraph(function() {
 
   
   //HeaderMenu Plugin
+  var mytest;
   var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
+  /*
   headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
       var menu = args.menu;
 
@@ -776,20 +790,45 @@ nv.addGraph(function() {
         command: "item" + i
       });
     });
+	*/
 	
 	 headerMenuPlugin.onCommand.subscribe(function(e, args) {
-      alert("Command: " + args.command);
+	  mytest = args;
+      //alert("Command: " + args.command + " column: " + args.column.id);
+	  
+	  var newcolumn = args.column.id + "_copy";
+	  var cpt = 1;
+	  while(grid.getColumnIndex(newcolumn) != undefined) {
+			newcolumn = args.column.id + "_copy_" + cpt;
+			cpt = cpt + 1;
+	  }
+	  
+		for(var i = 0; i < data.length; i++) {
+			data[i][newcolumn] = data[i][args.column.id];
+		}
+		var columns = grid.getColumns();
+		columns.push({id: newcolumn, name: newcolumn, field: newcolumn});
+		grid.setColumns(columns);
+		grid.getColumns()[grid.getColumnIndex(newcolumn)].header = grid.getColumns()[grid.getColumnIndex(args.column.id)].header;
+		grid.registerPlugin(headerMenuPlugin); 
+		
     });
 
    grid.registerPlugin(headerMenuPlugin); 
 	
 	//HeaderButton Plugin
-	var headerButtonsPlugin = new Slick.Plugins.HeaderButtons();
+	var headerButtonsPlugin = new Slick.Plugins.HeaderButtons({});
 
     headerButtonsPlugin.onCommand.subscribe(function(e, args) {
       var column = args.column;
       var button = args.button;
       var command = args.command;
+	  
+	  //alert("Command: " + args.command + " column: " + args.column.id);
+	  
+	  var newcolumn=prompt("Please enter the new column name","");
+	  grid.getColumns()[grid.getColumnIndex(args.column.id)].name = newcolumn;
+	  grid.setColumns(grid.getColumns());
 	  
 	 }); 
 	 grid.registerPlugin(headerButtonsPlugin);
