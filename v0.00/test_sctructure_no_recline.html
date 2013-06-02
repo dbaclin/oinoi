@@ -184,27 +184,11 @@
         <script type="text/javascript" src="../libs/d3/d3.geo.projection.min.js"></script>
         <script type="text/javascript" src="../libs/d3/d3.layout.cloud.js"></script>
         <script type="text/javascript" src="../libs/vega/vega.js"></script>
+  
+        <script type="text/javascript" src="./utils_functions.js"></script>
         <script type="text/javascript" src="./data.js"></script>
         <script>
-            function deepCopy(obj) {
-                if (Object.prototype.toString.call(obj) === '[object Array]') {
-                    var out = [],
-                        i = 0,
-                        len = obj.length;
-                    for (; i < len; i++) {
-                        out[i] = arguments.callee(obj[i]);
-                    }
-                    return out;
-                }
-                if (typeof obj === 'object') {
-                    var out = {}, i;
-                    for (i in obj) {
-                        out[i] = arguments.callee(obj[i]);
-                    }
-                    return out;
-                }
-                return obj;
-            }
+            
 
             var selected = "";
             $(".btn-group > button.btn").on("click", function() {
@@ -248,12 +232,6 @@
                     $(this).find(".placeholder").remove();
                     $("<li style=\"background-color:#f8f8f8; border-radius: 4px;\"><a href=\"#\">" + ui.draggable.text() + "</a></li>").appendTo(this);
                 }
-            });
-
-            vg.parse.spec("./area.json", function(chart) {
-                self.view = chart({
-                    el: "#viz"
-                }).update();
             });
 
             var grid;
@@ -315,7 +293,7 @@
             
             var initialData = deepCopy(data);
             
-            for (var i = 0; i < 1000; i++) {
+            for (var i = 0; i < 10; i++) {
                 data = data.concat(deepCopy(initialData));
             }
 
@@ -323,13 +301,14 @@
                 data[i].id = "id_" + i;
                 data[i].num = i + 1;
             }
-            
-        
 
             dataView.beginUpdate();
             dataView.setItems(data);
             dataView.endUpdate();
         </script>
+        
+        <script type="text/javascript" src="./vega_stuff.js"></script>      
+        
     </body>
 
 </html>
