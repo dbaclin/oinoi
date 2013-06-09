@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Oinoi - Chart This</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="libs/bootstrap/2.0.2/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="libs/bootstrap/2.0.2/css/bootstrap-responsive.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<link href="libs/oinoi.css" rel="stylesheet">
+  
+	
+	<link rel="stylesheet" href="libs/rickshaw/rickshaw.min.css">
+
+	<link rel="stylesheet" href="libs/slickgrid/slick.grid.css" type="text/css"/>
+	
+	<!-- 
+	<link rel="stylesheet" href="libs/slickgrid/examples/examples.css" type="text/css"/> 
+	<link rel="stylesheet" href="..libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
+	<link rel="stylesheet" href="..libs/slickgrid/plugins/slick.headerbuttons.css" type="text/css"/>-->
+
+	
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="libs/bootstrap/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  
+  
+  
+  
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Project name</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+		<div class="row">
+			<div class="btn-group" data-toggle="buttons-radio">
+				<button id="menu-grid" class="btn">Grid</button>
+				<button id="menu-graph" class="btn">Graph</button>
+			</div>
+		</div>
+		
+		
+		
+		
+		
+		
+		
+		
+		<div class="row">
+		<div id="tabs">
+			<ul>
+				<li><a href="#tab-grid"><span>Grid</span></a></li>
+				<li><a href="#tab-transform"><span>Transform</span></a></li>
+				<li><a href="#tab-graph"><span>Graph</span></a></li>
+			</ul>
+			<div id="tab-grid">
+				<div class="row">  
+					<div class="span4">
+					<div>
+						
+						<div id="accordion-data-summary">
+							  <h3>Fields: 6</h3>
+							  <div>
+								<div id="accordion-fields">
+							  <h3>Rank</h3>
+							  <div>
+								<ul>
+									<li>Type: Index</li>
+									<li>Format: Number</li>
+									<li>Minimum: 1</li>
+									<li>Maximum: 10000</li>
+								</ul>
+							  </div>
+							  <h3>Name</h3>
+							  <div>
+								<ul>
+									<li>Type: Dimenstion</li>
+									<li>Format: String</li>
+									<li>Most common modality: 1</li>
+								</ul>
+							  </div>
+							  <h3>Region</h3>
+							  <div>
+								<ul>
+									<li>Type: Dimenstion</li>
+									<li>Format: String</li>
+									<li>Most common modality: 1</li>
+								</ul>
+							  </div>
+							  <h3>Points</h3>
+							  <div>
+								<ul>
+									<li>Type: Measure</li>
+									<li>Format: Number</li>
+									<li>Minimum: 1</li>
+									<li>Maximum: 1</li>
+									<li>Mean: 1</li>
+								</ul>
+							  </div>
+							  <h3>Price</h3>
+							  <div>
+								<ul>
+									<li>Type: Measure</li>
+									<li>Format: Number</li>
+									<li>Minimum: 1</li>
+									<li>Maximum: 1</li>
+									<li>Mean: 1</li>
+								</ul>
+							  </div>
+							</div>
+						
+							  </div>
+							  <h3>Records: 10000</h3>
+							  <div>
+
+							  </div>
+							  <h3>Data quality issues: 14</h3>
+							  <div>								
+								<ul>
+								  <li>Missing values: 8</li>
+								  <li>Outliers: 2</li>
+								  <li>Spelling mistakes: 4</li>
+								</ul>
+							  </div>
+							</div>
+						
+						
+					</div>
+					
+					</div>
+					<div >
+						<div class="span8" id="myGrid" style="width:800px;height:800px;"></div>
+					</div>
+					
+				</div>
+			</div>
+			<div id="tab-graph">
+				<div class="row">  
+					<div id="chart_container">
+						<div id="y_axis"></div>
+						<div id="chart"></div>
+						<div id="legend"></div>
+						<form id="offset_form" class="toggler">
+							<input type="radio" name="offset" id="lines" value="lines" checked>
+							<label class="lines" for="lines">lines</label><br>
+							<input type="radio" name="offset" id="stack" value="zero">
+							<label class="stack" for="stack">stack</label>
+						</form>
+					</div>		
+				
+
+				</div>	
+			</div>
+		
+		</div>
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	
+
+	
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="libs/jquery/plugins/uniform/jquery.uniform.js"></script>
+	<script src="libs/jquery/plugins/jquery.event.drag-2.2.js"></script>
+ 	
+	
+	<!-- slickgrid -->
+	<script src="libs/slickgrid/slick.editors.js"></script>
+	<script src="libs/slickgrid/slick.core.js"></script>
+	<script src="libs/slickgrid/slick.grid.js"></script>
+	<script src="libs/slickgrid/plugins/slick.headermenu.js"></script>
+	<script src="libs/slickgrid/plugins/slick.headerbuttons.js"></script>
+  
+	
+	<!-- charts -->
+	<script src="libs/rickshaw/vendor/d3.min.js"></script>
+	<script src="libs/rickshaw/vendor/d3.layout.min.js"></script>
+	<script src="libs/rickshaw/rickshaw.min.js"></script>
+	
+	
+	
+	
+	<!-- bootstrap -->
+    <script src="libs/bootstrap/bootstrap-transition.js"></script>
+    <script src="libs/bootstrap/bootstrap-alert.js"></script>
+    <script src="libs/bootstrap/bootstrap-modal.js"></script>
+    <script src="libs/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="libs/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="libs/bootstrap/bootstrap-tab.js"></script>
+    <script src="libs/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="libs/bootstrap/bootstrap-popover.js"></script>
+    <script src="libs/bootstrap/bootstrap-button.js"></script>
+    <script src="libs/bootstrap/bootstrap-collapse.js"></script>
+    <script src="libs/bootstrap/bootstrap-carousel.js"></script>
+    <script src="libs/bootstrap/bootstrap-typeahead.js"></script>
+
+	<script type="text/javascript" src="libs/oinoi.js"></script>
+  </body>
+</html>
