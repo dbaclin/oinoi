@@ -425,11 +425,7 @@
 		
 	        var palette = new Rickshaw.Color.Palette();
 
-		var graph = new Rickshaw.Graph( {
-				element: document.querySelector("#chart"),
-				width: 540,
-				height: 250,
-				series: [
+			var chartData = [
 						{
 								name: "Northeast",
 								data: [ { x: -1893456000, y: 25868573 }, { x: -1577923200, y: 29662053 }, { x: -1262304000, y: 34427091 }, { x: -946771200, y: 35976777 }, { x: -631152000, y: 39477986 }, { x: -315619200, y: 44677819 }, { x: 0, y: 49040703 }, { x: 315532800, y: 49135283 }, { x: 631152000, y: 50809229 }, { x: 946684800, y: 53594378 }, { x: 1262304000, y: 55317240 } ],
@@ -450,7 +446,12 @@
 								data: [ { x: -1893456000, y: 7082086 }, { x: -1577923200, y: 9213920 }, { x: -1262304000, y: 12323836 }, { x: -946771200, y: 14379119 }, { x: -631152000, y: 20189962 }, { x: -315619200, y: 28053104 }, { x: 0, y: 34804193 }, { x: 315532800, y: 43172490 }, { x: 631152000, y: 52786082 }, { x: 946684800, y: 63197932 }, { x: 1262304000, y: 71945553 } ],
 								color: palette.color()
 						}
-				]
+				];
+		var graph = new Rickshaw.Graph( {
+				element: document.querySelector("#chart"),
+				width: 540,
+				height: 250,
+				series: chartData
 		} );
 
 		var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
