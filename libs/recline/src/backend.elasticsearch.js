@@ -153,6 +153,7 @@ this.recline.Backend.ElasticSearch = this.recline.Backend.ElasticSearch || {};
     //
     // @return deferred supporting promise API
     this.query = function(queryObj) {
+	  
       var esQuery = (queryObj && queryObj.toJSON) ? queryObj.toJSON() : _.extend({}, queryObj);
       esQuery.query = this._normalizeQuery(queryObj);
       delete esQuery.q;

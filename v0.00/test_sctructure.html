@@ -8,15 +8,11 @@
         <meta name="description" content="">
         <meta name="author" content="">
         <!-- Le styles -->
-<!--        <link rel="stylesheet" href="../libes/recline/css/grid.css" />-->
+        <!-- <link rel="stylesheet" href="../libes/recline/css/grid.css" />-->
         <link rel="stylesheet" href="../libs/slickgrid/slick.grid.css" />
         <link rel="stylesheet" href="../libs/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css" />
-        
         <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.css" />
-        
-        
-        
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -39,7 +35,6 @@
             <script src="../libs/bootstrap/js/html5shiv.js"></script>
         <![endif]-->
         <!-- Fav and touch icons -->
-       
     </head>
     
     <body>
@@ -72,7 +67,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="span3">
@@ -144,8 +138,7 @@
                         <!-- Only required for left/right tabs -->
                         <div class="tab-content">
                             <div class="tab-pane active" id="Data">
-                                 <div id="myGrid" class="grid-canvas" style="height:550px;"></div>
-
+                                <div id="myGrid" class="grid-canvas" style="height:550px;"></div>
                             </div>
                             <div class="tab-pane" id="Pivot">
                                 <p>Pivot</p>
@@ -164,8 +157,6 @@
                 <p>&copy; Company 2013</p>
             </footer>
         </div>
-        
-       
         <!--/.fluid-container-->
         <!-- Le javascript==================================================- ->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -173,25 +164,20 @@
         <script type="text/javascript" src="../libs/jquery/ui/jquery-ui.js"></script>
         <script type="text/javascript" src="../libs/slickgrid/lib/jquery.event.drag-2.2.js"></script>
         <script type="text/javascript" src="../libs/bootstrap/js/bootstrap.js"></script>
-        
-    <script type="text/javascript" src="../libs/underscore/1.4.4/underscore.js"></script>
-	<script type="text/javascript" src="../libs/backbone/1.0.0/backbone.js"></script>
-	<script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
-	<script type="text/javascript" src="../libs/recline/recline.js"></script>
-        
-    <script type="text/javascript" src="../libs/slickgrid/slick.editors.js"></script>
-	<script type="text/javascript" src="../libs/slickgrid/slick.core.js"></script>
-	<script type="text/javascript" src="../libs/slickgrid/slick.grid.js"></script>
-	<script type="text/javascript" src="../libs/slickgrid/plugins/slick.headermenu.js"></script>
-	<script type="text/javascript" src="../libs/slickgrid/plugins/slick.headerbuttons.js"></script>
-        
-    <script type="text/javascript" src="../libs/d3/d3.v3.min.js"></script>
-    <script type="text/javascript" src="../libs/d3/d3.geo.projection.min.js"></script>
-    <script type="text/javascript" src="../libs/d3/d3.layout.cloud.js"></script>
-    <script type="text/javascript" src="../libs/vega/vega.js"></script>    
-        
+        <script type="text/javascript" src="../libs/underscore/1.4.4/underscore.js"></script>
+        <script type="text/javascript" src="../libs/backbone/1.0.0/backbone.js"></script>
+        <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
+        <script type="text/javascript" src="../libs/recline/recline.js"></script>
+        <script type="text/javascript" src="../libs/slickgrid/slick.editors.js"></script>
+        <script type="text/javascript" src="../libs/slickgrid/slick.core.js"></script>
+        <script type="text/javascript" src="../libs/slickgrid/slick.grid.js"></script>
+        <script type="text/javascript" src="../libs/slickgrid/plugins/slick.headermenu.js"></script>
+        <script type="text/javascript" src="../libs/slickgrid/plugins/slick.headerbuttons.js"></script>
+        <script type="text/javascript" src="../libs/d3/d3.v3.min.js"></script>
+        <script type="text/javascript" src="../libs/d3/d3.geo.projection.min.js"></script>
+        <script type="text/javascript" src="../libs/d3/d3.layout.cloud.js"></script>
+        <script type="text/javascript" src="../libs/vega/vega.js"></script>
         <script type="text/javascript" src="./data.js"></script>
-        
         <script>
             var selected = "";
             $(".btn-group > button.btn").on("click", function() {
@@ -236,23 +222,32 @@
                     $("<li style=\"background-color:#f8f8f8; border-radius: 4px;\"><a href=\"#\">" + ui.draggable.text() + "</a></li>").appendTo(this);
                 }
             });
-            
+
             vg.parse.spec("./area.json", function(chart) {
-                self.view = chart({el:"#viz"}).update();
+                self.view = chart({
+                    el: "#viz"
+                }).update();
             });
-    
-    var dataset = new recline.Model.Dataset({
-  records: data
-});        
-            
+
+            var dataset = new recline.Model.Dataset({
+               url: 'http://ichart.finance.yahoo.com/table.csv?s=%5EGSPC&a=00&b=3&c=2000&d=05&e=1&f=2013&g=d&ignore=.csv',
+			   rows: 3000,
+			   size: 3000,
+			   backend: 'dataproxy'
+			   // records: data
+            });
+			
+			dataset.fetch();
+			
+			dataset.fetch();
+
             var $el = $('#myGrid');
-var grid = new recline.View.SlickGrid({
-  model: dataset,
-  el: $el
-});
-grid.visible = true;
-grid.render();
-            
+            var grid = new recline.View.SlickGrid({
+                model: dataset,
+                el: $el
+            });
+            grid.visible = true;
+            grid.render();
         </script>
     </body>
 
