@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="utf-8">
+        <title>Bootstrap, from Twitter</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <!-- Le styles -->
+        <link href="../libs/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <style>
+            body {
+                padding-top: 60px;
+                /* 60px to make the container go all the way to the bottom of the topbar */
+            }
+        </style>
+        <link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="../assets/js/html5shiv.js"></script>
+        <![endif]-->
+        <!-- Fav and touch icons -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+        <link rel="shortcut icon" href="../assets/ico/favicon.png">
+    </head>
+    
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="#">Project name</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active">
+                                <a href="#">Home</a>
+                            </li>
+                            <li>
+                                <a href="#about">About</a>
+                            </li>
+                            <li>
+                                <a href="#contact">Contact</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <h1>fdgdf starter template</h1>
+            <p>Use this document as a way to quick start any new project.
+                <br>All you get is this message and a barebones HTML document.</p>
+        </div>
+        <!-- /container -->
+        <!-- Le javascript==================================================- ->
+    <!-- Placed at the end of the document so the pages load faster -->
+        <script src="../libs/jquery/jquery-1.9.1.js"></script>
+        <script src="../libs/bootstrap/js/bootstrap.js"></script>
+        <script src="../libs/d3/d3.v3.js"></script>
+        <script src="../libs/crossfilter/crossfilter.js"></script>
+        <script src="../libs/dc/dc.js"></script>
+        
+        <script type="text/javascript" src="../libs/csvjsonjs/csvjson.min.js"></script>
+        <script type="text/javascript" src="../libs/datejs/date.js"></script>
+        <script type="text/javascript" src="../libs/utils_functions.js"></script>
+        <script type="text/javascript">
+            function guessTypeOfColumn(aColumn) {
+
+                var tempRes = {
+                    date: 0,
+                    number: 0,
+                    string: 0,
+                    na: 0,
+                    cpt: 0
+                };
+
+                for (var i = 0; i < aColumn.length; i++) {
+
+                    if (typeof aColumn[i] == "number") + tempRes.number++;
+                    else if (Date.parse(aColumn[i]) != null) + tempRes.date++;
+                    else if (typeof aColumn[i] == "string") + tempRes.string++;
+                    else +tempRes.na++;
+
+                    + tempRes.cpt++;
+                }
+
+                var maxSoFar = -1;
+                var result;
+
+                for (var i in tempRes) {
+                    if (i != "cpt") {
+                        if (maxSoFar < tempRes[i]) {
+                            maxSoFar = +tempRes[i];
+                            result = i;
+                        }
+                    }
+                }
+
+                if (result == "na") result = "string";
+
+                return result;
+            }
+
+            function guessType(jsonData) {
+                var columns = {};
+
+                for (var i in jsonData) {
+                    columns[i] = guessTypeOfColumn(jsonData[i]);
+                }
+
+                return columns;
+            }
+
+            function getHistogram(aColumn, aType) {
+            
+                var res;
+
+                if (aType == "string") {
+
+                    var ht = new HashTable();
+
+                    for (var i = 0; i < aColumn.length; i++) {
+                        ht.increment(aColumn[i]);
+                    }
+
+                    res = [];
+                    var keys = ht.keys();
+
+                    for (var i in keys) {
+                        res[i] = {
+                            "x": (keys[i] + "").trim(),
+                            "y": +ht.get(keys[i])
+                        };
+
+                    }
+                    res.sort(function(a, b) {
+                        return b.y - a.y
+                    });
+
+                } else if (aType == "date") {
+                    var ht = new HashTable();
+                    var currentDate;
+
+                    // Date.parse(dd.toDateString());
+
+                    for (var i = 0; i < aColumn.length; i++) {
+
+                        currentDate = Date.parse(aColumn[i]);
+                        if (currentDate != null) {
+
+                            currentDate = Date.parse(currentDate.toDateString());
+                            ht.increment(currentDate);
+
+                        } else {
+                            ht.increment("not a date");
+                        }
+
+                    }
+
+                    res = [];
+                    var keys = ht.keys();
+
+                    for (var i in keys) {
+                        res[i] = {
+                            "x": keys[i],
+                            "y": +ht.get(keys[i])
+                        };
+
+                    }
+                    res.sort(function(a, b) {
+                        if (b.x == "not a date") return -a.x
+                        else if (a.x == "not a date") return b.x
+                        else return a.x - b.x;
+                    });
+
+                } else {
+
+                    var nofGroups = 10;
+                    var ht = new HashTable();
+
+                    var min_value = Math.min.apply(Math, aColumn);
+                    var max_value = Math.max.apply(Math, aColumn);
+
+                    var range_size = (max_value - min_value) / nofGroups;
+
+                    if (range_size > 0) {
+                        var max_bin = Math.floor(max_value / range_size);
+                        var min_bin = Math.floor(min_value / range_size);
+
+                        for (var i = min_bin; i <= max_bin; i = i + 1) {
+                            ht.put(i, 0);
+                        }
+
+                        for (var i = 0; i < aColumn.length; i++) {
+                            if (typeof aColumn[i] == "number") ht.increment(+Math.floor(aColumn[i] / range_size));
+                            else ht.increment("not a number");
+                        }
+
+                        res = [];
+                        var keys = ht.keys();
+
+                        for (var i in keys) {
+                            res[i] = {
+                                "x": keys[i],
+                                "y": +ht.get(keys[i])
+                            };
+                        }
+                        res.sort(function(a, b) {
+                            if (b.x == "not a number") return -a.x
+                            else if (a.x == "not a number") return b.x
+                            else return a.x - b.x;
+                        });
+                        
+                        for(var i = 0; i < res.length ; i++) {
+                            if(isFinite(res[i]["x"]))
+                            res[i]["x"] = (Math.round(+res[i]["x"] * range_size * 100) / 100).toFixed(2) + " " + (Math.round((+res[i]["x"] + 1) * range_size * 100) / 100).toFixed(2);   
+                        }
+
+                    } else {
+                        for (var i = 0; i < aColumn.length; i++) {
+                            if (typeof aColumn[i] == "number") ht.increment(aColumn[i]);
+                            else ht.increment("not a number");
+                        }
+                        
+                        res = [];
+                        var keys = ht.keys();
+
+                        for (var i in keys) {
+                            res[i] = {
+                                "x": keys[i],
+                                "y": +ht.get(keys[i])
+                            };
+
+                        }
+                        res.sort(function(a, b) {
+                            if (b.x == "not a number") return -a.x
+                            else if (a.x == "not a number") return b.x
+                            else return a.x - b.x;
+                        });
+                        
+                    }
+
+                }
+
+                return res;
+            }
+
+
+            var file_name = "income.csv";
+
+            var json_data;
+            var data_in_columns = {};
+            var columns_types;
+
+            if (file_name.length > 0) {
+                $.ajax("./" + file_name, {
+                    success: function(data) {
+                        json_data = csvjson.csv2json(data);
+                        console.log("done loading initial data");
+                        var headers = json_data.headers;
+                        for(var i = 0; i < headers.length; i++) {
+                            headers[i] = headers[i].trim(); 
+                        }
+                        var rows = json_data.rows;
+
+                        for (var i = 0; i < headers.length; i++) {
+                            var currentCol = [];
+                            for (var j = 0; j < rows.length; j++) {
+                                currentCol[j] = rows[j][headers[i]];
+                            }
+                            data_in_columns[headers[i]] = currentCol;
+                        }
+                        console.log("done transforming in columns");
+                        columns_types = guessType(data_in_columns);
+                        console.log("done guessing");
+
+
+
+                    },
+                    error: function() {
+                        // Show some error message, couldn't get the CSV file
+                    }
+                })
+            };
+        </script>
+    </body>
+
+</html>
