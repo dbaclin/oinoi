@@ -1,0 +1,10 @@
+.charts-container {
+    display: table-cell;
+    vertical-align: bottom;
+}
+.chart-child {
+    display: inline-block;    /* act like image */
+}
+ul {
+    list-style-type:none;
+}

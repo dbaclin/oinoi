@@ -21,6 +21,9 @@
             <script src="../assets/js/html5shiv.js"></script>
         <![endif]-->
         <!-- Fav and touch icons -->
+        <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css"/>
+        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
+        
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
@@ -59,7 +62,12 @@
             <h1>fdgdf starter template</h1>
             <p>Use this document as a way to quick start any new project.
                 <br>All you get is this message and a barebones HTML document.</p>
+            <div class="charts-container">
+                <ul id="chart-holder">
+                
+                </ul>
         </div>
+    </div>
         <!-- /container -->
         <!-- Le javascript==================================================- ->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -68,11 +76,27 @@
         <script src="../libs/d3/d3.v3.js"></script>
         <script src="../libs/crossfilter/crossfilter.js"></script>
         <script src="../libs/dc/dc.js"></script>
-        
         <script type="text/javascript" src="../libs/csvjsonjs/csvjson.min.js"></script>
         <script type="text/javascript" src="../libs/datejs/date.js"></script>
         <script type="text/javascript" src="../libs/utils_functions.js"></script>
+        <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
+        
+        <script id="tpl-chart" type="text/html">
+                {{#variables}}
+                <li>
+                <div id="{{var_name}}-chart">
+                    <strong>{{var_name}}</strong>
+                    <a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <div class="clearfix"></div>
+                </div>
+                </li>
+                {{/variables}}
+                
+        </script>
+        
+        
         <script type="text/javascript">
+            
             function guessTypeOfColumn(aColumn) {
 
                 var tempRes = {
@@ -121,7 +145,7 @@
             }
 
             function getHistogram(aColumn, aType) {
-            
+
                 var res;
 
                 if (aType == "string") {
@@ -219,10 +243,10 @@
                             else if (a.x == "not a number") return b.x
                             else return a.x - b.x;
                         });
-                        
-                        for(var i = 0; i < res.length ; i++) {
-                            if(isFinite(res[i]["x"]))
-                            res[i]["x"] = (Math.round(+res[i]["x"] * range_size * 100) / 100).toFixed(2) + " " + (Math.round((+res[i]["x"] + 1) * range_size * 100) / 100).toFixed(2);   
+
+                        for (var i = 0; i < res.length; i++) {
+                            if (isFinite(res[i]["x"]))
+                                res[i]["x"] = (Math.round(+res[i]["x"] * range_size * 100) / 100).toFixed(2) + " " + (Math.round((+res[i]["x"] + 1) * range_size * 100) / 100).toFixed(2);
                         }
 
                     } else {
@@ -230,7 +254,7 @@
                             if (typeof aColumn[i] == "number") ht.increment(aColumn[i]);
                             else ht.increment("not a number");
                         }
-                        
+
                         res = [];
                         var keys = ht.keys();
 
@@ -246,7 +270,7 @@
                             else if (a.x == "not a number") return b.x
                             else return a.x - b.x;
                         });
-                        
+
                     }
 
                 }
@@ -255,23 +279,32 @@
             }
 
 
-            var file_name = "income.csv";
+            var file_name = "income-reduced.csv";
 
             var json_data;
             var data_in_columns = {};
             var columns_types;
-
+            
+            var dimGroup;
+            
             if (file_name.length > 0) {
                 $.ajax("./" + file_name, {
                     success: function(data) {
                         json_data = csvjson.csv2json(data);
                         console.log("done loading initial data");
                         var headers = json_data.headers;
+                        
+                        var variables_for_template = { "variables" : []};
                         for(var i = 0; i < headers.length; i++) {
-                            headers[i] = headers[i].trim(); 
+                            variables_for_template.variables[i] = {"var_name":headers[i].replace(/\s+/g, '-').trim()};
                         }
+                        
+                        var chart_holder = Mustache.render($('#tpl-chart').html(),variables_for_template);
+                        $('#chart-holder').append(chart_holder);
+                        //$('#chart-holder').listview('refresh');
+                         
                         var rows = json_data.rows;
-
+                        /*
                         for (var i = 0; i < headers.length; i++) {
                             var currentCol = [];
                             for (var j = 0; j < rows.length; j++) {
@@ -279,11 +312,71 @@
                             }
                             data_in_columns[headers[i]] = currentCol;
                         }
+                        */
                         console.log("done transforming in columns");
-                        columns_types = guessType(data_in_columns);
+                       // columns_types = guessType(data_in_columns);
                         console.log("done guessing");
 
-
+                        dimGroup = new HashTable();
+                        
+                        var data = json_data.rows;
+                        var ndx = crossfilter(data);
+                        var all = ndx.groupAll();
+                        
+                        for(var i = 0; i < headers.length; i++) {
+                            var dimension = ndx.dimension(function(d) {
+                                    return d[headers[i]];
+                            });
+                            var dimensionGroup = dimension.group();
+                            var chart;
+                            if(headers[i] == "age" || headers[i] == "num persons worked for employer" || headers[i] == "taxable income amount") {
+                                chart = dc.barChart("#"+headers[i].replace(/\s+/g, '-').trim()+"-chart");
+                                chart.width(700)
+                            .height(300)
+                            .margins({
+                            top: 10,
+                            right: 50,
+                            bottom: 30,
+                            left: 40
+                          }).dimension(dimension)
+                            .group(dimensionGroup)
+                            .elasticY(true)
+                            .centerBar(true)
+                            .gap(1)
+                            .round(dc.round.floor)
+                            .x(d3.scale.linear().domain([d3.min(data,function(d) { return d[headers[i]]; }), d3.max(data,function(d) { return d[headers[i]]; })]))
+                            .renderHorizontalGridLines(true)
+                            .xAxis()
+                            .tickFormat(function(v) {
+                            return v;
+                            });
+                                
+                            } else {
+                                chart = dc.rowChart("#"+headers[i].replace(/\s+/g, '-').trim()+"-chart");
+                                chart.width(700)
+                                .height(300)
+                                .margins({top: 20,left: 10, right: 10, bottom: 20
+                            })
+                                .group(dimensionGroup)
+                                .dimension(dimension)
+                                .colors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
+                                .label(function(d) {
+                                return d.key;
+                            })
+                                .title(function(d) {
+                                return d.value;
+                            })
+                                .elasticX(true)
+                                .xAxis().ticks(4)
+                                ;
+                            }
+                            dimGroup.put(headers[i].replace(/\s+/g, '-').trim(),{dim: dimension, grp: dimensionGroup, chart: chart});
+                        }
+                        
+                        
+                            
+                         dc.renderAll();
+                        
 
                     },
                     error: function() {
