@@ -81,6 +81,13 @@
             </table>
         </div>
             
+        <div id="us-chart">
+            <strong>VC Distribution by States (color: total amount raised)</strong>
+            <a class="reset" href="javascript:usChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+    
+            <div class="clearfix"></div>    
+        </div>
             
         </div>
         <!-- /container -->
@@ -290,7 +297,7 @@
             }
 
 
-            var file_name = "vc-reduced.csv"; // "income-reduced.csv";
+            var file_name = "vc.csv"; // "income-reduced.csv";
 
             var usChart;
             var json_data;
@@ -341,6 +348,34 @@
                         var data = json_data.rows;
                         var ndx = crossfilter(data);
                         var all = ndx.groupAll();
+                        
+                        var states = ndx.dimension(function(d) {
+                            return d["State"];
+                        });
+                        var statesGroup = states.group().reduceSum(function (d) {
+                            return d["Raised"];
+                        });
+                        
+                        var usChart = dc.geoChoroplethChart("#us-chart");
+                        
+                        d3.json("us-states.json", function (statesJson) {
+                                usChart.width(990)
+                                        .height(500)
+                                        .dimension(states)
+                                        .group(statesGroup)
+                                        .colors([ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ])
+                                        .colorDomain([-5, 200])
+                                        .overlayGeoJson(statesJson.features, "state", function (d) {
+                                            return d.properties.name;
+                                        })
+                                        .title(function (d) {
+                                            return "State: " + d.key + "\nTotal Amount Raised: " + Math.round(d.value) + "M";
+                                        });
+                                dc.renderAll();
+                            });
+
+                        
+                        
                         
                         var candidateVariableForGrouping;
                         var minSoFar = 9999999999;
