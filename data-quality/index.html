@@ -16,6 +16,8 @@
             }
         </style>
         <link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../libs/gridster/dist/jquery.gridster.min.css">
+        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
             <script src="../assets/js/html5shiv.js"></script>
@@ -58,11 +60,13 @@
             </div>
         </div>
         <div class="container">
-            <h1>Data Exploration</h1>
-            <div class="charts-container">
-                <ul id="chart-holder"></ul>
+              <h1>Data quality report</h1>
+              <div class="gridster">
+              <ul>
+            </ul>
             </div>
-            
+        </div>
+<!--
         <div class="row">
             <div>
                 <div class="dc-data-count">
@@ -78,9 +82,10 @@
                 </thead>
             </table>
         </div>
+-->
             
             
-        </div>
+        
         <!-- /container -->
         <!-- Le javascript==================================================- ->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -93,13 +98,75 @@
         <script type="text/javascript" src="../libs/datejs/date.js"></script>
         <script type="text/javascript" src="../libs/utils_functions.js"></script>
         <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
-        <script id="tpl-chart" type="text/html">
-            {{#variables}} <li> <div id = "{{var_name}}-chart"> <strong> {{var_name}} </strong>
-                    <a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a> <div class = "clearfix">
+        <script src="../libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
+                
+                   <script id="tpl-gridster" type="text/html">
+                {{#variables}}
+                
+                 <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
+                    <div class="card-heading">
+                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true">&times;</button>
+                          <a class="card-toggle"  >{{var_name_short}}</a>
+                          <div class="btn-group hide" >
+                              <button class="close resize size-smaller">&#45;</button>
+                              <button class="close resize size-bigger">&#43;</button>
+                          </div>
                     </div>
-                </div> </li>
-            {{/variables}}
+                <div id="{{var_name}}-card-collapse" class="card-body collapse">
+                  <div id="{{var_name}}-chart"><a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="clearfix"></div></div>
+                </div>     
+            </li>
+                 
+                 
+                {{/variables}}
+                
         </script>
+
+                
+                                
+        <script id="tpl-chart" type="text/html">
+                {{#variables}}
+                <li>
+                <div id="{{var_name}}-card">
+                    <div id="{{var_name}}-chart">
+                    <strong>{{var_name}}</strong>
+                    <a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="{{var_name}}-stats"> 
+                    <table id="{{var_name}}-table-stats">
+                        <tr>
+                            <th>KPI</th>
+                            <th>Value</th>
+                        </tr>
+                        {{#stats}}
+                        <tr>        
+                            <td>{{stats_name}}</td>
+                            <td>{{stats_value}}</td>
+                        </tr>
+                        {{/stats}}        
+                      </table>
+                </div>
+                </div>
+                </li>
+                {{/variables}}
+                
+        </script>
+        
+        <script id="tpl-stats" type="text/html">
+                <tr>
+                        <th>KPI</th>
+                        <th>Value</th>
+                </tr>
+                {{#stats}}
+                <tr>
+                
+                    <td>{{KPI_name}}</td>
+                    <td>{{KPI_value}}</td>
+                </tr>
+                {{/stats}}        
+        </script>
+        
         <script id="tpl-datatable" type="text/html">
             {{#variables}} 
                 <th>{{var_name}}</th>
@@ -303,24 +370,95 @@
                         json_data = csvjson.csv2json(data);
                         console.log("done loading initial data");
                         var headers = json_data.headers;
-
-                        var variables_for_template = {
-                            "variables": []
-                        };
-                        for (var i = 0; i < headers.length; i++) {
-                            variables_for_template.variables[i] = {
-                                "var_name": headers[i].trim().replace(/\s+/g, '-')
-                            };
+                        var rows = json_data.rows;
+                        
+                        var cardSizeMin = {x:6,y:1};
+                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
+                        var gridsterUnit = {x:30,y:30};
+                        
+                        var dcSize = [];
+                        for(var i in cardSize){
+                            dcSize[i] = { x : 0, y: 0};
+                            dcSize[i].x = cardSize[i].x * gridsterUnit.x;
+                            dcSize[i].y = cardSize[i].y * gridsterUnit.y;
                         }
+                        console.log(dcSize);
+                        
+                        
+                        function getSummaryStats(headers, rows) {
+                        
+                            var data_summary = {};
+                            for(var i in headers){
+                                data_summary[headers[i]] = {};
+                                
+                                data_summary[headers[i]].max = d3.max(rows, function(d){return d[headers[i]];});
+                                data_summary[headers[i]].min = d3.min(rows, function(d){return d[headers[i]];});
+                                data_summary[headers[i]].median = d3.median(rows, function(d){return d[headers[i]];});
+                                
+                                data_summary[headers[i]].nbNumber = 0;
+                                data_summary[headers[i]].nbString = 0;
+                                data_summary[headers[i]].nbDate = 0;
+                                data_summary[headers[i]].nbUndefined = 0;
+                                data_summary[headers[i]].nbNegative = 0;
+                            }
+                            
+                            return rows.reduce(function (previousValue, currentValue, index, array){ 
+                                for(var i in headers){
+                                    if(typeof currentValue[headers[i]] == "number")
+                                     previousValue[headers[i]].nbNumber++;
+                                    else if(!isNaN(new Date(currentValue[headers[i]])))
+                                     previousValue[headers[i]].nbDate++;
+                                    else if( typeof currentValue[headers[i]] == "string" && currentValue[headers[i]].length > 0)
+                                     previousValue[headers[i]].nbString++;
+                                    else
+                                     previousValue[headers[i]].nbUndefined++;
+                                    
+                                    previousValue[headers[i]].nbNegative  = previousValue[headers[i]].nbNegative + (currentValue[headers[i]] < 0);
+                                     
+                            }return previousValue;}, data_summary)
+                            
+                            return data_summary;
+                        }
+                        
+                        var data_summary = getSummaryStats(headers, rows);
 
-                        var chart_holder = Mustache.render($('#tpl-chart').html(), variables_for_template);
-                        $('#chart-holder').append(chart_holder);
+                        var variables_for_template = { "variables" : []};
+                        
+                        for(var i = 0; i < headers.length; i++) {
+                            
+                            var short_name = "";
+                            if(headers[i].trim().replace(/\s+/g, '-').length > 17)
+                                short_name = headers[i].trim().replace(/\s+/g, '-').substring(0,16) + "...";
+                             else 
+                                 short_name = headers[i].trim().replace(/\s+/g, '-');
+                            
+                            variables_for_template.variables[i] = {
+                                "var_name":headers[i].trim().replace(/\s+/g, '-'),
+                                "cardSizeMin": {"x": cardSizeMin.x , "y": cardSizeMin.y },
+                                
+                                "var_name_short": short_name ,
+                                "var_idx" : i + 1 , 
+                                "stats" : []
+                            };
+                            
+                            for(var k in data_summary[headers[i]]) {
+                                variables_for_template.variables[i].stats.push({"stats_name": k, "stats_value": data_summary[headers[i]][k] });
+                            }    
+                            
+                        }
+                        
+                        console.log(variables_for_template);
+                        
+                        var chart_holder = Mustache.render($('#tpl-gridster').html(),variables_for_template);
+                        //var chart_holder = Mustache.render($('#tpl-chart').html(),variables_for_template);
+                        
+                        $('.gridster ul').append(chart_holder);
                         
                         var datatable_holder = Mustache.render($('#tpl-datatable').html(), variables_for_template);
                         $('#datatable-holder').append(datatable_holder);
                         //$('#chart-holder').listview('refresh');
 
-                        var rows = json_data.rows;
+                        
                         /*
                         for (var i = 0; i < headers.length; i++) {
                             var currentCol = [];
@@ -462,7 +600,7 @@
                                 chart: chart
                             });
                         }
-                      
+                        /*
                         dc.dataCount(".dc-data-count")
                                 .dimension(ndx)
                                 .group(all);
@@ -496,9 +634,60 @@
                                 .renderlet(function (table) {
                                     table.selectAll(".dc-table-group").classed("info", true);
                                 });
+                        */
 
-
-                        dc.renderAll();
+                      dc.renderAll();
+                        
+                      var gridster;
+                        
+                      $(function(){
+                    
+                             $('.collapse').on('hide', function () {       
+                               gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+                              $(this).siblings().children('.btn-group').hide();
+                            })
+                            
+                            $('.collapse').on('show', function () {
+                              
+                              var currentSize = $(this).parents(".card").attr('card-size');
+                              gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
+                              
+                              $(this).siblings().children('.btn-group').show();
+                            })  
+                            
+                            gridster = $(".gridster > ul").gridster({
+                                widget_margins: [5, 5],
+                                widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
+                                min_cols: 1,
+                                max_cols: 0,
+                                autogenerate_stylesheet: true
+                            }).data('gridster');
+                        
+                        $('.size-smaller').click(function() {
+                            
+                            var currentSize = $(this).parents(".card").attr('card-size');
+                            var newSize = Math.max(currentSize - 1, 0);
+                            console.log(currentSize);
+                           $(this).parents(".card").attr('card-size', newSize);
+                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
+                        })  
+                          
+                        $('.size-bigger').click(function() {
+                            
+                            var currentSize = $(this).parents(".card").attr('card-size');
+                            var newSize = Math.min(currentSize + 1, cardSize.length - 1);
+                            console.log(currentSize);
+                            $(this).parents(".card").attr('card-size', newSize);
+                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
+                        })   
+                          
+                         /*$(".disable-widget").click(function () {
+                          
+                              gridster.remove_widget( $(this).parents(".card"))
+                                  
+                        });*/
+                    
+                      }); 
 
 
                     },
