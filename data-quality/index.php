@@ -60,6 +60,9 @@
             </div>
         </div>
         <div class="container">
+              <div id="spinner">
+                
+            </div>
               <h1>Data quality report</h1>
               <div class="gridster">
               <ul>
@@ -98,8 +101,31 @@
         <script type="text/javascript" src="../libs/datejs/date.js"></script>
         <script type="text/javascript" src="../libs/utils_functions.js"></script>
         <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
+           <script type="text/javascript" src="../libs/spin/spin.min.js"></script>     
         <script src="../libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
-                
+         <script type="text/javascript">       
+                   var opts = {
+  lines: 13, // The number of lines to draw
+  length: 13, // The length of each line
+  width: 10, // The line thickness
+  radius: 26, // The radius of the inner circle
+  corners: 0.6, // Corner roundness (0..1)
+  rotate: 90, // The rotation offset
+  direction: 1, // 1: clockwise, -1: counterclockwise
+  color: '#000', // #rgb or #rrggbb
+  speed: 0.7, // Rounds per second
+  trail: 58, // Afterglow percentage
+  shadow: false, // Whether to render a shadow
+  hwaccel: false, // Whether to use hardware acceleration
+  className: 'spinner', // The CSS class to assign to the spinner
+  zIndex: 2e9, // The z-index (defaults to 2000000000)
+  top: '50%', // Top position relative to parent in px
+  left: 'auto' // Left position relative to parent in px
+};
+var target = document.getElementById('spinner');
+var spinner = new Spinner(opts).spin(target);
+                    
+         </script>                           
                    <script id="tpl-gridster" type="text/html">
                 {{#variables}}
                 
@@ -107,6 +133,7 @@
                     <div class="card-heading">
                           <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true">&times;</button>
                           <a class="card-toggle"  >{{var_name_short}}</a>
+                          
                           <div class="btn-group hide" >
                               <button class="close resize size-smaller">&#45;</button>
                               <button class="close resize size-bigger">&#43;</button>
@@ -219,173 +246,29 @@
 
                 return columns;
             }
-
-            function getHistogram(aColumn, aType) {
-
-                var res;
-
-                if (aType == "string") {
-
-                    var ht = new HashTable();
-
-                    for (var i = 0; i < aColumn.length; i++) {
-                        ht.increment(aColumn[i]);
-                    }
-
-                    res = [];
-                    var keys = ht.keys();
-
-                    for (var i in keys) {
-                        res[i] = {
-                            "x": (keys[i] + "").trim(),
-                            "y": +ht.get(keys[i])
-                        };
-
-                    }
-                    res.sort(function(a, b) {
-                        return b.y - a.y
-                    });
-
-                } else if (aType == "date") {
-                    var ht = new HashTable();
-                    var currentDate;
-
-                    // Date.parse(dd.toDateString());
-
-                    for (var i = 0; i < aColumn.length; i++) {
-
-                        currentDate = Date.parse(aColumn[i]);
-                        if (currentDate != null) {
-
-                            currentDate = Date.parse(currentDate.toDateString());
-                            ht.increment(currentDate);
-
-                        } else {
-                            ht.increment("not a date");
-                        }
-
-                    }
-
-                    res = [];
-                    var keys = ht.keys();
-
-                    for (var i in keys) {
-                        res[i] = {
-                            "x": keys[i],
-                            "y": +ht.get(keys[i])
-                        };
-
-                    }
-                    res.sort(function(a, b) {
-                        if (b.x == "not a date") return -a.x
-                        else if (a.x == "not a date") return b.x
-                        else return a.x - b.x;
-                    });
-
-                } else {
-
-                    var nofGroups = 10;
-                    var ht = new HashTable();
-
-                    var min_value = Math.min.apply(Math, aColumn);
-                    var max_value = Math.max.apply(Math, aColumn);
-
-                    var range_size = (max_value - min_value) / nofGroups;
-
-                    if (range_size > 0) {
-                        var max_bin = Math.floor(max_value / range_size);
-                        var min_bin = Math.floor(min_value / range_size);
-
-                        for (var i = min_bin; i <= max_bin; i = i + 1) {
-                            ht.put(i, 0);
-                        }
-
-                        for (var i = 0; i < aColumn.length; i++) {
-                            if (typeof aColumn[i] == "number") ht.increment(+Math.floor(aColumn[i] / range_size));
-                            else ht.increment("not a number");
-                        }
-
-                        res = [];
-                        var keys = ht.keys();
-
-                        for (var i in keys) {
-                            res[i] = {
-                                "x": keys[i],
-                                "y": +ht.get(keys[i])
-                            };
-                        }
-                        res.sort(function(a, b) {
-                            if (b.x == "not a number") return -a.x
-                            else if (a.x == "not a number") return b.x
-                            else return a.x - b.x;
-                        });
-
-                        for (var i = 0; i < res.length; i++) {
-                            if (isFinite(res[i]["x"]))
-                                res[i]["x"] = (Math.round(+res[i]["x"] * range_size * 100) / 100).toFixed(2) + " " + (Math.round((+res[i]["x"] + 1) * range_size * 100) / 100).toFixed(2);
-                        }
-
-                    } else {
-                        for (var i = 0; i < aColumn.length; i++) {
-                            if (typeof aColumn[i] == "number") ht.increment(aColumn[i]);
-                            else ht.increment("not a number");
-                        }
-
-                        res = [];
-                        var keys = ht.keys();
-
-                        for (var i in keys) {
-                            res[i] = {
-                                "x": keys[i],
-                                "y": +ht.get(keys[i])
-                            };
-
-                        }
-                        res.sort(function(a, b) {
-                            if (b.x == "not a number") return -a.x
-                            else if (a.x == "not a number") return b.x
-                            else return a.x - b.x;
-                        });
-
-                    }
-
+            
+            function sizeOfDict(obj) {
+                var size = 0, key;
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) size++;
                 }
-
-                return res;
+                return size;
+            }
+            
+            function isNullOrNanOrUndefined(aVariable){
+                return (aVariable == null) ||
+                       (aVariable == undefined) ||
+                       (typeof aVariable == "number" && isNaN(aVariable))  
+            }
+            
+            function isNullOrNanOrUndefinedOrEmptyString(aVariable){
+                return (aVariable == null) ||
+                       (aVariable == undefined) ||
+                       (typeof aVariable == "number" && isNaN(aVariable)) ||
+                       (typeof aVariable == "string" && aVariable.length == 0)
             }
 
-
-            var file_name = "vc-reduced.csv"; // "income-reduced.csv";
-
-            var usChart;
-            var json_data;
-            var data_in_columns = {};
-            var columns_types;
-
-            var dimGroup;
-
-            if (file_name.length > 0) {
-                $.ajax("./" + file_name, {
-                    success: function(data) {
-                        json_data = csvjson.csv2json(data);
-                        console.log("done loading initial data");
-                        var headers = json_data.headers;
-                        var rows = json_data.rows;
-                        
-                        var cardSizeMin = {x:6,y:1};
-                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
-                        var gridsterUnit = {x:30,y:30};
-                        
-                        var dcSize = [];
-                        for(var i in cardSize){
-                            dcSize[i] = { x : 0, y: 0};
-                            dcSize[i].x = cardSize[i].x * gridsterUnit.x;
-                            dcSize[i].y = cardSize[i].y * gridsterUnit.y;
-                        }
-                        console.log(dcSize);
-                        
-                        
-                        function getSummaryStats(headers, rows) {
+            function getSummaryStats(headers, rows) {
                         
                             var data_summary = {};
                             for(var i in headers){
@@ -400,9 +283,11 @@
                                 data_summary[headers[i]].nbDate = 0;
                                 data_summary[headers[i]].nbUndefined = 0;
                                 data_summary[headers[i]].nbNegative = 0;
+                                
+                                data_summary[headers[i]].nbDistinct = {};
                             }
                             
-                            return rows.reduce(function (previousValue, currentValue, index, array){ 
+                            rows.reduce(function (previousValue, currentValue, index, array){ 
                                 for(var i in headers){
                                     if(typeof currentValue[headers[i]] == "number")
                                      previousValue[headers[i]].nbNumber++;
@@ -412,15 +297,97 @@
                                      previousValue[headers[i]].nbString++;
                                     else
                                      previousValue[headers[i]].nbUndefined++;
+                                     
+                                    previousValue[headers[i]].nbDistinct[currentValue[headers[i]]] = 1;
                                     
                                     previousValue[headers[i]].nbNegative  = previousValue[headers[i]].nbNegative + (currentValue[headers[i]] < 0);
                                      
-                            }return previousValue;}, data_summary)
+                            }return previousValue;}, data_summary);
+                            
+                            for(var i in headers) {
+                                data_summary[headers[i]].nbDistinct = sizeOfDict(data_summary[headers[i]].nbDistinct);
+                                
+                                if(data_summary[headers[i]].nbDistinct < 3) 
+                                   data_summary[headers[i]].type = "string";
+                                else if(data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbString &&
+                                   data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "number";
+                                else if(data_summary[headers[i]].nbDate > data_summary[headers[i]].nbString &&
+                                   data_summary[headers[i]].nbDate > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "date";
+                                else data_summary[headers[i]].type = "string";
+                            }
                             
                             return data_summary;
+            }
+            
+            function convertDataSet(rows, statistics) {
+                for(var k in statistics) {
+                    if(statistics[k].type == "date") {
+                        for(var i in rows) {
+                            if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) rows[i][k] = undefined; 
+                            else {
+                                var localDate = Date.parse(rows[i][k]); 
+                                if(localDate == null)
+                                    rows[i][k] = undefined;
+                                else 
+                                    rows[i][k] = localDate;
+                            }       
+                        }
+                    } else {
+                        for(var i in rows) {
+                            if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) {
+                                rows[i][k] = undefined;
+                            } 
+                            else {
+                                 if(statistics[k].type != typeof rows[i][k]) {
+                                    if(statistics[k].type == "number") {
+                                        var localFloat = parseFloat(rows[i][k]);
+                                        if(isNaN(localFloat)) rows[i][k] = undefined; 
+                                        else rows[i][k] = localFloat;
+                                    } else {
+                                        rows[i][k] = (""+rows[i][k]).trim();
+                                    }
+                                 } else if(statistics[k].type == "string") {
+                                    rows[i][k] = rows[i][k].trim();    
+                                 }
+                            }
+                        }
+                    }
+                }
+            }
+
+            
+            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'income-reduced.csv'; ?>";
+
+            var json_data;
+            var data_in_columns = {};
+            var columns_types;
+            var headers;
+            var rows;
+
+            var dimGroup;
+
+            if (file_name.length > 0) {
+                $.ajax("./uploads/" + file_name, {
+                    success: function(data) {
+                        json_data = csvjson.csv2json(data);
+                        console.log("done loading initial data");
+                        headers = json_data.headers;
+                        rows = json_data.rows;
+                        
+                        var cardSizeMin = {x:6,y:1};
+                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
+                        var gridsterUnit = {x:30,y:30};
+                        
+                        var dcSize = [];
+                        for(var i in cardSize){
+                            dcSize[i] = { x : 0, y: 0};
+                            dcSize[i].x = cardSize[i].x * gridsterUnit.x;
+                            dcSize[i].y = cardSize[i].y * gridsterUnit.y;
                         }
                         
-                        var data_summary = getSummaryStats(headers, rows);
+                        var data_summary = getSummaryStats(headers, rows.splice(0,200));
+                        
+                        convertDataSet(rows, data_summary);
 
                         var variables_for_template = { "variables" : []};
                         
@@ -447,8 +414,6 @@
                             
                         }
                         
-                        console.log(variables_for_template);
-                        
                         var chart_holder = Mustache.render($('#tpl-gridster').html(),variables_for_template);
                         //var chart_holder = Mustache.render($('#tpl-chart').html(),variables_for_template);
                         
@@ -457,28 +422,14 @@
                         var datatable_holder = Mustache.render($('#tpl-datatable').html(), variables_for_template);
                         $('#datatable-holder').append(datatable_holder);
                         //$('#chart-holder').listview('refresh');
-
                         
-                        /*
-                        for (var i = 0; i < headers.length; i++) {
-                            var currentCol = [];
-                            for (var j = 0; j < rows.length; j++) {
-                                currentCol[j] = rows[j][headers[i]];
-                            }
-                            data_in_columns[headers[i]] = currentCol;
-                        }
-                        */
-                        console.log("done transforming in columns");
-                        // columns_types = guessType(data_in_columns);
-                        console.log("done guessing");
-
                         dimGroup = new HashTable();
 
                         var data = json_data.rows;
                         var ndx = crossfilter(data);
                         var all = ndx.groupAll();
                         
-                        var candidateVariableForGrouping;
+                        //var candidateVariableForGrouping; // stuff for the rows display
                         var minSoFar = 9999999999;
 
                         for (var i = 0; i < headers.length; i++) {
@@ -486,17 +437,17 @@
                                 return d[headers[i]];
                             });
                             var dimensionGroup = dimension.group();
+                            /*
+                            stuff linked to the rows display
                             var dimensionTop = dimensionGroup.top(20);
                             if(dimensionTop.length < minSoFar && dimensionTop.length > 1) 
                             {
                                 candidateVariableForGrouping = headers[i];
                                 minSoFar = dimensionTop.length;
                             }
+                            */
                             
-                            var currentType = guessTypeOfColumn(dimensionTop, function(a) {
-                                return a.key;
-                            });
-                            
+                            var currentType = data_summary[headers[i]].type;
                             
                             var chart;
                             var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
@@ -511,7 +462,7 @@
                                 
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
                                 chart.width(700)
-                                    .height(300)
+                                    .height(250)
                                     .margins({
                                     top: 10,
                                     right: 50,
@@ -566,7 +517,7 @@
                             } else if(currentType == "date") {
                                 
                                 dimension = ndx.dimension(function(d) {
-                                    return d3.time.day(Date.parse(d[headers[i]]));
+                                    return d3.time.day(d[headers[i]]);
                                 });
                                 dimensionGroup = dimension.group();
                                 
@@ -579,8 +530,8 @@
                                     .valueAccessor(function(d) {
                                         return d.value;
                                     })
-                                    .x(d3.time.scale().domain([new Date(d3.min(data, function(d) { return Date.parse(d[headers[i]]); }).toString("yyyy-MM-dd")), 
-                                                                 new Date(d3.max(data, function(d) { return Date.parse(d[headers[i]]); }).toString("yyyy-MM-dd"))]                                                                 
+                                    .x(d3.time.scale().domain([d3.min(data, function(d) { return d[headers[i]]; }), 
+                                                               d3.max(data, function(d) { return d[headers[i]]; })]                                                                 
                                                                  ))
                                     /*.x(d3.time.scale().domain([new Date.parse("2010-01-01"), Date.parse("2015-01-01")]))*/
                                     .renderHorizontalGridLines(true)
@@ -635,34 +586,33 @@
                                     table.selectAll(".dc-table-group").classed("info", true);
                                 });
                         */
-
+                      
                       dc.renderAll();
                         
                       var gridster;
                         
-                      $(function(){
-                    
-                             $('.collapse').on('hide', function () {       
-                               gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-                              $(this).siblings().children('.btn-group').hide();
-                            })
-                            
-                            $('.collapse').on('show', function () {
-                              
-                              var currentSize = $(this).parents(".card").attr('card-size');
-                              gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
-                              
-                              $(this).siblings().children('.btn-group').show();
-                            })  
-                            
-                            gridster = $(".gridster > ul").gridster({
-                                widget_margins: [5, 5],
-                                widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
-                                min_cols: 1,
-                                max_cols: 0,
-                                autogenerate_stylesheet: true
-                            }).data('gridster');
+             
+                         $('.collapse').on('hide', function () {       
+                           gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+                          $(this).siblings().children('.btn-group').hide();
+                        })
                         
+                        $('.collapse').on('show', function () {
+                          
+                          var currentSize = $(this).parents(".card").attr('card-size');
+                          gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
+                          
+                          $(this).siblings().children('.btn-group').show();
+                        })  
+                        
+                        gridster = $(".gridster > ul").gridster({
+                            widget_margins: [5, 5],
+                            widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
+                            min_cols: 1,
+                            max_cols: 0,
+                            autogenerate_stylesheet: true
+                        }).data('gridster');
+                    
                         $('.size-smaller').click(function() {
                             
                             var currentSize = $(this).parents(".card").attr('card-size');
@@ -680,15 +630,15 @@
                             $(this).parents(".card").attr('card-size', newSize);
                             gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
                         })   
-                          
+                              
+                        spinner.stop();
+                              
                          /*$(".disable-widget").click(function () {
                           
                               gridster.remove_widget( $(this).parents(".card"))
                                   
                         });*/
                     
-                      }); 
-
 
                     },
                     error: function() {
