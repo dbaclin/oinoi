@@ -50,6 +50,7 @@ ul {
 .card-heading .card-toggle {
     font-size: 14px;
     width: 100%;
+    cursor: hand; cursor: pointer; 
 }
 .card-heading .btn-group {
     float: right;

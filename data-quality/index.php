@@ -104,26 +104,26 @@
            <script type="text/javascript" src="../libs/spin/spin.min.js"></script>     
         <script src="../libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
          <script type="text/javascript">       
-                   var opts = {
-  lines: 13, // The number of lines to draw
-  length: 13, // The length of each line
-  width: 10, // The line thickness
-  radius: 26, // The radius of the inner circle
-  corners: 0.6, // Corner roundness (0..1)
-  rotate: 90, // The rotation offset
-  direction: 1, // 1: clockwise, -1: counterclockwise
-  color: '#000', // #rgb or #rrggbb
-  speed: 0.7, // Rounds per second
-  trail: 58, // Afterglow percentage
-  shadow: false, // Whether to render a shadow
-  hwaccel: false, // Whether to use hardware acceleration
-  className: 'spinner', // The CSS class to assign to the spinner
-  zIndex: 2e9, // The z-index (defaults to 2000000000)
-  top: '50%', // Top position relative to parent in px
-  left: 'auto' // Left position relative to parent in px
-};
-var target = document.getElementById('spinner');
-var spinner = new Spinner(opts).spin(target);
+        var opts = {
+          lines: 15, // The number of lines to draw
+          length: 12, // The length of each line
+          width: 7, // The line thickness
+          radius: 19, // The radius of the inner circle
+          corners: 0.6, // Corner roundness (0..1)
+          rotate: 90, // The rotation offset
+          direction: 1, // 1: clockwise, -1: counterclockwise
+          color: '#000', // #rgb or #rrggbb
+          speed: 0.7, // Rounds per second
+          trail: 58, // Afterglow percentage
+          shadow: false, // Whether to render a shadow
+          hwaccel: false, // Whether to use hardware acceleration
+          className: 'spinner', // The CSS class to assign to the spinner
+          zIndex: 2e9, // The z-index (defaults to 2000000000)
+          top: '100%', // Top position relative to parent in px
+          left: 'auto' // Left position relative to parent in px
+        };
+        var target = document.getElementById('spinner');
+        var spinner = new Spinner(opts).spin(target);
                     
          </script>                           
                    <script id="tpl-gridster" type="text/html">
@@ -323,25 +323,19 @@ var spinner = new Spinner(opts).spin(target);
                 for(var k in statistics) {
                     if(statistics[k].type == "date") {
                         for(var i in rows) {
-                            if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) rows[i][k] = undefined; 
-                            else {
-                                var localDate = Date.parse(rows[i][k]); 
-                                if(localDate == null)
-                                    rows[i][k] = undefined;
-                                else 
-                                    rows[i][k] = localDate;
-                            }       
+                            if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) rows[i][k] = null; 
+                            else rows[i][k] = Date.parse(rows[i][k]);        
                         }
                     } else {
                         for(var i in rows) {
                             if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) {
-                                rows[i][k] = undefined;
+                                rows[i][k] = null;
                             } 
                             else {
                                  if(statistics[k].type != typeof rows[i][k]) {
                                     if(statistics[k].type == "number") {
                                         var localFloat = parseFloat(rows[i][k]);
-                                        if(isNaN(localFloat)) rows[i][k] = undefined; 
+                                        if(isNaN(localFloat)) rows[i][k] = null; 
                                         else rows[i][k] = localFloat;
                                     } else {
                                         rows[i][k] = (""+rows[i][k]).trim();
@@ -363,6 +357,7 @@ var spinner = new Spinner(opts).spin(target);
             var columns_types;
             var headers;
             var rows;
+            var ndx;
 
             var dimGroup;
 
@@ -385,7 +380,7 @@ var spinner = new Spinner(opts).spin(target);
                             dcSize[i].y = cardSize[i].y * gridsterUnit.y;
                         }
                         
-                        var data_summary = getSummaryStats(headers, rows.splice(0,200));
+                        var data_summary = getSummaryStats(headers, rows.slice(0,200));
                         
                         convertDataSet(rows, data_summary);
 
@@ -426,7 +421,7 @@ var spinner = new Spinner(opts).spin(target);
                         dimGroup = new HashTable();
 
                         var data = json_data.rows;
-                        var ndx = crossfilter(data);
+                        ndx = crossfilter(data);
                         var all = ndx.groupAll();
                         
                         //var candidateVariableForGrouping; // stuff for the rows display
@@ -486,6 +481,7 @@ var spinner = new Spinner(opts).spin(target);
                                 var allKeysValues = dimensionGroup.top(Infinity);
                                 var allKeysValuesStore = {};
                                 for(var idx in allKeysValues) {
+                                    
                                     allKeysValuesStore[allKeysValues[idx].key] = allKeysValues[idx].value;
                                 }
                                 
@@ -586,7 +582,7 @@ var spinner = new Spinner(opts).spin(target);
                                     table.selectAll(".dc-table-group").classed("info", true);
                                 });
                         */
-                      
+                    
                       dc.renderAll();
                         
                       var gridster;
