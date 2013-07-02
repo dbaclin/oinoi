@@ -1,0 +1,311 @@
+﻿<html>
+
+<head>
+
+ <meta charset="utf-8" />
+  <title>Oinoi</title>
+  
+  <link rel="stylesheet" href="../libs/jquery/plugins/uniform/themes/default/css/uniform.default.css" media="screen" />
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+  <link href="../libs/nvd3/src/nv.d3.css" rel="stylesheet" type="text/css">
+  <!--<link rel="stylesheet" href="../libs/jquery/demos/demos.css" />-->
+  <link rel="stylesheet" href="../libs/slickgrid/slick.grid.css" type="text/css"/>
+  <!-- <link rel="stylesheet" href="../libs/slickgrid/examples/examples.css" type="text/css"/> -->
+  <link rel="stylesheet" href="../libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
+  <link rel="stylesheet" href="../libs/slickgrid/plugins/slick.headerbuttons.css" type="text/css"/>
+  <link rel="stylesheet" href="../libs/bootstrap/2.0.2/css/bootstrap.css" />
+  <link rel="stylesheet" href="../libs/bootstrap/custom-theme/jquery-ui-1.10.0.custom.css" />
+  <link rel="stylesheet" href="../libs/bootstrap/custom-theme/jquery.ui.1.10.0.ie.css" />
+  <link rel="stylesheet" href="oinoi.css" />
+  
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<script src="../libs/jquery/plugins/uniform/jquery.uniform.js"></script>
+	<script src="../libs/jquery/plugins/jquery.event.drag-2.2.js"></script>
+ 
+	
+	<!-- Recline -->
+	<script type="text/javascript" src="../libs/underscore/1.4.4/underscore.js"></script>
+	<script type="text/javascript" src="../libs/backbone/1.0.0/backbone.js"></script>
+	<script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
+	<script type="text/javascript" src="../libs/recline/recline.js"></script>
+	
+	<script src="../libs/nvd3/lib/d3.v2.js"></script>
+	<script src="../libs/nvd3/nv.d3.js"></script>
+	<script src="../libs/nvd3/src/models/pie.js"></script>
+
+	
+	<script src="../libs/slickgrid/slick.editors.js"></script>
+	<script src="../libs/slickgrid/slick.core.js"></script>
+	<script src="../libs/slickgrid/slick.grid.js"></script>
+	<script src="../libs/slickgrid/plugins/slick.headermenu.js"></script>
+	<script src="../libs/slickgrid/plugins/slick.headerbuttons.js"></script>
+  
+	
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+  
+   <style>
+    /**
+     * Style the drop-down menu here since the plugin stylesheet mostly contains structural CSS.
+     */
+
+    .slick-header-menu {
+      border: 1px solid #718BB7;
+      background: #f0f0f0;
+      padding: 2px;
+      -moz-box-shadow: 2px 2px 2px silver;
+      -webkit-box-shadow: 2px 2px 2px silver;
+      min-width: 100px;
+      z-index: 20;
+    }
+
+
+    .slick-header-menuitem {
+      padding: 2px 4px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+    }
+
+    .slick-header-menuitem:hover {
+      border-color: silver;
+      background: white;
+    }
+
+    .slick-header-menuitem-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+    }
+
+    .icon-help {
+      background-image: url(../images/help.png);
+    }
+  </style>
+  
+  
+  
+  <script>
+  
+  $(function() {
+    $( "#radio" ).buttonset();
+	$("#radio1").click(function(){
+		$( "#tabs" ).tabs("option", "active",0);
+	
+	});
+	$("#radio2").click(function(){
+		$( "#tabs" ).tabs("option", "active",1);
+	
+	});
+	$("#radio3").click(function(){
+		$( "#tabs" ).tabs("option", "active",2);
+	
+	});
+	
+  });
+  
+  
+  $(function() {
+    $( "#tabs" ).tabs();
+  });
+  
+  $(function() {
+    $( "#accordion" ).accordion();
+  });
+  
+  $(function() {
+	$("select, input, a.button, button").uniform();
+  });
+  
+  $(function() {
+   $("#suggestions").click(function() {
+					var str = "";
+					for(var i = 0; i < data.length; i++) {
+						str = data[i].Region;
+						data[i].country = str.substring(0,str.indexOf(";") == -1 ? str.length : str.indexOf(";"));
+					}
+					var columns = grid.getColumns();
+					columns.push({id: "country", name: "Country", field: "country"});
+					grid.setColumns(columns);
+					
+					var countryCount = {};
+					for(var i = 0; i < data.length; i++) {
+						if(isNaN(countryCount[data[i].country])) {
+							countryCount[data[i].country] = 1;
+						} else {
+							countryCount[data[i].country] ++ ;
+						}
+					}
+					
+					console.log(countryCount);
+					
+					var newdata = [];
+					var cpt = 0;
+					
+					for(var ctry in countryCount) {
+						newdata[cpt] = { x: ctry, y: countryCount[ctry] };
+						cpt ++ ;
+					}
+					
+					console.log(newdata);
+					
+					nv.addGraph(function() {
+						var width = 300,
+							height = 300;
+
+						var chart = nv.models.pieChart()
+							.values(function(d) { return d })
+							.width(width)
+							.height(height)
+							.showLabels(true)
+							.labelThreshold(.1)
+							.donut(true);
+
+						d3.select("#myd3Chart")
+							.datum([newdata])
+						  .transition().duration(1200)
+							.attr('width', width)
+							.attr('height', height)
+							.call(chart);
+
+						return chart;
+					});
+					
+					
+    });
+  });
+  
+  $(function() {
+   $("#suggestionAntoine").click(function() {
+					var str = "";
+					for(var i = 0; i < data.length; i++) {
+						str = data[i].Points;
+						data[i].PointsClean = str.substring(0,2);
+					}
+					var columns = grid.getColumns();
+					columns.push({id: "PointsClean", name: "Points", field: "PointsClean"});
+					grid.setColumns(columns);
+					
+    });
+  }); 
+  
+  </script>
+
+  
+  
+</head>
+
+<body>
+
+  <div class="navbar navbar-static-top navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Oinoi</a>
+          <div class="nav-collapse collapse">
+            <p class="navbar-text pull-right">
+              Logged in as <a href="#" class="navbar-link">Username</a>
+            </p>
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span3">
+			<h2>Suggestions</h2>
+			<div id="accordion">
+				<h3 id="suggestions">Extract up to the first ","</h3>
+				<div>
+					<p>Showing off the forms</p>
+					<div>
+						<label>Separator:</label>
+						<select id="separator">
+							<option value="comma">,</option>
+							<option value="pipe">|</option>
+							<option value="colon">:</option>
+							<option value="semi-colon">;</option>
+						</select>
+					</div>
+					<div>
+						<label>Some number:</label>
+						<input type="number" size="40" />
+					</div>				
+				</div>
+				<h3 id="suggestionAntoine">Suggestion 2</h3>
+				<h3>Suggestion 3</h3>
+				<h3>Suggestion 4</h3>
+				<h3>Suggestion Antoine</h3>
+			</div>
+		</div>
+		<div class="span9" >
+		
+			<form>
+				<div id="radio">
+					<input type="radio" id="radio1" name="radio" checked="checked" /><label for="radio1">Grid</label>
+					<input type="radio" id="radio2" name="radio"  /><label for="radio2">Graph</label>
+					<input type="radio" id="radio3" name="radio" /><label for="radio3">Transform</label>
+				</div>
+			</form>
+		
+
+			
+			
+			<div id="tabs">
+				<ul>
+					<li><a href="#tabs-1">Grid</a></li>
+					<li><a href="#tabs-2">Chart</a></li>
+					<li><a href="#tabs-3">Transform</a></li>
+				</ul>
+				<div id="tabs-1">
+					<div class="data-view-container">
+						<div id="myGrid" class="grid-canvas" style="width:100%;height:100%;"></div>
+					</div>
+				
+				</div>
+					
+				<div id="tabs-2">
+						<p>My d3 chart here</p>
+						<div><svg id="myd3Chart"></svg></div>
+						<ul id="contextMenu" style="display:none;position:absolute">
+							<li data="Low">Sort</li>
+							<li data="Medium">Delete</li>
+							<li data="High">Create new colum</li>
+						</ul>	
+					  </div>
+
+						
+
+				<div id="tabs-3">
+			
+					<p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+						<p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+	
+<script type="text/javascript" src="oinoi.js"></script>
+
+
+</body>
+
+</html>
