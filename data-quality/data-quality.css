@@ -1,0 +1,67 @@
+
+body{
+
+     background: rgb(240,240,240);
+       padding-top: 60px;
+    /* 60px to make the container go all the way to the bottom of the topbar */
+
+}
+
+
+.gridster .gs_w {
+                background: white;
+                border-radius: 5px;
+                box-shadow: 0px 0px 3px rgb(200,200,200);
+                
+            }
+
+.charts-container {
+    display: table-cell;
+    vertical-align: bottom;
+}
+.chart-child {
+    display: inline-block;
+    /* act like image */
+}
+ul {
+    list-style-type:none;
+}
+.card-heading {
+    height: 30px;
+}
+.card-heading a {
+    padding: 4px;
+    text-align:left;
+    text-transform:capitalize;
+    text-decoration:none;
+    color:black;
+    font-weight:bold;
+}
+.card .resize {
+    float: none;
+    opacity: 0.2;
+    margin: 3px 2px 0px 2px;
+}
+.card .close {
+    float: none;
+    opacity: 0.2;
+    margin: 3px 2px 0px 2px;
+}
+.card-heading .card-toggle {
+    font-size: 14px;
+    width: 100%;
+    cursor: hand; cursor: pointer; 
+}
+.card-heading .btn-group {
+    float: right;
+}
+
+.card-body{
+
+padding: 5px;
+}
+li .card{
+
+padding: 4px;
+
+}
