@@ -31,12 +31,15 @@ for (var i = 0; i < 150; i++) {
 	random.addData(seriesData);
 }
 
+seriesData[0][10].y = -20;
+
 // instantiate our graph!
 
 var graph = new Rickshaw.Graph( {
 	element: document.getElementById("chart"),
 	width: 960,
 	height: 500,
+	min: 'auto',
 	renderer: 'line',
 	series: [
 		{
