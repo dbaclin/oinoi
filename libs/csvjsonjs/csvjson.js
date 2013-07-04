@@ -47,6 +47,15 @@ var csvjson = {};
 
 		var csvlines = csvdata.split("\n");
 		var csvheaders = splitCSV(csvlines[0], delim);
+		for(var i in csvheaders) {
+		  if(csvheaders[i].length == 0) csvheaders[i] = "_MISSING_" + i;
+		  else {
+		      csvheaders[i] = csvheaders[i].replace(/%/g,"_Prct").replace(/\//g,"_").replace(/ /g,"_");
+		      if(!isNaN(+csvheaders[i][0])) csvheaders[i] = "_" + csvheaders[i];
+          }
+		}
+		console.log(csvheaders);
+		
 		var csvrows = csvlines.slice(1, csvlines.length);
 
 		var ret = {};

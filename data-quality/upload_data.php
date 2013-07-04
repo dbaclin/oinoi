@@ -2,10 +2,17 @@
     
     <head>
         <meta charset="utf-8">
+<<<<<<< HEAD
         <title>Oinoi</title>
+=======
+        <title>Oinoi, Analytics for all</title>
+>>>>>>> 8678d4474ac03e58056140973b11b91294140506
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
+        <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
+        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+        
         <!-- Le styles -->
         <link href="../libs/bootstrap/css/bootstrap.css" rel="stylesheet">
         <style>
@@ -25,13 +32,12 @@
         <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css" />
         <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
-        
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-        <link rel="shortcut icon" href="../assets/ico/favicon.png">
+        <link rel="shortcut icon" href="../images/favicon.png">
         
     </head>
     
@@ -74,8 +80,8 @@
       <form id="main_form" action="index.php" method="post">
       <input type="hidden" id="file_name" name="file_name" value="" />
       <input type="hidden" id="pasted_data" name="pasted_data" value="" />
-      <a class="btn btn-large btn-info" href="#" onclick="javascript:sumbitForm();" style="font-size: 30px;">
-  <i class="icon-bar-chart"></i> Create dashoard</a>
+      <a class="btn btn-large btn-primary" href="#" onclick="javascript:sumbitForm();" style="font-size: 30px;">
+  <i class="icon-bar-chart"></i> Create dashboard</a>
       </form>
   </div>
   
