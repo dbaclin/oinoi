@@ -348,15 +348,26 @@
                     }
                 }
             }
+
             
+            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
+
+            var json_data;
+            var data_in_columns = {};
+            var columns_types;
+            var headers;
+            var rows;
+            var ndx;
+
             var dimGroup;
-                        
-            function buildDashboard(json_data) {
-                
-                        var headers = json_data.headers;
-                        var rows = json_data.rows;
-						
-						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
+
+            if (file_name.length > 0) {
+                $.ajax("./uploads/" + file_name, {
+                    success: function(data) {
+                        json_data = csvjson.csv2json(data);
+                        console.log("done loading initial data");
+                        headers = json_data.headers;
+                        rows = json_data.rows;
                         
                         var cardSizeMin = {x:6,y:1};
                         var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
@@ -409,7 +420,8 @@
                         
                         dimGroup = new HashTable();
 
-                        var ndx = crossfilter(rows);
+                        var data = json_data.rows;
+                        ndx = crossfilter(data);
                         var all = ndx.groupAll();
                         
                         //var candidateVariableForGrouping; // stuff for the rows display
@@ -433,10 +445,12 @@
                             var currentType = data_summary[headers[i]].type;
                             
                             var chart;
+                            var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
+                            
                             
                             if (currentType == "number") {
-                                var min_bound = d3.min(rows, function(d) {return d[headers[i]]; });
-                                var max_bound = d3.max(rows, function(d) {return d[headers[i]]; });
+                                var min_bound = d3.min(data, function(d) {return d[headers[i]]; });
+                                var max_bound = d3.max(data, function(d) {return d[headers[i]]; });
                                 var increment = 0.02 * (max_bound - min_bound);
                                 min_bound -= increment;
                                 max_bound += increment;
@@ -478,7 +492,7 @@
                                 
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
                                 chart.width(700)
-                                    .height(250)
+                                    .height(300)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -505,15 +519,15 @@
                                 
                                 chart = dc.lineChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
                                 chart.width(700)
-                                    .height(250)
+                                    .height(300)
                                     .margins({top: 10, right: 50, bottom: 30, left: 60})
                                     .dimension(dimension)
                                     .group(dimensionGroup)
                                     .valueAccessor(function(d) {
                                         return d.value;
                                     })
-                                    .x(d3.time.scale().domain([d3.min(rows, function(d) { return d[headers[i]]; }), 
-                                                               d3.max(rows, function(d) { return d[headers[i]]; })]                                                                 
+                                    .x(d3.time.scale().domain([d3.min(data, function(d) { return d[headers[i]]; }), 
+                                                               d3.max(data, function(d) { return d[headers[i]]; })]                                                                 
                                                                  ))
                                     /*.x(d3.time.scale().domain([new Date.parse("2010-01-01"), Date.parse("2015-01-01")]))*/
                                     .renderHorizontalGridLines(true)
@@ -572,93 +586,62 @@
                       dc.renderAll();
                         
                       var gridster;
+                        
              
-					 $('.collapse').on('hide', function () {       
-					   gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-					  $(this).siblings().children('.btn-group').hide();
-					})
-					
-					$('.collapse').on('show', function () {
-					  
-					  var currentSize = $(this).parents(".card").attr('card-size');
-					  gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
-					  
-					  $(this).siblings().children('.btn-group').show();
-					})  
-					
-					gridster = $(".gridster > ul").gridster({
-						widget_margins: [5, 5],
-						widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
-						min_cols: 1,
-						max_cols: 0,
-						autogenerate_stylesheet: true
-					}).data('gridster');
-				
-					$('.size-smaller').click(function() {
-						
-						var currentSize = $(this).parents(".card").attr('card-size');
-						var newSize = Math.max(currentSize - 1, 0);
-						console.log(currentSize);
-					   $(this).parents(".card").attr('card-size', newSize);
-						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
-					})  
-					  
-					$('.size-bigger').click(function() {
-						
-						var currentSize = $(this).parents(".card").attr('card-size');
-						var newSize = Math.min(currentSize + 1, cardSize.length - 1);
-						console.log(currentSize);
-						$(this).parents(".card").attr('card-size', newSize);
-						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
-					})   
-						  
-					 /*$(".disable-widget").click(function () {
-					  
-						  gridster.remove_widget( $(this).parents(".card"))
-							  
-					});*/
+                         $('.collapse').on('hide', function () {       
+                           gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+                          $(this).siblings().children('.btn-group').hide();
+                        })
+                        
+                        $('.collapse').on('show', function () {
+                          
+                          var currentSize = $(this).parents(".card").attr('card-size');
+                          gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
+                          
+                          $(this).siblings().children('.btn-group').show();
+                        })  
+                        
+                        gridster = $(".gridster > ul").gridster({
+                            widget_margins: [5, 5],
+                            widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
+                            min_cols: 1,
+                            max_cols: 0,
+                            autogenerate_stylesheet: true
+                        }).data('gridster');
                     
-            }
-
-            
-            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
-            var pasted_data = "<?php if(isset($_POST['pasted_data'])) echo $_POST['pasted_data']; else echo ''; ?>";
-            
-            var json_data;
-            
-            if (file_name.length > 0) {
-                $.ajax("./uploads/" + file_name, {
-                    success: function(data) {
-                      
-                        json_data = csvjson.csv2json(data);
-                        console.log("done loading initial data");
-                        
-                        buildDashboard(json_data);
-                        
+                        $('.size-smaller').click(function() {
+                            
+                            var currentSize = $(this).parents(".card").attr('card-size');
+                            var newSize = Math.max(currentSize - 1, 0);
+                            console.log(currentSize);
+                           $(this).parents(".card").attr('card-size', newSize);
+                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
+                        })  
+                          
+                        $('.size-bigger').click(function() {
+                            
+                            var currentSize = $(this).parents(".card").attr('card-size');
+                            var newSize = Math.min(currentSize + 1, cardSize.length - 1);
+                            console.log(currentSize);
+                            $(this).parents(".card").attr('card-size', newSize);
+                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
+                        })   
+                              
                         spinner.stop();
+                              
+                         /*$(".disable-widget").click(function () {
+                          
+                              gridster.remove_widget( $(this).parents(".card"))
+                                  
+                        });*/
+                    
 
                     },
                     error: function() {
                         // Show some error message, couldn't get the CSV file
                     }
-                });
-            } else if(pasted_data.length > 0) {
-                 console.log("loading pasted data");
-                 pasted_data = pasted_data.replace(/Ø/g,"\n");
-                 json_data = csvjson.csv2json(pasted_data, {
-                      delim: "\t"
-                 });
-                 buildDashboard(json_data);
-                        
-                spinner.stop();
-    	       
-            } else {
-                console.log("nothing to see here");
-                
-                spinner.stop();
-            }
-            
-            
+                })
+            };
         </script>
     </body>
 
