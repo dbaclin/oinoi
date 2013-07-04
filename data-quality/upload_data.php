@@ -2,11 +2,7 @@
     
     <head>
         <meta charset="utf-8">
-<<<<<<< HEAD
         <title>Oinoi, Analytics for all</title>
-=======
-        <title>Oinoi</title>
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">

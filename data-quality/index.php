@@ -3,11 +3,8 @@
     
     <head>
         <meta charset="utf-8">
-<<<<<<< HEAD
         <title>Oinoi, Analytics for all</title>
-=======
-        <title>Oinoi</title>
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -33,14 +30,11 @@
  		
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
         
-<<<<<<< HEAD
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
         <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
         <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-=======
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
-        
+
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
@@ -371,17 +365,16 @@
 						
 						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
                         
-                        var cardSizeMin = {x:6,y:1};
-                        var cardSize = [{x:8,y:5}, {x:10,y:8}, {x:12,y:10}, {x:18,y:10}];                        
-                        
+                        var cardSizeMin = {x:6,y:1};                
                         var gridsterUnit = {x:30,y:30};
+
                         
-                        var dcSize = [{x:300,y:200}, {x:350,y:250}, {x:400,y:300}, , {x:600,y:300}];
-                       /* for(var i in cardSize){
-                            dcSize[i] = { x : 0, y: 0};
-                            dcSize[i].x = cardSize[i].x * gridsterUnit.x;
-                            dcSize[i].y = cardSize[i].y * gridsterUnit.y;
-                        }*/
+                        function convertDCToGridsterSize(dcChartSize, gridsterUnit) {
+                                    var card = {};   
+                                    card.x =  Math.ceil( (dcChartSize.x) / gridsterUnit.x); // chart width + buffer
+                                    card.y =  Math.floor( (dcChartSize.y + gridsterUnit.y ) / gridsterUnit.y); // chart height + header + buffer
+                                    return card;
+                        }
                         
                         var data_summary = getSummaryStats(headers, rows.slice(0,200));
                         
@@ -455,15 +448,21 @@
                                 min_bound -= increment;
                                 max_bound += increment;
                                 
-<<<<<<< HEAD
-
-=======
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', 3);
+                                var dcChartSize = {
+                                    x:600,
+                                    y: 300
+                                };
                                 
+                                var card = convertDCToGridsterSize(dcChartSize, gridsterUnit);
+                                
+                                
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-x', card.x);
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-y', card.y);
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('test', card);
+
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(600)
-                                    .height(325)
+                                chart.width(dcChartSize.x)
+                                    .height(dcChartSize.y)
                                     .margins({
                                     top: 10,
                                     right: 50,
@@ -496,33 +495,22 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
-<<<<<<< HEAD
-
-=======
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
-                                var chartSize;
-                                var chartContainerSize = [];
-                                var nbBins = dimensionGroupForChart.top(Infinity).length;
+                                 var nbBins = dimensionGroupForChart.top(Infinity).length;
+                                 
+                                 
+                                var dcChartSize = {
+                                    x:250,
+                                    y: Math.min(nbBins * 20 + 50 , 800)
+                                };
                                 
-                                if(nbBins < 5) {
-                                  chartSize = 0;
-                                  
-                                } else if (nbBins < 10){
-                                 chartSize = 1;
-                                  
-                                } else {
-                                  chartSize = 2;
-                                  
-                                }
+                                var card = convertDCToGridsterSize(dcChartSize, gridsterUnit);
                                 
-                                
-                                
-                                
-                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', chartSize);
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-x', card.x);
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-y', card.y);
                                 
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(dcSize[chartSize].x)
-                                    .height(dcSize[chartSize].y)
+                                chart.width(dcChartSize.x)
+                                    .height(dcChartSize.y)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -577,75 +565,27 @@
                                 chart: chart
                             });
                         }
-                        /*
-                        dc.dataCount(".dc-data-count")
-                                .dimension(ndx)
-                                .group(all);
-            
-                        var functions_array = [];
-                        
-                        function createFunction(varName) {
-                          var variableName = varName;
-                          return function (d) {
-                            return d[variableName];
-                          }
-                        }
-                        
-                        for(var i in headers) {
-                            functions_array[i] = createFunction(headers[i]);
-                        }
-                        
-                        dc.dataTable(".dc-data-table")
-                                .dimension(ndx.dimension(function (d) {
-                                    return d[candidateVariableForGrouping];
-                                 }))
-                                .group(function (d) {
-                                    return d[candidateVariableForGrouping];
-                                })
-                                .size(20)
-                                .columns(functions_array)
-                                .sortBy(function (d) {
-                                    return d[candidateVariableForGrouping];
-                                })
-                                .order(d3.ascending)
-                                .renderlet(function (table) {
-                                    table.selectAll(".dc-table-group").classed("info", true);
-                                });
-                        */
+                       
                     
                       dc.renderAll();
                         
                       var gridster;
              
 					 $('.collapse').on('hide', function () {       
-					   gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-					 // $(this).siblings().children('.btn-group').hide();
-					  $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
+					     // $(this).siblings().children('.btn-group').hide();
+				        gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+					    $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
 					})
 					
 					$('.collapse').on('show', function () {
 					  
-					  var size = $(this).parents(".card").attr('card-size');
-					  //var sizex = 10;
-					  //var sizey = $(this).parents(".card").attr('w-sizey');
-					  
-					  
-					  //$(this).parents(".card").attr('data-sizex', sizex);
-					  //$(this).parents(".card").attr('data-sizey', sizey);
-<<<<<<< HEAD
-					  
-					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
-					  
 					  //$(this).siblings().children('.btn-group').show();
-					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
-
-=======
+					  var dataSizeX = $(this).parents(".card").attr('card-x');
+					  var dataSizeY = $(this).parents(".card").attr('card-y');
 					  
-					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
+					  gridster.resize_widget( $(this).parents(".card"), dataSizeX, dataSizeY);
 					  
-					  //$(this).siblings().children('.btn-group').show();
 					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
->>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
 					})  
 					
 					gridster = $(".gridster > ul").gridster({
