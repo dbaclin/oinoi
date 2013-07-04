@@ -6,6 +6,11 @@ textarea{
 }
 
 
+.dc-chart g.row text {
+    fill: rgb(234,234,234);
+    font-size: 12px;
+}
+
 i {
 margin: 2px 2px 2px 2px;
 

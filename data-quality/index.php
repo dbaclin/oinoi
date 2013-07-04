@@ -360,15 +360,16 @@
 						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
                         
                         var cardSizeMin = {x:6,y:1};
-                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
+                        var cardSize = [{x:8,y:5}, {x:10,y:8}, {x:12,y:10}, {x:18,y:10}];                        
+                        
                         var gridsterUnit = {x:30,y:30};
                         
-                        var dcSize = [];
-                        for(var i in cardSize){
+                        var dcSize = [{x:300,y:200}, {x:350,y:250}, {x:400,y:300}, , {x:600,y:300}];
+                       /* for(var i in cardSize){
                             dcSize[i] = { x : 0, y: 0};
                             dcSize[i].x = cardSize[i].x * gridsterUnit.x;
                             dcSize[i].y = cardSize[i].y * gridsterUnit.y;
-                        }
+                        }*/
                         
                         var data_summary = getSummaryStats(headers, rows.slice(0,200));
                         
@@ -442,9 +443,11 @@
                                 min_bound -= increment;
                                 max_bound += increment;
                                 
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', 3);
+                                
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(250)
+                                chart.width(600)
+                                    .height(325)
                                     .margins({
                                     top: 10,
                                     right: 50,
@@ -477,27 +480,29 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
-                                var chartSize = [];
+                                var chartSize;
                                 var chartContainerSize = [];
                                 var nbBins = dimensionGroupForChart.top(Infinity).length;
                                 
                                 if(nbBins < 5) {
-                                 chartSize = {x:300,y:100};
-                                 chartContainerSize = {x:5,y:4};
+                                  chartSize = 0;
+                                  
                                 } else if (nbBins < 10){
-                                  chartSize = {x:300,y:250};
-                                  chartContainerSize = {x:5,y:8};
+                                 chartSize = 1;
+                                  
                                 } else {
-                                  chartSize = {x:300,y:350};
-                                  chartContainerSize = {x:5,y:11};
+                                  chartSize = 2;
+                                  
                                 }
                                 
                                 
-                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('w-sizey', chartContainerSize.y);
+                                
+                                
+                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', chartSize);
                                 
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(chartSize.x)
-                                    .height(chartSize.y)
+                                chart.width(dcSize[chartSize].x)
+                                    .height(dcSize[chartSize].y)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -600,15 +605,15 @@
 					
 					$('.collapse').on('show', function () {
 					  
-					  //var currentSize = $(this).parents(".card").attr('card-size');
-					  var sizex = 10;
-					  var sizey = $(this).parents(".card").attr('w-sizey');
+					  var size = $(this).parents(".card").attr('card-size');
+					  //var sizex = 10;
+					  //var sizey = $(this).parents(".card").attr('w-sizey');
 					  
 					  
 					  //$(this).parents(".card").attr('data-sizex', sizex);
 					  //$(this).parents(".card").attr('data-sizey', sizey);
 					  
-					  gridster.resize_widget( $(this).parents(".card"), sizex, sizey);
+					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
 					  
 					  //$(this).siblings().children('.btn-group').show();
 					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
