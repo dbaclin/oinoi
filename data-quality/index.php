@@ -3,7 +3,11 @@
     
     <head>
         <meta charset="utf-8">
+<<<<<<< HEAD
         <title>Oinoi, Analytics for all</title>
+=======
+        <title>Oinoi</title>
+>>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -29,8 +33,13 @@
  		
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
         
+<<<<<<< HEAD
         <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
         <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+=======
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+>>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
         
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
@@ -51,9 +60,6 @@
                     <a class="brand" href="#">Project name</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
-                            <li class="active">
-                                <a href="#">Home</a>
-                            </li>
                             <li>
                                 <a href="#about">About</a>
                             </li>
@@ -449,7 +455,10 @@
                                 min_bound -= increment;
                                 max_bound += increment;
                                 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', 3);
                                 
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
@@ -487,7 +496,10 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
                                 var chartSize;
                                 var chartContainerSize = [];
                                 var nbBins = dimensionGroupForChart.top(Infinity).length;
@@ -620,12 +632,20 @@
 					  
 					  //$(this).parents(".card").attr('data-sizex', sizex);
 					  //$(this).parents(".card").attr('data-sizey', sizey);
+<<<<<<< HEAD
 					  
 					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
 					  
 					  //$(this).siblings().children('.btn-group').show();
 					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
 
+=======
+					  
+					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
+					  
+					  //$(this).siblings().children('.btn-group').show();
+					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
+>>>>>>> b32b913d2cbe150e2aef0d9926a9c010eea63033
 					})  
 					
 					gridster = $(".gridster > ul").gridster({

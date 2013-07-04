@@ -25,10 +25,10 @@
         <!-- Fav and touch icons -->
         <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css" />
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
-		
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+        
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-		
+        
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
@@ -45,7 +45,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="brand" href="#">Oinoi</a>
+                    <a class="brand" href="#">Project name</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li>
@@ -130,10 +130,10 @@
                    <script id="tpl-gridster" type="text/html">
                 {{#variables}}
                 
-                 <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="{{col}}" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
+                 <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
                     <div class="card-heading">
                           <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
-                          <a class="card-toggle"  >{{var_name_short}} </a> <a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                          <a class="card-toggle"  >{{var_name_short}}</a>
                           
                           <div class="btn-group hide" >
                               <button class="close resize size-smaller">&#45;</button>
@@ -144,6 +144,8 @@
                   <div id="{{var_name}}-chart"><a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="clearfix"></div></div>
                 </div>     
             </li>
+                 
+                 
                 {{/variables}}
                 
         </script>
@@ -179,6 +181,19 @@
                 
         </script>
         
+        <script id="tpl-stats" type="text/html">
+                <tr>
+                        <th>KPI</th>
+                        <th>Value</th>
+                </tr>
+                {{#stats}}
+                <tr>
+                
+                    <td>{{KPI_name}}</td>
+                    <td>{{KPI_value}}</td>
+                </tr>
+                {{/stats}}        
+        </script>
         
         <script id="tpl-datatable" type="text/html">
             {{#variables}} 
@@ -334,46 +349,32 @@
                     }
                 }
             }
-
             
-            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'income-reduced.csv'; ?>";
-
-            var json_data;
-            var data_in_columns = {};
-            var columns_types;
-            var headers;
-            var rows;
-            var ndx;
-
-            var dimGroup = new HashTable();
-            
-            if (file_name.length > 0) {
-                $.ajax("./uploads/" + file_name, {
-                    success: function(data) {
-                        json_data = csvjson.csv2json(data);
-                        console.log("done loading initial data");
-                        headers = json_data.headers;
-                        rows = json_data.rows;
+            var dimGroup;
+                        
+            function buildDashboard(json_data) {
+                
+                        var headers = json_data.headers;
+                        var rows = json_data.rows;
+						
+						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
                         
                         var cardSizeMin = {x:6,y:1};
-                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
+                        var cardSize = [{x:8,y:5}, {x:10,y:8}, {x:12,y:10}, {x:18,y:10}];                        
+                        
                         var gridsterUnit = {x:30,y:30};
                         
-                        var dcSize = [];
-                        for(var i in cardSize){
+                        var dcSize = [{x:300,y:200}, {x:350,y:250}, {x:400,y:300}, , {x:600,y:300}];
+                       /* for(var i in cardSize){
                             dcSize[i] = { x : 0, y: 0};
                             dcSize[i].x = cardSize[i].x * gridsterUnit.x;
                             dcSize[i].y = cardSize[i].y * gridsterUnit.y;
-                        }
+                        }*/
                         
                         var data_summary = getSummaryStats(headers, rows.slice(0,200));
                         
                         convertDataSet(rows, data_summary);
 
-                        
-                        ndx = crossfilter(json_data.rows);
-                        var all = ndx.groupAll();
-                        
                         var variables_for_template = { "variables" : []};
                         
                         for(var i = 0; i < headers.length; i++) {
@@ -384,36 +385,9 @@
                              else 
                                  short_name = headers[i].trim().replace(/\s+/g, '-');
                             
-                            
-                            var currentType = data_summary[headers[i]].type;
-                            var varTypeIcon = "";
-                            var col;
-                            
-                            switch(currentType)
-                            {
-                            case "string":
-                              varTypeIcon = '<i class="icon-sort-by-alphabet"></i>';
-                              col = 1;
-                              break;
-                            case "number":
-                              varTypeIcon = '<i class="icon-sort-by-order"></i>';
-                              col = 1;
-                              break;
-                            case "date":
-                              varTypeIcon = '<i class="icon-calendar"></i>';
-                              col = 1;
-                              break;
-                            default:
-                              varTypeIcon = '<i class="icon-exclamation"></i>';
-                              col = 1;
-                            }
-                            
-                            
                             variables_for_template.variables[i] = {
                                 "var_name":headers[i].trim().replace(/\s+/g, '-'),
-                                "col": col,
                                 "cardSizeMin": {"x": cardSizeMin.x , "y": cardSizeMin.y },
-                                "varTypeIcon": varTypeIcon,
                                 
                                 "var_name_short": short_name ,
                                 "var_idx" : i + 1 , 
@@ -435,12 +409,15 @@
                         $('#datatable-holder').append(datatable_holder);
                         //$('#chart-holder').listview('refresh');
                         
-                       
+                        dimGroup = new HashTable();
+
+                        var ndx = crossfilter(rows);
+                        var all = ndx.groupAll();
                         
                         //var candidateVariableForGrouping; // stuff for the rows display
                         var minSoFar = 9999999999;
 
-                        for (var i = 0; i < headers.length; i++){
+                        for (var i = 0; i < headers.length; i++) {
                             var dimension = ndx.dimension(function(d) {
                                 return d[headers[i]];
                             });
@@ -458,21 +435,25 @@
                             var currentType = data_summary[headers[i]].type;
                             
                             var chart;
-                            var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
-                            
                             
                             if (currentType == "number") {
-                                var min_bound = d3.min(json_data.rows, function(d) {return d[headers[i]]; });
-                                var max_bound = d3.max(json_data.rows, function(d) {return d[headers[i]]; });
+                                var min_bound = d3.min(rows, function(d) {return d[headers[i]]; });
+                                var max_bound = d3.max(rows, function(d) {return d[headers[i]]; });
                                 var increment = 0.02 * (max_bound - min_bound);
                                 min_bound -= increment;
                                 max_bound += increment;
                                 
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', 3);
+                                
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(250)
-                                    .margins({ top: 10,right: 50,bottom: 30,left: 40})
-                                    .dimension(dimension)
+                                chart.width(600)
+                                    .height(325)
+                                    .margins({
+                                    top: 10,
+                                    right: 50,
+                                    bottom: 30,
+                                    left: 40
+                                }).dimension(dimension)
                                     .group(dimensionGroup)
                                     .elasticY(true)
                                     .centerBar(true)
@@ -490,6 +471,7 @@
                                 var allKeysValues = dimensionGroup.top(Infinity);
                                 var allKeysValuesStore = {};
                                 for(var idx in allKeysValues) {
+                                    
                                     allKeysValuesStore[allKeysValues[idx].key] = allKeysValues[idx].value;
                                 }
                                 
@@ -498,27 +480,29 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
-                                var chartSize = [];
+                                var chartSize;
                                 var chartContainerSize = [];
                                 var nbBins = dimensionGroupForChart.top(Infinity).length;
                                 
                                 if(nbBins < 5) {
-                                 chartSize = {x:300,y:100};
-                                 chartContainerSize = {x:5,y:4};
+                                  chartSize = 0;
+                                  
                                 } else if (nbBins < 10){
-                                  chartSize = {x:300,y:250};
-                                  chartContainerSize = {x:5,y:8};
+                                 chartSize = 1;
+                                  
                                 } else {
-                                  chartSize = {x:300,y:350};
-                                  chartContainerSize = {x:5,y:11};
+                                  chartSize = 2;
+                                  
                                 }
                                 
                                 
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('collapse-sizey', chartContainerSize.y);
+                                
+                                
+                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', chartSize);
                                 
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(chartSize.x)
-                                    .height(chartSize.y)
+                                chart.width(dcSize[chartSize].x)
+                                    .height(dcSize[chartSize].y)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -544,16 +528,16 @@
                                 dimensionGroup = dimension.group();
                                 
                                 chart = dc.lineChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(300)
+                                chart.width(600)
+                                    .height(250)
                                     .margins({top: 10, right: 50, bottom: 30, left: 60})
                                     .dimension(dimension)
                                     .group(dimensionGroup)
                                     .valueAccessor(function(d) {
                                         return d.value;
                                     })
-                                    .x(d3.time.scale().domain([d3.min(json_data.rows, function(d) { return d[headers[i]]; }), 
-                                                               d3.max(json_data.rows, function(d) { return d[headers[i]]; })]                                                                 
+                                    .x(d3.time.scale().domain([d3.min(rows, function(d) { return d[headers[i]]; }), 
+                                                               d3.max(rows, function(d) { return d[headers[i]]; })]                                                                 
                                                                  ))
                                     /*.x(d3.time.scale().domain([new Date.parse("2010-01-01"), Date.parse("2015-01-01")]))*/
                                     .renderHorizontalGridLines(true)
@@ -612,73 +596,102 @@
                       dc.renderAll();
                         
                       var gridster;
-                        
-                        gridster = $(".gridster > ul").gridster({
-                            widget_margins: [5, 5]
-                            ,widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y]
-                            ,min_cols: 1
-                            ,max_cols: 40
-                            ,max_size_x: 20
-                            ,max_size_y: 40
-                            ,avoid_overlapped_widgets: true
-                         //   autogenerate_stylesheet: true
-                       }).data('gridster');
-                        
              
-                         $('.collapse').on('hide', function () {       
-                           gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-                          $(this).siblings().children('.btn-group').hide();
-						  $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');  
-                        })
-                        
-                        $('.collapse').on('show', function () {
-							$(this).siblings().children('.btn-group').show();  
-							$(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
+					 $('.collapse').on('hide', function () {       
+					   gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+					 // $(this).siblings().children('.btn-group').hide();
+					  $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
+					})
+					
+					$('.collapse').on('show', function () {
+					  
+					  var size = $(this).parents(".card").attr('card-size');
+					  //var sizex = 10;
+					  //var sizey = $(this).parents(".card").attr('w-sizey');
+					  
+					  
+					  //$(this).parents(".card").attr('data-sizex', sizex);
+					  //$(this).parents(".card").attr('data-sizey', sizey);
+					  
+					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
+					  
+					  //$(this).siblings().children('.btn-group').show();
+					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
+					})  
+					
+					gridster = $(".gridster > ul").gridster({
+						widget_margins: [5, 5],
+						widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
+						min_cols: 1,
+						max_cols: 0,
+						autogenerate_stylesheet: true
+					}).data('gridster');
+				
+					$('.size-smaller').click(function() {
 						
+						var currentSize = $(this).parents(".card").attr('card-size');
+						var newSize = Math.max(currentSize - 1, 0);
+						console.log(currentSize);
+					   $(this).parents(".card").attr('card-size', newSize);
+						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
+					})  
+					  
+					$('.size-bigger').click(function() {
 						
-                          var height = $(this).parents(".card").attr('collapse-sizey');
-                          $(this).parents(".card").attr('data-sizex', 10);
-                          $(this).parents(".card").attr('data-sizey', height);
-                          //gridster.resize_widget( $(this).parents(".card"), 10, height);
-                          
-                         
-                        })  
-                        
-                       
+						var currentSize = $(this).parents(".card").attr('card-size');
+						var newSize = Math.min(currentSize + 1, cardSize.length - 1);
+						console.log(currentSize);
+						$(this).parents(".card").attr('card-size', newSize);
+						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
+					})   
+						  
+					 /*$(".disable-widget").click(function () {
+					  
+						  gridster.remove_widget( $(this).parents(".card"))
+							  
+					});*/
                     
-                        $('.size-smaller').click(function() {
-                            
-                            var currentSize = $(this).parents(".card").attr('card-size');
-                            var newSize = Math.max(currentSize - 1, 0);
-                            console.log(currentSize);
-                           $(this).parents(".card").attr('card-size', newSize);
-                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
-                        })  
-                          
-                        $('.size-bigger').click(function() {
-                            
-                            var currentSize = $(this).parents(".card").attr('card-size');
-                            var newSize = Math.min(currentSize + 1, cardSize.length - 1);
-                            console.log(currentSize);
-                            $(this).parents(".card").attr('card-size', newSize);
-                            gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
-                        })   
-                              
+            }
+
+            
+            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
+            var pasted_data = "<?php if(isset($_POST['pasted_data'])) echo $_POST['pasted_data']; else echo ''; ?>";
+            
+            var json_data;
+            
+            if (file_name.length > 0) {
+                $.ajax("./uploads/" + file_name, {
+                    success: function(data) {
+                      
+                        json_data = csvjson.csv2json(data);
+                        console.log("done loading initial data");
+                        
+                        buildDashboard(json_data);
+                        
                         spinner.stop();
-                              
-                         /*$(".disable-widget").click(function () {
-                          
-                              gridster.remove_widget( $(this).parents(".card"))
-                                  
-                        });*/
-                    
 
                     },
                     error: function() {
                         // Show some error message, couldn't get the CSV file
                     }
-                })
-            };
+                });
+            } else if(pasted_data.length > 0) {
+                 console.log("loading pasted data");
+                 pasted_data = pasted_data.replace(/Ø/g,"\n");
+                 json_data = csvjson.csv2json(pasted_data, {
+                      delim: "\t"
+                 });
+                 buildDashboard(json_data);
+                        
+                spinner.stop();
+    	       
+            } else {
+                console.log("nothing to see here");
+                
+                spinner.stop();
+            }
+            
+            
         </script>
     </body>
 
