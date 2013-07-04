@@ -1,4 +1,16 @@
 
+textarea{
+
+    width: 500px;
+
+}
+
+
+i {
+margin: 2px 2px 2px 2px;
+
+}
+
 body{
 
      background: rgb(240,240,240);
@@ -6,6 +18,7 @@ body{
     /* 60px to make the container go all the way to the bottom of the topbar */
 
 }
+
 
 
 .gridster .gs_w {
@@ -28,9 +41,10 @@ ul {
 }
 .card-heading {
     height: 30px;
+    padding: 5px;
 }
 .card-heading a {
-    padding: 4px;
+    margin: 5px;
     text-align:left;
     text-transform:capitalize;
     text-decoration:none;

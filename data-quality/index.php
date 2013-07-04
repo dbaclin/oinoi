@@ -3,7 +3,7 @@
     
     <head>
         <meta charset="utf-8">
-        <title>Bootstrap, from Twitter</title>
+        <title>Oinoi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -25,6 +25,10 @@
         <!-- Fav and touch icons -->
         <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css" />
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
+        
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+        
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
@@ -44,9 +48,6 @@
                     <a class="brand" href="#">Project name</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
-                            <li class="active">
-                                <a href="#">Home</a>
-                            </li>
                             <li>
                                 <a href="#about">About</a>
                             </li>
@@ -131,7 +132,7 @@
                 
                  <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
                     <div class="card-heading">
-                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true">&times;</button>
+                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
                           <a class="card-toggle"  >{{var_name_short}}</a>
                           
                           <div class="btn-group hide" >
@@ -476,9 +477,27 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
+                                var chartSize = [];
+                                var chartContainerSize = [];
+                                var nbBins = dimensionGroupForChart.top(Infinity).length;
+                                
+                                if(nbBins < 5) {
+                                 chartSize = {x:300,y:100};
+                                 chartContainerSize = {x:5,y:4};
+                                } else if (nbBins < 10){
+                                  chartSize = {x:300,y:250};
+                                  chartContainerSize = {x:5,y:8};
+                                } else {
+                                  chartSize = {x:300,y:350};
+                                  chartContainerSize = {x:5,y:11};
+                                }
+                                
+                                
+                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('w-sizey', chartContainerSize.y);
+                                
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(250)
+                                chart.width(chartSize.x)
+                                    .height(chartSize.y)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -504,7 +523,7 @@
                                 dimensionGroup = dimension.group();
                                 
                                 chart = dc.lineChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
+                                chart.width(600)
                                     .height(250)
                                     .margins({top: 10, right: 50, bottom: 30, left: 60})
                                     .dimension(dimension)
@@ -575,15 +594,24 @@
              
 					 $('.collapse').on('hide', function () {       
 					   gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-					  $(this).siblings().children('.btn-group').hide();
+					 // $(this).siblings().children('.btn-group').hide();
+					  $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
 					})
 					
 					$('.collapse').on('show', function () {
 					  
-					  var currentSize = $(this).parents(".card").attr('card-size');
-					  gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
+					  //var currentSize = $(this).parents(".card").attr('card-size');
+					  var sizex = 10;
+					  var sizey = $(this).parents(".card").attr('w-sizey');
 					  
-					  $(this).siblings().children('.btn-group').show();
+					  
+					  //$(this).parents(".card").attr('data-sizex', sizex);
+					  //$(this).parents(".card").attr('data-sizey', sizey);
+					  
+					  gridster.resize_widget( $(this).parents(".card"), sizex, sizey);
+					  
+					  //$(this).siblings().children('.btn-group').show();
+					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
 					})  
 					
 					gridster = $(".gridster > ul").gridster({
