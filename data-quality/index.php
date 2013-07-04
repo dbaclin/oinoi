@@ -3,7 +3,7 @@
     
     <head>
         <meta charset="utf-8">
-        <title>Bootstrap, from Twitter</title>
+        <title>Oinoi, Analytics for all</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -24,12 +24,19 @@
         <![endif]-->
         <!-- Fav and touch icons -->
         <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css" />
+        
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+ 		
         <link rel="stylesheet" type="text/css" href="./data-quality.css" />
+        
+        <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
+        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+        
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-        <link rel="shortcut icon" href="../assets/ico/favicon.png">
+        <link rel="shortcut icon" href="../images/favicon.png">
     </head>
     
     <body>
@@ -97,7 +104,7 @@
         <script src="../libs/d3/d3.v3.js"></script>
         <script src="../libs/crossfilter/crossfilter.js"></script>
         <script src="../libs/dc/dc.js"></script>
-        <script type="text/javascript" src="../libs/csvjsonjs/csvjson.min.js"></script>
+        <script type="text/javascript" src="../libs/csvjsonjs/csvjson.js"></script>
         <script type="text/javascript" src="../libs/datejs/date.js"></script>
         <script type="text/javascript" src="../libs/utils_functions.js"></script>
         <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
@@ -131,7 +138,7 @@
                 
                  <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
                     <div class="card-heading">
-                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true">&times;</button>
+                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
                           <a class="card-toggle"  >{{var_name_short}}</a>
                           
                           <div class="btn-group hide" >
@@ -359,15 +366,16 @@
 						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
                         
                         var cardSizeMin = {x:6,y:1};
-                        var cardSize = [{x:11,y:8}, {x:13,y:9}, {x:14,y:10}];
+                        var cardSize = [{x:8,y:5}, {x:10,y:8}, {x:12,y:10}, {x:18,y:10}];                        
+                        
                         var gridsterUnit = {x:30,y:30};
                         
-                        var dcSize = [];
-                        for(var i in cardSize){
+                        var dcSize = [{x:300,y:200}, {x:350,y:250}, {x:400,y:300}, , {x:600,y:300}];
+                       /* for(var i in cardSize){
                             dcSize[i] = { x : 0, y: 0};
                             dcSize[i].x = cardSize[i].x * gridsterUnit.x;
                             dcSize[i].y = cardSize[i].y * gridsterUnit.y;
-                        }
+                        }*/
                         
                         var data_summary = getSummaryStats(headers, rows.slice(0,200));
                         
@@ -441,9 +449,12 @@
                                 min_bound -= increment;
                                 max_bound += increment;
                                 
+
+                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', 3);
+                                
                                 chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(250)
+                                chart.width(600)
+                                    .height(325)
                                     .margins({
                                     top: 10,
                                     right: 50,
@@ -476,9 +487,30 @@
                                 });
                                 var dimensionGroupForChart = dimensionForChart.group();
                                 
+
+                                var chartSize;
+                                var chartContainerSize = [];
+                                var nbBins = dimensionGroupForChart.top(Infinity).length;
+                                
+                                if(nbBins < 5) {
+                                  chartSize = 0;
+                                  
+                                } else if (nbBins < 10){
+                                 chartSize = 1;
+                                  
+                                } else {
+                                  chartSize = 2;
+                                  
+                                }
+                                
+                                
+                                
+                                
+                                 $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-size', chartSize);
+                                
                                 chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
-                                    .height(250)
+                                chart.width(dcSize[chartSize].x)
+                                    .height(dcSize[chartSize].y)
                                     .margins({
                                     top: 20,
                                     left: 10,
@@ -504,7 +536,7 @@
                                 dimensionGroup = dimension.group();
                                 
                                 chart = dc.lineChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(700)
+                                chart.width(600)
                                     .height(250)
                                     .margins({top: 10, right: 50, bottom: 30, left: 60})
                                     .dimension(dimension)
@@ -575,15 +607,25 @@
              
 					 $('.collapse').on('hide', function () {       
 					   gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-					  $(this).siblings().children('.btn-group').hide();
+					 // $(this).siblings().children('.btn-group').hide();
+					  $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
 					})
 					
 					$('.collapse').on('show', function () {
 					  
-					  var currentSize = $(this).parents(".card").attr('card-size');
-					  gridster.resize_widget( $(this).parents(".card"), cardSize[currentSize].x, cardSize[currentSize].y);
+					  var size = $(this).parents(".card").attr('card-size');
+					  //var sizex = 10;
+					  //var sizey = $(this).parents(".card").attr('w-sizey');
 					  
-					  $(this).siblings().children('.btn-group').show();
+					  
+					  //$(this).parents(".card").attr('data-sizex', sizex);
+					  //$(this).parents(".card").attr('data-sizey', sizey);
+					  
+					  gridster.resize_widget( $(this).parents(".card"), cardSize[size].x, cardSize[size].y);
+					  
+					  //$(this).siblings().children('.btn-group').show();
+					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
+
 					})  
 					
 					gridster = $(".gridster > ul").gridster({

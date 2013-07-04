@@ -51,6 +51,10 @@ ul {
     font-size: 14px;
     width: 100%;
     cursor: hand; cursor: pointer; 
+    font-family: "museo-sans",sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    
 }
 .card-heading .btn-group {
     float: right;
@@ -76,3 +80,14 @@ padding: 4px;
 	height: 358px;
 }
 
+.dc-chart g.row text {
+fill: rgb(0, 0, 0);
+font-size: 12px;
+}
+
+
+h1, a, textarea, text, .dc-chart .axis text  {
+    font-family: "museo-sans",sans-serif;
+    font-style: normal;
+    font-weight: 500;
+}
