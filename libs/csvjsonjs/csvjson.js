@@ -54,7 +54,7 @@ var csvjson = {};
 		      if(!isNaN(+csvheaders[i][0])) csvheaders[i] = "_" + csvheaders[i];
           }
 		}
-		console.log(csvheaders);
+		//console.log(csvheaders);
 		
 		var csvrows = csvlines.slice(1, csvlines.length);
 
