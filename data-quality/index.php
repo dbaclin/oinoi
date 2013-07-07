@@ -10,6 +10,8 @@
         <meta name="author" content="">
         <!-- Le styles -->
         <link href="../libs/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="../libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+
         <style>
             body {
                 padding-top: 60px;
@@ -19,17 +21,14 @@
         <link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../libs/gridster/dist/jquery.gridster.min.css">
         <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
+
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
             <script src="../assets/js/html5shiv.js"></script>
         <![endif]-->
         <!-- Fav and touch icons -->
         <link rel="stylesheet" type="text/css" href="../libs/dc/dc.css" />
-        
-        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
- 		
-        <link rel="stylesheet" type="text/css" href="./data-quality.css" />
-        
+
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
         <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
@@ -67,39 +66,44 @@
             </div>
         </div>
         <div class="container">
-              <div id="spinner">
+            <div id="spinner">
                 
             </div>
               <h1>Data quality report</h1>
-              <div class="gridster">
-              <ul>
-            </ul>
-            </div>
-        </div>
-<!--
-        <div class="row">
-            <div>
-                <div class="dc-data-count">
-                    <span class="filter-count"></span>selected out of
-                    <span class="total-count"></span>records |
-                    <a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+            
+            <div class="row">         
+                <div  class="span2 list-var">
+                    <ul id="variables" >
+                        
+                    </ul>
                 </div>
-            </div>
-            <table class="table table-hover dc-data-table">
-                <thead>
-                    <tr class="header" id="datatable-holder">
-                    </tr>
-                </thead>
-            </table>
+            
+            
+                <div class="span10 layouts_grid" id="layouts_grid">
+                    <ul>
+                        <li class="layout_block"  data-row="1" data-col="1" data-sizex="1" data-sizey="1" style="background-color: #D24726;">
+                        <div class="remove_element">X</div>
+                        <div class="info">
+                        <span class="block_name">Logo</span>
+                        </div>    
+                        </li>
+                        <li class="layout_block"  data-row="1" data-col="2" data-sizex="5" data-sizey="1" style="background-color: #15992A;">
+                        <div class="remove_element">X</div>
+                        <div class="info">
+                        <span class="block_name">Ads top</span>
+                        </div>    
+                        </li>
+                        
+                    </ul>
+                </div>
+            
+            </div>    
         </div>
--->
-            
-            
-        
-        <!-- /container -->
-        <!-- Le javascript==================================================- ->
-    <!-- Placed at the end of the document so the pages load faster -->
+
         <script src="../libs/jquery/jquery-1.9.1.js"></script>
+        <script src="../libs/jquery/ui/jquery-ui.js"></script>
+
+
         <script src="../libs/bootstrap/js/bootstrap.js"></script>
         <script src="../libs/d3/d3.v3.js"></script>
         <script src="../libs/crossfilter/crossfilter.js"></script>
@@ -108,7 +112,7 @@
         <script type="text/javascript" src="../libs/datejs/date.js"></script>
         <script type="text/javascript" src="../libs/utils_functions.js"></script>
         <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
-           <script type="text/javascript" src="../libs/spin/spin.min.js"></script>     
+        <script type="text/javascript" src="../libs/spin/spin.min.js"></script>     
         <script src="../libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
          <script type="text/javascript">       
         var opts = {
@@ -138,7 +142,7 @@
                 
                  <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
                     <div class="card-heading">
-                          <button class="close card disable-widget" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
+                          <button class="close card" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
                           <a class="card-toggle"  >{{var_name_short}}</a>
                           
                           <div class="btn-group hide" >
@@ -156,49 +160,14 @@
                 
         </script>
 
-                
+        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}}</span><a class="reset" href="javascript:dimGroup.get("{{varName}}").chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
                                 
-        <script id="tpl-chart" type="text/html">
-                {{#variables}}
-                <li>
-                <div id="{{var_name}}-card">
-                    <div id="{{var_name}}-chart">
-                    <strong>{{var_name}}</strong>
-                    <a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-                    <div class="clearfix"></div>
-                </div>
-                <div id="{{var_name}}-stats"> 
-                    <table id="{{var_name}}-table-stats">
-                        <tr>
-                            <th>KPI</th>
-                            <th>Value</th>
-                        </tr>
-                        {{#stats}}
-                        <tr>        
-                            <td>{{stats_name}}</td>
-                            <td>{{stats_value}}</td>
-                        </tr>
-                        {{/stats}}        
-                      </table>
-                </div>
-                </div>
-                </li>
-                {{/variables}}
-                
-        </script>
+      
         
-        <script id="tpl-stats" type="text/html">
-                <tr>
-                        <th>KPI</th>
-                        <th>Value</th>
-                </tr>
-                {{#stats}}
-                <tr>
-                
-                    <td>{{KPI_name}}</td>
-                    <td>{{KPI_value}}</td>
-                </tr>
-                {{/stats}}        
+        <script id="tpl-var-list" type="text/html">
+            {{#variables}} 
+                 <li  class="ui-state-default variable" data-var="{{varName}}">{{varName}}</li>
+            {{/variables}}
         </script>
         
         <script id="tpl-datatable" type="text/html">
@@ -206,7 +175,176 @@
                 <th>{{var_name}}</th>
             {{/variables}}
         </script>
+        
         <script type="text/javascript">
+        
+            var layout;
+            var grid_size = 100;
+            var grid_margin = 5;
+            var block_params = {
+                max_width: 6,
+                max_height: 6
+            };
+            $(function() {
+            
+                // initialize gridster
+                
+                layout = $('.layouts_grid ul').gridster({
+                    widget_margins: [grid_margin, grid_margin],
+                    widget_base_dimensions: [grid_size, grid_size],
+                    serialize_params: function($w, wgd) {
+                        return {
+                            x: wgd.col,
+                            y: wgd.row,
+                            width: wgd.size_x,
+                            height: wgd.size_y,
+                            id: $($w).attr('data-id'),
+                            name: $($w).find('.block_name').html(),
+                        };
+                    },
+                    min_rows: block_params.max_height
+                }).data('gridster');
+                
+                
+                $("#layouts_grid" ).droppable({
+                  drop: function( event, ui ) {
+                    
+                    add_card(ui.draggable.data('var'));
+  
+                  }
+                });
+            
+                $('.layout_block').resizable({
+                    grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
+                    animate: false,
+                    minWidth: grid_size,
+                    minHeight: grid_size,
+                    containment: '#layouts_grid ul',
+                    autoHide: true,
+                    stop: function(event, ui) {
+                        var resized = $(this);
+                        setTimeout(function() {
+                            resizeBlock(resized);
+                        }, 300);
+                    }
+                });
+            
+                $('.ui-resizable-handle').hover(function() {
+                    layout.disable();
+                }, function() {
+            
+                    layout.enable();
+                });
+            
+                function resizeBlock(elmObj) {
+            
+                    var elmObj = $(elmObj);
+                    var w = elmObj.width() - grid_size;
+                    var h = elmObj.height() - grid_size;
+            
+                    for (var grid_w = 1; w > 0; w -= (grid_size + (grid_margin * 2))) {
+            
+                        grid_w++;
+                    }
+            
+                    for (var grid_h = 1; h > 0; h -= (grid_size + (grid_margin * 2))) {
+            
+                        grid_h++;
+                    }
+            
+                    layout.resize_widget(elmObj, grid_w, grid_h);
+                }
+                
+                
+                    $('.remove_element').click(function(event){
+                            var gridster = $(".layouts_grid ul").gridster().data('gridster'); 
+                            gridster.remove_widget($(this).parents('.gs_w'));
+                    });
+                    
+                //end: gridster initialized
+
+            });
+        
+        
+         </script>
+        <script type="text/javascript">
+            var dimGroup = new HashTable();
+            var ndx;
+            var all;
+            
+            
+            
+            function add_variable_list(headers){
+                    
+                    var allVariables = { "variables" : []};
+                        
+                    for(var i = 0; i < headers.length; i++) {
+                        
+                        allVariables.variables[i] = {
+                            "varName":headers[i],
+                            "varIdx" : i + 1 
+                        };
+                         
+                        
+                    }
+
+
+                    $('#variables').append(Mustache.render($('#tpl-var-list').html(),allVariables));
+                    $('#variables li').draggable({ revert: true });
+                
+            }
+            
+             function add_card(varName){
+                    
+                    var dimension;
+                    var chart;
+                    var gridster = $(".layouts_grid ul").gridster().data('gridster');
+                    
+                    var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName});
+                    
+                    gridster.add_widget(widget_html, 5, 5);
+                 
+                 
+                    switch(data_summary[varName].type)
+                    {
+                    case "number":
+                        dimension = ndx.dimension(function(d) {
+                                    return d[varName];
+                                });
+                        chart = add_dc_bar_chart(varName,dimension,gridster.min_widget_width * 2 - 30,gridster.min_widget_height * 3);
+                        break;
+                    case "string":
+                        dimension = ndx.dimension(function(d) {
+                                    return d[varName];
+                                });
+                        chart = add_dc_row_chart(varName,dimension,gridster.min_widget_width * 2 - 30, gridster.min_widget_height );
+                        break;
+                    
+                    case "date":
+                        dimension = ndx.dimension(function(d) {
+                                        return d3.time.day(d[name]);
+                                });
+                        chart = add_dc_line_chart(varName,dimension,gridster.min_widget_width * 4 - 30, gridster.min_widget_height * 2);
+                        break;
+                    default:
+                        alert('data type is undefined');
+                    }
+                    
+                    
+                    
+                    dimGroup.put(varName, {
+                                dim: dimension,
+                                grp: dimension.group(),
+                                chart: chart
+                            });
+                    
+                    var sizex = Math.ceil(chart.width() / gridster.min_widget_width);
+                    var sizey = Math.ceil(chart.height() / gridster.min_widget_height);
+                    gridster.resize_widget($('#'+ varName +'-card' ), sizex, sizey);
+                  
+                    dimGroup.get(varName).chart.render();
+                }
+            
             function guessTypeOfColumn(aColumn, f) {
 
                 var tempRes = {
@@ -275,58 +413,59 @@
                        (typeof aVariable == "string" && aVariable.length == 0)
             }
 
-            function getSummaryStats(headers, rows) {
+            function getSummaryStats(headers, rows) {        
+                var data_summary = {};
+                for(var i in headers){
+                    data_summary[headers[i]] = {};
+                    
+                    data_summary[headers[i]].max = d3.max(rows, function(d){return d[headers[i]];});
+                    data_summary[headers[i]].min = d3.min(rows, function(d){return d[headers[i]];});
+                    data_summary[headers[i]].median = d3.median(rows, function(d){return d[headers[i]];});
+                    
+                    data_summary[headers[i]].nbNumber = 0;
+                    data_summary[headers[i]].nbString = 0;
+                    data_summary[headers[i]].nbDate = 0;
+                    data_summary[headers[i]].nbUndefined = 0;
+                    data_summary[headers[i]].nbNegative = 0;
+                    
+                    data_summary[headers[i]].nbDistinct = {};
+                }
+                
+                rows.reduce(function (previousValue, currentValue, index, array){ 
+                    for(var i in headers){
+                        if(typeof currentValue[headers[i]] == "number")
+                         previousValue[headers[i]].nbNumber++;
+                        else if(!isNaN(new Date(currentValue[headers[i]])))
+                         previousValue[headers[i]].nbDate++;
+                        else if( typeof currentValue[headers[i]] == "string" && currentValue[headers[i]].length > 0)
+                         previousValue[headers[i]].nbString++;
+                        else
+                         previousValue[headers[i]].nbUndefined++;
+                         
+                        previousValue[headers[i]].nbDistinct[currentValue[headers[i]]] = 1;
                         
-                            var data_summary = {};
-                            for(var i in headers){
-                                data_summary[headers[i]] = {};
-                                
-                                data_summary[headers[i]].max = d3.max(rows, function(d){return d[headers[i]];});
-                                data_summary[headers[i]].min = d3.min(rows, function(d){return d[headers[i]];});
-                                data_summary[headers[i]].median = d3.median(rows, function(d){return d[headers[i]];});
-                                
-                                data_summary[headers[i]].nbNumber = 0;
-                                data_summary[headers[i]].nbString = 0;
-                                data_summary[headers[i]].nbDate = 0;
-                                data_summary[headers[i]].nbUndefined = 0;
-                                data_summary[headers[i]].nbNegative = 0;
-                                
-                                data_summary[headers[i]].nbDistinct = {};
-                            }
-                            
-                            rows.reduce(function (previousValue, currentValue, index, array){ 
-                                for(var i in headers){
-                                    if(typeof currentValue[headers[i]] == "number")
-                                     previousValue[headers[i]].nbNumber++;
-                                    else if(!isNaN(new Date(currentValue[headers[i]])))
-                                     previousValue[headers[i]].nbDate++;
-                                    else if( typeof currentValue[headers[i]] == "string" && currentValue[headers[i]].length > 0)
-                                     previousValue[headers[i]].nbString++;
-                                    else
-                                     previousValue[headers[i]].nbUndefined++;
-                                     
-                                    previousValue[headers[i]].nbDistinct[currentValue[headers[i]]] = 1;
-                                    
-                                    previousValue[headers[i]].nbNegative  = previousValue[headers[i]].nbNegative + (currentValue[headers[i]] < 0);
-                                     
-                            }return previousValue;}, data_summary);
-                            
-                            for(var i in headers) {
-                                data_summary[headers[i]].nbDistinct = sizeOfDict(data_summary[headers[i]].nbDistinct);
-                                
-                                if(data_summary[headers[i]].nbDistinct < 3) 
-                                   data_summary[headers[i]].type = "string";
-                                else if(data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbString &&
-                                   data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "number";
-                                else if(data_summary[headers[i]].nbDate > data_summary[headers[i]].nbString &&
-                                   data_summary[headers[i]].nbDate > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "date";
-                                else data_summary[headers[i]].type = "string";
-                            }
-                            
-                            return data_summary;
+                        previousValue[headers[i]].nbNegative  = previousValue[headers[i]].nbNegative + (currentValue[headers[i]] < 0);
+                         
+                }return previousValue;}, data_summary);
+                
+                for(var i in headers) {
+                    data_summary[headers[i]].nbDistinct = sizeOfDict(data_summary[headers[i]].nbDistinct);
+                    
+                    if(data_summary[headers[i]].nbDistinct < 3) 
+                       data_summary[headers[i]].type = "string";
+                    else if(data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbString &&
+                       data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "number";
+                    else if(data_summary[headers[i]].nbDate > data_summary[headers[i]].nbString &&
+                       data_summary[headers[i]].nbDate > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "date";
+                    else data_summary[headers[i]].type = "string";
+                }
+                
+                return data_summary;
             }
             
-            function convertDataSet(rows, statistics) {
+           
+            
+            function cleanDataset(rows, statistics) {
                 for(var k in statistics) {
                     if(statistics[k].type == "date") {
                         for(var i in rows) {
@@ -356,9 +495,134 @@
                 }
             }
             
-            var dimGroup;
+           
+            
+            function loadDataset(json_data){
+          
+                data_summary = getSummaryStats(json_data.headers, json_data.rows.slice(0,200));
+                cleanDataset(json_data.rows, data_summary);
+                
+                ndx = crossfilter(json_data.rows);
+                all = ndx.groupAll();
+                
+            }
+            
+     
+
+            
+            function add_dc_bar_chart(name,dimension,w,h){
+                var chart; 
+                
+                var min_bound = dimension.bottom(1);
+                var max_bound = dimension.top(1);
+               // var min_bound = d3.min(rows, function(d) {return d[name]; });
+               // var max_bound = d3.max(rows, function(d) {return d[name]; });
+                var increment = 0.02 * (max_bound - min_bound);
                         
+                min_bound -= increment;
+                max_bound += increment;
+                
+
+                chart = dc.barChart("#" + name + "-chart");
+                chart.width(w)
+                    .height(h)
+                    .margins({
+                        top: 10,
+                        right: 50,
+                        bottom: 30,
+                        left: 40})
+                    .dimension(dimension)
+                    .group(dimension.group())
+                    .elasticY(true)
+                    .centerBar(true)
+                    .gap(1)
+                    .round(dc.round.floor)
+                    .x(d3.scale.linear().domain([min_bound,max_bound]))
+                    .renderHorizontalGridLines(true)
+                    .xAxis()
+                    .tickFormat(function(v) {
+                    return v;
+                    });
+                         
+                   return chart;     
+            
+            }
+            
+             
+            function add_dc_row_chart(name,dimension,w, gridster_min_height){
+                var chart;
+                var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
+                var allKeysValues = dimension.group().top(Infinity);
+                var allKeysValuesStore = {};
+                for(var i in allKeysValues) {
+                    allKeysValuesStore[allKeysValues[i].key] = allKeysValues[i].value;
+                }
+                
+                var dimensionForChart = ndx.dimension(function(d) {
+                    return (9999999999 - allKeysValuesStore[d[name]]) + "" + d[name];
+                });
+                var dimensionGroupForChart = dimensionForChart.group();
+                
+                var nbBins = dimensionGroupForChart.top(Infinity).length;
+
+                var grid_height = Math.ceil( (nbBins * 18 + 75)/ gridster_min_height);
+                
+                var h = Math.min(gridster_min_height * grid_height, gridster_min_height * 5) - 50;
+                
+                chart = dc.rowChart("#" + name + "-chart");
+                chart.width(w)
+                    .height(h)
+                    .margins({
+                    top: 5,
+                    left: 15,
+                    right: 15,
+                    bottom: 30 })
+                    .group(dimensionGroupForChart)
+                    .dimension(dimensionForChart)
+                    .colors(colorCategory10)
+                    .label(function(d) {
+                    return d.key.substr(10);
+                    })
+                    .title(function(d) {
+                    return d.value;
+                    })
+                    .elasticX(true)
+                    .xAxis().ticks(4);
+                
+                
+                return chart;
+            
+            }
+
+                
+            function add_dc_line_chart(name,dimension,w,h){
+                var chart;
+                
+                
+                chart = dc.lineChart("#" + name + "-chart");
+                chart.width(w)
+                    .height(h)
+                    .margins({top: 10, right: 50, bottom: 30, left: 60})
+                    .dimension(dimension)
+                    .group(dimension.group())
+                    .valueAccessor(function(d) {
+                        return d.value;
+                    })
+                    .x(d3.time.scale().domain([dimension.bottom(1), dimension.top(1)]))
+                    .renderHorizontalGridLines(true)
+                    .elasticY(true)
+                    .brushOn(false)
+                    .title(function(d){
+                        return d.key
+                                + "\nNumber of records: " + Math.round(d.value);
+                    })
+                    .xAxis();
+                return chart;
+                                    
+            }
+                
             function buildDashboard(json_data) {
+                
                 
                         var headers = json_data.headers;
                         var rows = json_data.rows;
@@ -427,136 +691,21 @@
                                 return d[headers[i]];
                             });
                             var dimensionGroup = dimension.group();
-                            /*
-                            stuff linked to the rows display
-                            var dimensionTop = dimensionGroup.top(20);
-                            if(dimensionTop.length < minSoFar && dimensionTop.length > 1) 
-                            {
-                                candidateVariableForGrouping = headers[i];
-                                minSoFar = dimensionTop.length;
-                            }
-                            */
+                         
                             
                             var currentType = data_summary[headers[i]].type;
                             
                             var chart;
                             
                             if (currentType == "number") {
-                                var min_bound = d3.min(rows, function(d) {return d[headers[i]]; });
-                                var max_bound = d3.max(rows, function(d) {return d[headers[i]]; });
-                                var increment = 0.02 * (max_bound - min_bound);
-                                min_bound -= increment;
-                                max_bound += increment;
-                                
-                                var dcChartSize = {
-                                    x:600,
-                                    y: 300
-                                };
-                                
-                                var card = convertDCToGridsterSize(dcChartSize, gridsterUnit);
-                                
-                                
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-x', card.x);
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-y', card.y);
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('test', card);
-
-                                chart = dc.barChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(dcChartSize.x)
-                                    .height(dcChartSize.y)
-                                    .margins({
-                                    top: 10,
-                                    right: 50,
-                                    bottom: 30,
-                                    left: 40
-                                }).dimension(dimension)
-                                    .group(dimensionGroup)
-                                    .elasticY(true)
-                                    .centerBar(true)
-                                    .gap(1)
-                                    .round(dc.round.floor)
-                                    .x(d3.scale.linear().domain([min_bound,max_bound]))
-                                    .renderHorizontalGridLines(true)
-                                    .xAxis()
-                                    .tickFormat(function(v) {
-                                    return v;
-                                });
+                      
 
                             } else if(currentType == "string") {
                                 
-                                var allKeysValues = dimensionGroup.top(Infinity);
-                                var allKeysValuesStore = {};
-                                for(var idx in allKeysValues) {
-                                    
-                                    allKeysValuesStore[allKeysValues[idx].key] = allKeysValues[idx].value;
-                                }
-                                
-                                var dimensionForChart = ndx.dimension(function(d) {
-                                    return (9999999999 - allKeysValuesStore[d[headers[i]]]) + "" + d[headers[i]];
-                                });
-                                var dimensionGroupForChart = dimensionForChart.group();
-                                
-                                 var nbBins = dimensionGroupForChart.top(Infinity).length;
-                                 
-                                 
-                                var dcChartSize = {
-                                    x:250,
-                                    y: Math.min(nbBins * 20 + 50 , 800)
-                                };
-                                
-                                var card = convertDCToGridsterSize(dcChartSize, gridsterUnit);
-                                
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-x', card.x);
-                                $('#' + headers[i].trim().replace(/\s+/g, '-') + '-card').attr('card-y', card.y);
-                                
-                                chart = dc.rowChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(dcChartSize.x)
-                                    .height(dcChartSize.y)
-                                    .margins({
-                                    top: 20,
-                                    left: 10,
-                                    right: 10,
-                                    bottom: 20
-                                })
-                                    .group(dimensionGroupForChart)
-                                    .dimension(dimensionForChart)
-                                    .colors(colorCategory10)
-                                    .label(function(d) {
-                                    return d.key.substr(10);
-                                })
-                                    .title(function(d) {
-                                    return d.value;
-                                })
-                                    .elasticX(true)
-                                    .xAxis().ticks(4);
+                    
                             } else if(currentType == "date") {
                                 
-                                dimension = ndx.dimension(function(d) {
-                                    return d3.time.day(d[headers[i]]);
-                                });
-                                dimensionGroup = dimension.group();
-                                
-                                chart = dc.lineChart("#" + headers[i].trim().replace(/\s+/g, '-') + "-chart");
-                                chart.width(600)
-                                    .height(250)
-                                    .margins({top: 10, right: 50, bottom: 30, left: 60})
-                                    .dimension(dimension)
-                                    .group(dimensionGroup)
-                                    .valueAccessor(function(d) {
-                                        return d.value;
-                                    })
-                                    .x(d3.time.scale().domain([d3.min(rows, function(d) { return d[headers[i]]; }), 
-                                                               d3.max(rows, function(d) { return d[headers[i]]; })]                                                                 
-                                                                 ))
-                                    /*.x(d3.time.scale().domain([new Date.parse("2010-01-01"), Date.parse("2015-01-01")]))*/
-                                    .renderHorizontalGridLines(true)
-                                    .elasticY(true)
-                                    .brushOn(false)
-                                    .title(function(d){
-                                        return d.key
-                                                + "\nNumber of records: " + Math.round(d.value);
-                                    })
-                                    .xAxis();
-                                    
+                               
                                 
                             }
                             dimGroup.put(headers[i].trim().replace(/\s+/g, '-'), {
@@ -564,6 +713,8 @@
                                 grp: dimensionGroup,
                                 chart: chart
                             });
+                            
+                           
                         }
                        
                     
@@ -571,30 +722,42 @@
                         
                       var gridster;
              
-					 $('.collapse').on('hide', function () {       
-					     // $(this).siblings().children('.btn-group').hide();
-				        gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-					    $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
-					})
-					
-					$('.collapse').on('show', function () {
-					  
-					  //$(this).siblings().children('.btn-group').show();
-					  var dataSizeX = $(this).parents(".card").attr('card-x');
-					  var dataSizeY = $(this).parents(".card").attr('card-y');
-					  
-					  gridster.resize_widget( $(this).parents(".card"), dataSizeX, dataSizeY);
-					  
-					  $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
-					})  
-					
-					gridster = $(".gridster > ul").gridster({
+                		gridster = $(".gridster > ul").gridster({
 						widget_margins: [5, 5],
 						widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
 						min_cols: 1,
 						max_cols: 0,
 						autogenerate_stylesheet: true
 					}).data('gridster');
+                
+                
+					 $('.collapse').on('hide', function () {       
+					     // $(this).siblings().children('.btn-group').hide();
+				        gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
+                         
+					    $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
+					})
+					
+					$('.collapse').on('show', function () {
+				      $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
+                        
+                      var gridster = $(".gridster ul").gridster().data('gridster');
+                        console.log(gridster);
+					  //$(this).siblings().children('.btn-group').show();
+                      var card = $(this).parents(".card");
+					  var sizex = card.attr('card-x');
+					  var sizey = card.attr('card-y');
+					  var col = card.data('col');
+                      var row = card.data('row');
+                        
+                        
+					 var e = gridster.resize_widget( $(this).parents(".card"), sizex, sizey);
+					  e.data('col',col);
+                        e.data('col',row);
+					
+					})  
+					
+			
 				
 					$('.size-smaller').click(function() {
 						
@@ -613,12 +776,15 @@
 						$(this).parents(".card").attr('card-size', newSize);
 						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
 					})   
-						  
-					 /*$(".disable-widget").click(function () {
-					  
-						  gridster.remove_widget( $(this).parents(".card"))
-							  
-					});*/
+				
+                
+                	
+                
+               
+                
+     
+                
+                
                     
             }
 
@@ -635,8 +801,10 @@
                         json_data = csvjson.csv2json(data);
                         console.log("done loading initial data");
                         
-                        buildDashboard(json_data);
+                        loadDataset(json_data);
                         
+                        add_variable_list(json_data.headers);
+                        //buildDashboard(json_data);
                         spinner.stop();
 
                     },
@@ -659,6 +827,10 @@
                 
                 spinner.stop();
             }
+            
+            
+            
+    
             
             
         </script>
