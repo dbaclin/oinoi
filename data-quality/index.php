@@ -151,7 +151,7 @@
                 
         </script>
 
-        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
+        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
                                 
       
         
@@ -197,17 +197,19 @@
                 
                 $("#layouts_grid" ).droppable({
                   drop: function( event, ui ) {
-                    
-                    
                     var variable_to_add = ui.draggable.data('var');
-                    var gridster_widget_element = add_card(variable_to_add);
-  
-                    addResize(gridster_widget_element,variable_to_add);
-                    addResizeHandle(gridster_widget_element);
-                    addRemove(gridster_widget_element,variable_to_add);
-                   
+                    addElementOnGridBoard(variable_to_add);
                   }
                 });
+                
+               
+                function addElementOnGridBoard(aVariableName) {
+                    var gridster_widget_element = add_card(aVariableName);
+  
+                    addResize(gridster_widget_element,aVariableName);
+                    addResizeHandle(gridster_widget_element);
+                    addRemove(gridster_widget_element,aVariableName);
+                }
                 
                 function addResize(anElement,aVariableName) {
                 
@@ -254,6 +256,8 @@
                     $(anElement).find('.remove_element').click(function(event) {
                         var gridster = $(".layouts_grid ul").gridster().data('gridster');
                         gridster.remove_widget(anElement);
+                        dimGroup.get(aVariableName).chart.filterAll();
+                        dc.redrawAll();
                         dimGroup.get(aVariableName).dim.remove();
                         dimGroup.remove(aVariableName);
                     });
@@ -311,6 +315,13 @@
 
                     $('#variables').append(Mustache.render($('#tpl-var-list').html(),allVariables));
                     $('#variables li').draggable({ revert: true });
+                    $("#variables li").click(function() {
+                        var variable_to_add = $(this).attr('data-var');
+                        console.log("Pushed on :"+variable_to_add);
+                        addElementOnGridBoard(variable_to_add);
+                        
+                        
+                  });
                 
             }
             
@@ -322,7 +333,7 @@
                     
                     var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName});
                     
-                    var gridster_widget_element = gridster.add_widget(widget_html, 5, 5);
+                    var gridster_widget_element = gridster.add_widget(widget_html);
                  
                     switch(data_summary[varName].type)
                     {
@@ -547,15 +558,15 @@
             function add_dc_bar_chart(name,dimension,w,h){
                 var chart; 
                 
-                var min_bound = dimension.bottom(1);
-                var max_bound = dimension.top(1);
+                var min_bound = dimension.bottom(1)[0][name];
+                var max_bound = dimension.top(1)[0][name];
                // var min_bound = d3.min(rows, function(d) {return d[name]; });
                // var max_bound = d3.max(rows, function(d) {return d[name]; });
                 var increment = 0.02 * (max_bound - min_bound);
                         
                 min_bound -= increment;
                 max_bound += increment;
-                
+                console.log("Trying to add: "+ name+" min: "+min_bound+" max: "+max_bound);
 
                 chart = dc.barChart("#" + name + "-chart");
                 chart.width(w)
@@ -582,10 +593,13 @@
             
             }
             
+            var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
+            for(var i = 0; i < 10; i++) {
+                colorCategory10 = colorCategory10.concat(colorCategory10);
+             }
              
             function add_dc_row_chart(name,nbBins,dimension,w, gridster_min_height){
                 var chart;
-                var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
                 
                 var grid_height = Math.ceil( (nbBins * 18 + 75)/ gridster_min_height);
                 

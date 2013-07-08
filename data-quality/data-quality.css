@@ -7,7 +7,14 @@
 }
 
 #variables { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-#variables li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1em; font-size: 1.2em; height: 18px; width: 150px;}
+#variables li { 
+  margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1em; font-size: 13px; height: 18px; width: 150px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "museo-sans",sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  }
   
 
 .additional_element {
@@ -84,10 +91,10 @@
     color: black;
     font-size: 12px;
     font-weight: bold;
-    padding: 2px 5px;
+    padding: 0px 3px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     cursor: pointer;
-    margin: 3px 0px 4px 4px;
+    margin: 0px 0px 0px 0px;
 }
 .layouts_grid .layout_block .info {
     color: white;
@@ -179,19 +186,15 @@ textarea{
 }
 
 
-.dc-chart g.row text {
-    fill: rgb(234,234,234);
-    font-size: 12px;
-}
-
-
-
 body{
 
      /*background: rgb(248,248,248);*/
        background: white;
        padding-top: 60px;
     /* 60px to make the container go all the way to the bottom of the topbar */
+        font-family: "museo-sans",sans-serif;
+    font-style: normal;
+    font-weight: 500;
 
 }
 
@@ -261,13 +264,17 @@ padding: 4px;
 	height: 358px;
 }
 
+.dc-chart {
+    width: 100%;
+}
+
 .dc-chart g.row text {
 fill: rgb(0, 0, 0);
 font-size: 12px;
 }
 
 
-h1, a, textarea, text, .dc-chart .axis text  {
+h1, a, textarea, text, .dc-chart .axis text, span  {
     font-family: "museo-sans",sans-serif;
     font-style: normal;
     font-weight: 500;
