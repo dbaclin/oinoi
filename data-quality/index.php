@@ -20,7 +20,6 @@
         </style>
         <link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../libs/gridster/dist/jquery.gridster.min.css">
-        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -31,6 +30,8 @@
 
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
+        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
+                
         <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
         <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
@@ -39,6 +40,8 @@
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
         <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
         <link rel="shortcut icon" href="../images/favicon.png">
+        
+        
     </head>
     
     <body>
@@ -81,18 +84,6 @@
             
                 <div class="span10 layouts_grid" id="layouts_grid">
                     <ul>
-                        <li class="layout_block"  data-row="1" data-col="1" data-sizex="1" data-sizey="1" style="background-color: #D24726;">
-                        <div class="remove_element">X</div>
-                        <div class="info">
-                        <span class="block_name">Logo</span>
-                        </div>    
-                        </li>
-                        <li class="layout_block"  data-row="1" data-col="2" data-sizex="5" data-sizey="1" style="background-color: #15992A;">
-                        <div class="remove_element">X</div>
-                        <div class="info">
-                        <span class="block_name">Ads top</span>
-                        </div>    
-                        </li>
                         
                     </ul>
                 </div>
@@ -160,7 +151,7 @@
                 
         </script>
 
-        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}}</span><a class="reset" href="javascript:dimGroup.get("{{varName}}").chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
+        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
                                 
       
         
@@ -185,8 +176,6 @@
                 max_width: 6,
                 max_height: 6
             };
-            $(function() {
-            
                 // initialize gridster
                 
                 layout = $('.layouts_grid ul').gridster({
@@ -209,33 +198,67 @@
                 $("#layouts_grid" ).droppable({
                   drop: function( event, ui ) {
                     
-                    add_card(ui.draggable.data('var'));
+                    
+                    var variable_to_add = ui.draggable.data('var');
+                    var gridster_widget_element = add_card(variable_to_add);
   
+                    addResize(gridster_widget_element,variable_to_add);
+                    addResizeHandle(gridster_widget_element);
+                    addRemove(gridster_widget_element,variable_to_add);
+                   
                   }
                 });
-            
-                $('.layout_block').resizable({
+                
+                function addResize(anElement,aVariableName) {
+                
+                anElement.resizable({
                     grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
                     animate: false,
                     minWidth: grid_size,
                     minHeight: grid_size,
-                    containment: '#layouts_grid ul',
                     autoHide: true,
+                    containment: '#layouts_grid ul',
+                    start: function(event, ui) {
+                        grid_height = layout.$el.height();
+                    },
+                    resize: function(event, ui) {
+                        //set new grid height along the dragging period
+                        var delta = grid_size + grid_margin * 2;
+                        if (event.offsetY > layout.$el.height()) {
+                            var extra = Math.floor((event.offsetY - grid_height) / delta + 1);
+                            var new_height = grid_height + extra * delta;
+                            layout.$el.css('height', new_height);
+                        }
+                    },
                     stop: function(event, ui) {
                         var resized = $(this);
                         setTimeout(function() {
-                            resizeBlock(resized);
+                            var new_dimensions = resizeBlock(resized);
+                            console.log("variable "+aVariableName+" should be resized");
+                            dimGroup.get(aVariableName).chart.width(new_dimensions[0] * grid_size).height(new_dimensions[1] * grid_size - 10).render();
                         }, 300);
                     }
                 });
-            
-                $('.ui-resizable-handle').hover(function() {
+
+                }
+                
+                function addResizeHandle(anElement) {
+                    $(anElement).find('.ui-resizable-handle').hover(function() {
                     layout.disable();
-                }, function() {
-            
-                    layout.enable();
-                });
-            
+                    }, function() {
+    
+                        layout.enable();
+                    });    
+                }
+                function addRemove(anElement,aVariableName) {
+                    $(anElement).find('.remove_element').click(function(event) {
+                        var gridster = $(".layouts_grid ul").gridster().data('gridster');
+                        gridster.remove_widget(anElement);
+                        dimGroup.get(aVariableName).dim.remove();
+                        dimGroup.remove(aVariableName);
+                    });
+                }
+                
                 function resizeBlock(elmObj) {
             
                     var elmObj = $(elmObj);
@@ -253,17 +276,14 @@
                     }
             
                     layout.resize_widget(elmObj, grid_w, grid_h);
+                    console.log("New Size: ["+grid_w+"],["+grid_h+"]");
+                    return [grid_w,grid_h];
                 }
-                
-                
-                    $('.remove_element').click(function(event){
-                            var gridster = $(".layouts_grid ul").gridster().data('gridster'); 
-                            gridster.remove_widget($(this).parents('.gs_w'));
-                    });
-                    
+                 
+                       
                 //end: gridster initialized
 
-            });
+           
         
         
          </script>
@@ -302,8 +322,7 @@
                     
                     var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName});
                     
-                    gridster.add_widget(widget_html, 5, 5);
-                 
+                    var gridster_widget_element = gridster.add_widget(widget_html, 5, 5);
                  
                     switch(data_summary[varName].type)
                     {
@@ -317,7 +336,20 @@
                         dimension = ndx.dimension(function(d) {
                                     return d[varName];
                                 });
-                        chart = add_dc_row_chart(varName,dimension,gridster.min_widget_width * 2 - 30, gridster.min_widget_height );
+                        var allKeysValues = dimension.group().top(Infinity);
+                        var allKeysValuesStore = {};
+                        for(var i in allKeysValues) {
+                            allKeysValuesStore[allKeysValues[i].key] = allKeysValues[i].value;
+                        }
+                        dimension.remove();
+                        dimension = ndx.dimension(function(d) {
+                            return (9999999999 - allKeysValuesStore[d[varName]]) + "" + d[varName];
+                        });
+
+                        var nbBins = dimension.group().top(Infinity).length;        
+                        console.log("Nb bins:"+nbBins);
+                                
+                        chart = add_dc_row_chart(varName,nbBins,dimension,gridster.min_widget_width * 2 - 30, gridster.min_widget_height );
                         break;
                     
                     case "date":
@@ -343,6 +375,8 @@
                     gridster.resize_widget($('#'+ varName +'-card' ), sizex, sizey);
                   
                     dimGroup.get(varName).chart.render();
+                    
+                    return gridster_widget_element;
                 }
             
             function guessTypeOfColumn(aColumn, f) {
@@ -549,22 +583,10 @@
             }
             
              
-            function add_dc_row_chart(name,dimension,w, gridster_min_height){
+            function add_dc_row_chart(name,nbBins,dimension,w, gridster_min_height){
                 var chart;
                 var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
-                var allKeysValues = dimension.group().top(Infinity);
-                var allKeysValuesStore = {};
-                for(var i in allKeysValues) {
-                    allKeysValuesStore[allKeysValues[i].key] = allKeysValues[i].value;
-                }
                 
-                var dimensionForChart = ndx.dimension(function(d) {
-                    return (9999999999 - allKeysValuesStore[d[name]]) + "" + d[name];
-                });
-                var dimensionGroupForChart = dimensionForChart.group();
-                
-                var nbBins = dimensionGroupForChart.top(Infinity).length;
-
                 var grid_height = Math.ceil( (nbBins * 18 + 75)/ gridster_min_height);
                 
                 var h = Math.min(gridster_min_height * grid_height, gridster_min_height * 5) - 50;
@@ -577,8 +599,8 @@
                     left: 15,
                     right: 15,
                     bottom: 30 })
-                    .group(dimensionGroupForChart)
-                    .dimension(dimensionForChart)
+                    .group(dimension.group())
+                    .dimension(dimension)
                     .colors(colorCategory10)
                     .label(function(d) {
                     return d.key.substr(10);
@@ -818,7 +840,12 @@
                  json_data = csvjson.csv2json(pasted_data, {
                       delim: "\t"
                  });
-                 buildDashboard(json_data);
+                 
+                 loadDataset(json_data);
+                        
+                 add_variable_list(json_data.headers);
+                 
+                 // buildDashboard(json_data);
                         
                 spinner.stop();
     	       
