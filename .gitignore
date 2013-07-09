@@ -3,7 +3,7 @@
 #############
 uploads/
 json_configs/
-data-quality/json_configs/
+datasets/
 *.csv
 
 #################
