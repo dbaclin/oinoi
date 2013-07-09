@@ -2,6 +2,8 @@
 ## Custom
 #############
 uploads/
+json_configs/
+data-quality/json_configs/
 *.csv
 
 #################
