@@ -894,7 +894,7 @@
                 })
                 .fail(function() { console.log( "error" ); });
             } else {
-                file_name = "<?php if(isset($_POST['pasted_data'])) echo write_pasted_data($_POST['pasted_data']); else echo ''; ?>";
+                file_name = "<?php if(isset($_POST['pasted_data']) && strlen($_POST['pasted_data'])>1) echo write_pasted_data($_POST['pasted_data']); else echo ''; ?>";
                 
                 if(file_name.length == 0) {
                     file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
