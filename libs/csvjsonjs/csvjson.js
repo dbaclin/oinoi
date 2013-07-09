@@ -51,7 +51,7 @@ var csvjson = {};
 		  if(csvheaders[i].length == 0) csvheaders[i] = "_MISSING_" + i;
 		  else {
 		      
-		      csvheaders[i] = csvheaders[i].trim().replace(/%/g,"_Prct").replace(/\//g,"_").replace(/ /g,"_");
+		      csvheaders[i] = csvheaders[i].trim().replace(/%/g,"_Prct").replace(/\//g,"_").replace(/ /g,"_").replace(/"/g,"").replace(/'/g,"");
 		      if(!isNaN(+csvheaders[i][0])) csvheaders[i] = "_" + csvheaders[i];
           }
 		}

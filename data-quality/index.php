@@ -16,6 +16,7 @@
             body {
                 padding-top: 60px;
                 /* 60px to make the container go all the way to the bottom of the topbar */
+                
             }
         </style>
         <link href="../libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
@@ -45,6 +46,18 @@
     </head>
     
     <body>
+        <?php 
+        function write_pasted_data($pasted_data) {
+            $unique_id = uniqid();
+            $data_file = "./uploads/" . $unique_id . ".csv";
+            $handle = fopen($data_file, 'w') or die('Cannot open file:  '.$data_file);
+            foreach (explode("Ø",$pasted_data) as $line) {
+                if(strlen($line)) fwrite($handle,str_replace("\t",",",$line) . "\n");
+            }
+            fclose($handle);
+            return $unique_id . ".csv";
+        }
+        ?>
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -53,7 +66,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="brand" href="#">Project name</a>
+                    <a class="brand" href="#">Trials</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li>
@@ -62,12 +75,34 @@
                             <li>
                                 <a href="#contact">Contact</a>
                             </li>
+                            <li>
+                                <a href="#share" id="share"><i class="icon-share"></i> Share</a>
+                            </li>
                         </ul>
                     </div>
                     <!--/.nav-collapse -->
                 </div>
             </div>
         </div>
+        
+        
+        
+        <div class="container-fluid">
+          <div id="spinner">
+                
+            </div>
+          <div class="row-fluid">
+            <div class="span2 list-var" style="align:right;">
+              <ul id="variables" >
+              </ul>
+            </div>
+            <div class="span10 layouts_grid" id="layouts_grid">
+              <ul>
+              </ul>
+            </div>
+          </div>
+        </div>
+       <!-- 
         <div class="container">
             <div id="spinner">
                 
@@ -89,7 +124,7 @@
                 </div>
             
             </div>    
-        </div>
+        </div>-->
 
         <script src="../libs/jquery/jquery-1.9.1.js"></script>
         <script src="../libs/jquery/ui/jquery-ui.js"></script>
@@ -105,6 +140,8 @@
         <script type="text/javascript" src="../libs/mustache/0.5.0-dev/mustache.js"></script>
         <script type="text/javascript" src="../libs/spin/spin.min.js"></script>     
         <script src="../libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="../libs/bootboxjs/bootbox.min.js"></script>     
+         
          <script type="text/javascript">       
         var opts = {
           lines: 15, // The number of lines to draw
@@ -151,7 +188,10 @@
                 
         </script>
 
-        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" ><div class="card-content"><div id="{{varName}}-chart"><span>{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element">X</div><div class="clearfix"></div></div></li></script>    
+        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" >
+        <div class="card-content">
+        <div id="{{varName}}-chart"><span class="card-title">{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element">X</div><div class="clearfix"></div></div></li>
+        </script>    
                                 
       
         
@@ -179,6 +219,7 @@
                 // initialize gridster
                 
                 layout = $('.layouts_grid ul').gridster({
+                    avoid_overlapped_widgets:true,
                     widget_margins: [grid_margin, grid_margin],
                     widget_base_dimensions: [grid_size, grid_size],
                     serialize_params: function($w, wgd) {
@@ -204,11 +245,13 @@
                 
                
                 function addElementOnGridBoard(aVariableName) {
-                    var gridster_widget_element = add_card(aVariableName);
+                    if(dimGroup.get(aVariableName) === undefined) {
+                        var gridster_widget_element = add_card(aVariableName);
   
-                    addResize(gridster_widget_element,aVariableName);
-                    addResizeHandle(gridster_widget_element);
-                    addRemove(gridster_widget_element,aVariableName);
+                        addResize(gridster_widget_element,aVariableName);
+                        addResizeHandle(gridster_widget_element);
+                        addRemove(gridster_widget_element,aVariableName);
+                    }
                 }
                 
                 function addResize(anElement,aVariableName) {
@@ -236,8 +279,11 @@
                         var resized = $(this);
                         setTimeout(function() {
                             var new_dimensions = resizeBlock(resized);
-                            console.log("variable "+aVariableName+" should be resized");
-                            dimGroup.get(aVariableName).chart.width(new_dimensions[0] * grid_size).height(new_dimensions[1] * grid_size - 10).render();
+                            
+                            var width = $("#"+aVariableName+"-card").width();
+                            var height = $("#"+aVariableName+"-card").height();
+                            
+                            dimGroup.get(aVariableName).chart.width(width-5).height(height-10).render();
                         }, 300);
                     }
                 });
@@ -280,7 +326,7 @@
                     }
             
                     layout.resize_widget(elmObj, grid_w, grid_h);
-                    console.log("New Size: ["+grid_w+"],["+grid_h+"]");
+                    
                     return [grid_w,grid_h];
                 }
                  
@@ -317,9 +363,8 @@
                     $('#variables li').draggable({ revert: true });
                     $("#variables li").click(function() {
                         var variable_to_add = $(this).attr('data-var');
-                        console.log("Pushed on :"+variable_to_add);
-                        addElementOnGridBoard(variable_to_add);
                         
+                        addElementOnGridBoard(variable_to_add);
                         
                   });
                 
@@ -358,7 +403,6 @@
                         });
 
                         var nbBins = dimension.group().top(Infinity).length;        
-                        console.log("Nb bins:"+nbBins);
                                 
                         chart = add_dc_row_chart(varName,nbBins,dimension,gridster.min_widget_width * 2 - 30, gridster.min_widget_height );
                         break;
@@ -813,24 +857,51 @@
 						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
 					})   
 				
-                
-                	
-                
-               
-                
-     
-                
-                
-                    
             }
-
-            
-            var file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
-            var pasted_data = "<?php if(isset($_POST['pasted_data'])) echo $_POST['pasted_data']; else echo ''; ?>";
             
             var json_data;
+            var file_name;
             
-            if (file_name.length > 0) {
+            var json_config_file = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
+            if(json_config_file.length > 0) {
+                $.getJSON( "./json_configs/" + json_config_file, function(data) {
+                    
+                    file_name = data["file_name"];
+                    var variables_to_display = data["variables"];
+                    
+                    $.ajax("./uploads/" + file_name, {
+                        success: function(csvdata) {
+                          
+                            json_data = csvjson.csv2json(csvdata);
+                            console.log("done loading initial data");
+                            
+                            loadDataset(json_data);
+                            
+                            add_variable_list(json_data.headers);
+                            
+                            for(var i in variables_to_display) {
+                                addElementOnGridBoard(variables_to_display[i]);
+                            }
+                            //buildDashboard(json_data);
+                            spinner.stop();
+    
+                        },
+                        error: function() {
+                            console.log("could not load csv file");
+                        }
+                    });  
+                          
+                })
+                .fail(function() { console.log( "error" ); });
+            } else {
+                file_name = "<?php if(isset($_POST['pasted_data'])) echo write_pasted_data($_POST['pasted_data']); else echo ''; ?>";
+                
+                if(file_name.length == 0) {
+                    file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
+                }
+                
+                if (file_name.length > 0) {
+                console.log("file name: " + file_name);
                 $.ajax("./uploads/" + file_name, {
                     success: function(data) {
                       
@@ -845,34 +916,27 @@
 
                     },
                     error: function() {
-                        // Show some error message, couldn't get the CSV file
+                        console.log("could not load csv file");
                     }
                 });
-            } else if(pasted_data.length > 0) {
-                 console.log("loading pasted data");
-                 pasted_data = pasted_data.replace(/Ø/g,"\n");
-                 json_data = csvjson.csv2json(pasted_data, {
-                      delim: "\t"
-                 });
-                 
-                 loadDataset(json_data);
-                        
-                 add_variable_list(json_data.headers);
-                 
-                 // buildDashboard(json_data);
-                        
-                spinner.stop();
-    	       
-            } else {
-                console.log("nothing to see here");
-                
-                spinner.stop();
+                } else {
+                    console.log("nothing to see here");
+                    spinner.stop();
+                }        
             }
             
+            $('#share').click(function() { 
+                var allKeys = dimGroup.keys();
+                var json_to_send = JSON.stringify({ file_name: file_name, variables: allKeys });
+                $.post("file_writer.php", { action: 'write_config', json_string: json_to_send }, function(data) { 
+                
+                bootbox.prompt("Share this dashboard link:", function(result) { console.log("res:"+result); })
             
-            
-    
-            
+                $('.input-block-level').attr('value',"http://oinoi.com/data-quality/?j=" + data);
+                
+                } );
+                
+            });
             
         </script>
     </body>
