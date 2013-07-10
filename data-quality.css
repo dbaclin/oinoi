@@ -115,7 +115,9 @@ width: 100%;
     width: 700px;
     min-height: 300px;
     float: left;
-    background: rgb(240,240,240);
+    background: rgb(255,255,255);
+    overflow: scroll;
+    height: 640px;
 }
 
 .layouts_grid > * {
@@ -284,6 +286,26 @@ h1, a, textarea, text, .dc-chart .axis text, span  {
     font-weight: 500;
 }
 .card-title {
-    margin-left: 5px;
+    
+    border-radius: 3px;
+    color: rgb(0, 0, 0);
+    background-color: gainsboro;
+    margin-bottom: 5px;
+    font-size: 15px;
+    line-height: 26px;
+    font-weight: 400;
+    text-indent: 14.5px;
     cursor: pointer;
+}
+
+.icon-remove {
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+
+svg {
+    background: #F7F7F7;
+    padding: 2px;
+    border-radius: 3px;
 }

@@ -190,14 +190,14 @@
 
         <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" >
         <div class="card-content">
-        <div id="{{varName}}-chart"><span class="card-title">{{varName}} </span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element">X</div><div class="clearfix"></div></div></li>
+        <div id="{{varName}}-chart"><div class="card-title">{{varName}} <a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
         </script>    
                                 
       
         
         <script id="tpl-var-list" type="text/html">
             {{#variables}} 
-                 <li  class="ui-state-default variable" data-var="{{varName}}">{{varName}}</li>
+                 <li  class="ui-state-default variable" data-var="{{varName}}"><i class="icon-plus-sign"></i> {{varName}}</li>
             {{/variables}}
         </script>
         
@@ -251,6 +251,12 @@
                         addResize(gridster_widget_element,aVariableName);
                         addResizeHandle(gridster_widget_element);
                         addRemove(gridster_widget_element,aVariableName);
+                        /*
+                        var new_width = $("#"+aVariableName+"-card").width();
+                        var new_height = $("#"+aVariableName+"-card").height();
+                            
+                        dimGroup.get(aVariableName).chart.width(new_width-5).height(new_height-30).render();
+                        */
                     }
                 }
                 
@@ -283,7 +289,7 @@
                             var width = $("#"+aVariableName+"-card").width();
                             var height = $("#"+aVariableName+"-card").height();
                             
-                            dimGroup.get(aVariableName).chart.width(width-5).height(height-10).render();
+                            dimGroup.get(aVariableName).chart.width(width-5).height(height-30).render();
                         }, 300);
                     }
                 });
@@ -428,8 +434,13 @@
                     var sizex = Math.ceil(chart.width() / gridster.min_widget_width);
                     var sizey = Math.ceil(chart.height() / gridster.min_widget_height);
                     gridster.resize_widget($('#'+ varName +'-card' ), sizex, sizey);
-                  
-                    dimGroup.get(varName).chart.render();
+                    console.log("sizex:"+sizex);
+                    console.log("sizey:"+sizey);
+                    
+                    var new_width = (2*grid_margin)*(sizex-1)+(sizex*grid_size);
+                    var new_height = (2*grid_margin)*(sizey-1)+(sizey*grid_size);
+                    // dimGroup.get(varName).chart.width((sizex * (grid_size + grid_margin))-5).height((sizey * (grid_size + grid_margin)-30).render();
+                    dimGroup.get(varName).chart.width(new_width-5).height(new_height-30).render();
                     
                     return gridster_widget_element;
                 }
@@ -699,164 +710,6 @@
                     .xAxis();
                 return chart;
                                     
-            }
-                
-            function buildDashboard(json_data) {
-                
-                
-                        var headers = json_data.headers;
-                        var rows = json_data.rows;
-						
-						var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
-                        
-                        var cardSizeMin = {x:6,y:1};                
-                        var gridsterUnit = {x:30,y:30};
-
-                        
-                        function convertDCToGridsterSize(dcChartSize, gridsterUnit) {
-                                    var card = {};   
-                                    card.x =  Math.ceil( (dcChartSize.x) / gridsterUnit.x); // chart width + buffer
-                                    card.y =  Math.floor( (dcChartSize.y + gridsterUnit.y ) / gridsterUnit.y); // chart height + header + buffer
-                                    return card;
-                        }
-                        
-                        var data_summary = getSummaryStats(headers, rows.slice(0,200));
-                        
-                        convertDataSet(rows, data_summary);
-
-                        var variables_for_template = { "variables" : []};
-                        
-                        for(var i = 0; i < headers.length; i++) {
-                            
-                            var short_name = "";
-                            if(headers[i].trim().replace(/\s+/g, '-').length > 17)
-                                short_name = headers[i].trim().replace(/\s+/g, '-').substring(0,16) + "...";
-                             else 
-                                 short_name = headers[i].trim().replace(/\s+/g, '-');
-                            
-                            variables_for_template.variables[i] = {
-                                "var_name":headers[i].trim().replace(/\s+/g, '-'),
-                                "cardSizeMin": {"x": cardSizeMin.x , "y": cardSizeMin.y },
-                                
-                                "var_name_short": short_name ,
-                                "var_idx" : i + 1 , 
-                                "stats" : []
-                            };
-                            
-                            for(var k in data_summary[headers[i]]) {
-                                variables_for_template.variables[i].stats.push({"stats_name": k, "stats_value": data_summary[headers[i]][k] });
-                            }    
-                            
-                        }
-                        
-                        var chart_holder = Mustache.render($('#tpl-gridster').html(),variables_for_template);
-                        //var chart_holder = Mustache.render($('#tpl-chart').html(),variables_for_template);
-                        
-                        $('.gridster ul').append(chart_holder);
-                        
-                        var datatable_holder = Mustache.render($('#tpl-datatable').html(), variables_for_template);
-                        $('#datatable-holder').append(datatable_holder);
-                        //$('#chart-holder').listview('refresh');
-                        
-                        dimGroup = new HashTable();
-
-                        var ndx = crossfilter(rows);
-                        var all = ndx.groupAll();
-                        
-                        //var candidateVariableForGrouping; // stuff for the rows display
-                        var minSoFar = 9999999999;
-
-                        for (var i = 0; i < headers.length; i++) {
-                            var dimension = ndx.dimension(function(d) {
-                                return d[headers[i]];
-                            });
-                            var dimensionGroup = dimension.group();
-                         
-                            
-                            var currentType = data_summary[headers[i]].type;
-                            
-                            var chart;
-                            
-                            if (currentType == "number") {
-                      
-
-                            } else if(currentType == "string") {
-                                
-                    
-                            } else if(currentType == "date") {
-                                
-                               
-                                
-                            }
-                            dimGroup.put(headers[i].trim().replace(/\s+/g, '-'), {
-                                dim: dimension,
-                                grp: dimensionGroup,
-                                chart: chart
-                            });
-                            
-                           
-                        }
-                       
-                    
-                      dc.renderAll();
-                        
-                      var gridster;
-             
-                		gridster = $(".gridster > ul").gridster({
-						widget_margins: [5, 5],
-						widget_base_dimensions: [gridsterUnit.x, gridsterUnit.y],
-						min_cols: 1,
-						max_cols: 0,
-						autogenerate_stylesheet: true
-					}).data('gridster');
-                
-                
-					 $('.collapse').on('hide', function () {       
-					     // $(this).siblings().children('.btn-group').hide();
-				        gridster.resize_widget( $(this).parents(".card"), cardSizeMin.x , cardSizeMin.y);
-                         
-					    $(this).siblings().children('.close').html('<i class="icon-expand-alt"></i>');
-					})
-					
-					$('.collapse').on('show', function () {
-				      $(this).siblings().children('.close').html('<i class="icon-check-minus"></i>');  
-                        
-                      var gridster = $(".gridster ul").gridster().data('gridster');
-                        console.log(gridster);
-					  //$(this).siblings().children('.btn-group').show();
-                      var card = $(this).parents(".card");
-					  var sizex = card.attr('card-x');
-					  var sizey = card.attr('card-y');
-					  var col = card.data('col');
-                      var row = card.data('row');
-                        
-                        
-					 var e = gridster.resize_widget( $(this).parents(".card"), sizex, sizey);
-					  e.data('col',col);
-                        e.data('col',row);
-					
-					})  
-					
-			
-				
-					$('.size-smaller').click(function() {
-						
-						var currentSize = $(this).parents(".card").attr('card-size');
-						var newSize = Math.max(currentSize - 1, 0);
-						console.log(currentSize);
-					   $(this).parents(".card").attr('card-size', newSize);
-						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x,cardSize[newSize].y);
-					})  
-					  
-					$('.size-bigger').click(function() {
-						
-						var currentSize = $(this).parents(".card").attr('card-size');
-						var newSize = Math.min(currentSize + 1, cardSize.length - 1);
-						console.log(currentSize);
-						$(this).parents(".card").attr('card-size', newSize);
-						gridster.resize_widget( $(this).parents(".card"), cardSize[newSize].x, cardSize[newSize].y);
-					})   
-				
             }
             
             var json_data;
