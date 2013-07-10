@@ -288,8 +288,8 @@ h1, a, textarea, text, .dc-chart .axis text, span  {
 .card-title {
     
     border-radius: 3px;
-    color: rgb(0, 0, 0);
-    background-color: gainsboro;
+    color: cornflowerblue;
+    background-color: #e5ebf1;
     margin-bottom: 5px;
     font-size: 15px;
     line-height: 26px;
@@ -301,6 +301,7 @@ h1, a, textarea, text, .dc-chart .axis text, span  {
 .icon-remove {
     margin-right: 5px;
     font-size: 14px;
+    color: #ff0084;
 }
 
 
@@ -308,4 +309,24 @@ svg {
     background: #F7F7F7;
     padding: 2px;
     border-radius: 3px;
+}
+
+
+.reset {
+    color: #ff0084;
+}
+.reset:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.ui-state-default.variable.ui-draggable {
+    border: 1px solid white;
+    background: #e5ebf1;
+    color: cornflowerblue;
+}
+.ui-state-default.variable.ui-draggable:hover {
+    border: 1px solid #ff0084;
+    background: #ffffff;
+    color: #ff0084;
 }

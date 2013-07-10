@@ -190,7 +190,7 @@
 
         <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" >
         <div class="card-content">
-        <div id="{{varName}}-chart"><div class="card-title">{{varName}} <a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;">clear filter</a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
+        <div id="{{varName}}-chart"><div class="card-title">{{varName}} <a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
         </script>    
                                 
       
@@ -414,9 +414,11 @@
                         break;
                     
                     case "date":
+                        
                         dimension = ndx.dimension(function(d) {
                                         return d3.time.day(d[name]);
                                 });
+                        
                         chart = add_dc_line_chart(varName,dimension,gridster.min_widget_width * 4 - 30, gridster.min_widget_height * 2);
                         break;
                     default:
@@ -555,8 +557,7 @@
                        data_summary[headers[i]].type = "string";
                     else if(data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbString &&
                        data_summary[headers[i]].nbNumber > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "number";
-                    else if(data_summary[headers[i]].nbDate > data_summary[headers[i]].nbString &&
-                       data_summary[headers[i]].nbDate > data_summary[headers[i]].nbDate) data_summary[headers[i]].type = "date";
+                    else if(data_summary[headers[i]].nbDate > data_summary[headers[i]].nbString) data_summary[headers[i]].type = "date";
                     else data_summary[headers[i]].type = "string";
                 }
                 
@@ -570,7 +571,7 @@
                     if(statistics[k].type == "date") {
                         for(var i in rows) {
                             if(isNullOrNanOrUndefinedOrEmptyString(rows[i][k])) rows[i][k] = null; 
-                            else rows[i][k] = Date.parse(rows[i][k]);        
+                            else rows[i][k] = Date.parse(rows[i][k]);     
                         }
                     } else {
                         for(var i in rows) {
@@ -689,7 +690,25 @@
             function add_dc_line_chart(name,dimension,w,h){
                 var chart;
                 
-                
+                chart = dc.barChart("#" + name + "-chart");
+                chart.width(w)
+                    .height(h)
+                    .margins({
+                        top: 10,
+                        right: 50,
+                        bottom: 30,
+                        left: 40})
+                    .dimension(dimension)
+                    .group(dimension.group())
+                    .elasticY(true)
+                    .x(d3.time.scale().domain([dimension.bottom(1)[0][name], dimension.top(1)[0][name]]))
+                    .renderHorizontalGridLines(true)
+                    .xAxis();
+                    
+                         
+                         
+                   return chart;    
+                /*
                 chart = dc.lineChart("#" + name + "-chart");
                 chart.width(w)
                     .height(h)
@@ -699,7 +718,7 @@
                     .valueAccessor(function(d) {
                         return d.value;
                     })
-                    .x(d3.time.scale().domain([dimension.bottom(1), dimension.top(1)]))
+                    .x(d3.time.scale().domain([dimension.bottom(1)[0][name], dimension.top(1)[0][name]]))
                     .renderHorizontalGridLines(true)
                     .elasticY(true)
                     .brushOn(false)
@@ -708,7 +727,9 @@
                                 + "\nNumber of records: " + Math.round(d.value);
                     })
                     .xAxis();
+                    
                 return chart;
+                    */
                                     
             }
             
