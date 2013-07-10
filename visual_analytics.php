@@ -76,6 +76,9 @@
                                 <a href="#contact">Contact</a>
                             </li>
                             <li>
+                                <a href="./">Analyse your data</a>
+                            </li>
+                            <li>
                                 <a href="#share" id="share"><i class="icon-share"></i> Share</a>
                             </li>
                         </ul>
@@ -415,11 +418,15 @@
                     
                     case "date":
                         
+                
                         dimension = ndx.dimension(function(d) {
-                                        return d3.time.day(d[name]);
+                                        return d[name];
                                 });
                         
+                        console.log("Dimension: " + dimension.group().top(Infinity)[0]);
+                        
                         chart = add_dc_line_chart(varName,dimension,gridster.min_widget_width * 4 - 30, gridster.min_widget_height * 2);
+                        
                         break;
                     default:
                         alert('data type is undefined');
@@ -436,12 +443,11 @@
                     var sizex = Math.ceil(chart.width() / gridster.min_widget_width);
                     var sizey = Math.ceil(chart.height() / gridster.min_widget_height);
                     gridster.resize_widget($('#'+ varName +'-card' ), sizex, sizey);
-                    console.log("sizex:"+sizex);
-                    console.log("sizey:"+sizey);
                     
                     var new_width = (2*grid_margin)*(sizex-1)+(sizex*grid_size);
                     var new_height = (2*grid_margin)*(sizey-1)+(sizey*grid_size);
                     // dimGroup.get(varName).chart.width((sizex * (grid_size + grid_margin))-5).height((sizey * (grid_size + grid_margin)-30).render();
+                    
                     dimGroup.get(varName).chart.width(new_width-5).height(new_height-30).render();
                     
                     return gridster_widget_element;
@@ -628,10 +634,10 @@
                 chart.width(w)
                     .height(h)
                     .margins({
-                        top: 10,
-                        right: 50,
-                        bottom: 30,
-                        left: 40})
+                        top: 5,
+                        right: 15,
+                        bottom: 15,
+                        left: 25})
                     .dimension(dimension)
                     .group(dimension.group())
                     .elasticY(true)
@@ -668,7 +674,7 @@
                     top: 5,
                     left: 15,
                     right: 15,
-                    bottom: 30 })
+                    bottom: 25 })
                     .group(dimension.group())
                     .dimension(dimension)
                     .colors(colorCategory10)
@@ -688,10 +694,9 @@
 
                 
             function add_dc_line_chart(name,dimension,w,h){
-                var chart;
-                
-                chart = dc.barChart("#" + name + "-chart");
-                chart.width(w)
+                /*
+                var chart = dc.barChart("#" + name + "-chart")
+                    .width(w)
                     .height(h)
                     .margins({
                         top: 10,
@@ -704,21 +709,22 @@
                     .x(d3.time.scale().domain([dimension.bottom(1)[0][name], dimension.top(1)[0][name]]))
                     .renderHorizontalGridLines(true)
                     .xAxis();
-                    
-                         
                          
                    return chart;    
-                /*
-                chart = dc.lineChart("#" + name + "-chart");
-                chart.width(w)
+                   */
+                var min_bound = d3.min(json_data.rows, function(d) {return d[name]; });
+                var max_bound = d3.max(json_data.rows, function(d) {return d[name]; });
+                
+                var chart = dc.lineChart("#" + name + "-chart");
+               chart.width(w)
                     .height(h)
-                    .margins({top: 10, right: 50, bottom: 30, left: 60})
+                    .margins({top: 5, right: 10, bottom: 25, left: 30})
                     .dimension(dimension)
                     .group(dimension.group())
                     .valueAccessor(function(d) {
                         return d.value;
                     })
-                    .x(d3.time.scale().domain([dimension.bottom(1)[0][name], dimension.top(1)[0][name]]))
+                    .x(d3.time.scale().domain([min_bound, max_bound]))
                     .renderHorizontalGridLines(true)
                     .elasticY(true)
                     .brushOn(false)
@@ -729,7 +735,7 @@
                     .xAxis();
                     
                 return chart;
-                    */
+                    
                                     
             }
             
