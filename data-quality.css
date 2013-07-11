@@ -6,20 +6,7 @@
     
 }
 
-#variables { list-style-type: none; margin: 0; padding: 0; 
-width: 100%;
-  }
-#variables li { 
-  margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1em; font-size: 13px; height: 18px; 
-  width: 100%;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: "museo-sans",sans-serif;
-  font-style: normal;
-  font-weight: 500;
-  z-index: 5;
-  }
-  
+
 
 .additional_element {
     margin: 5px;
@@ -116,7 +103,7 @@ width: 100%;
     min-height: 300px;
     float: left;
     background: rgb(255,255,255);
-    overflow: scroll;
+    overflow: auto;
     height: 640px;
 }
 
@@ -304,7 +291,23 @@ h1, a, textarea, text, .dc-chart .axis text, span  {
     color: #ff0084;
 }
 
-
+#variables { list-style-type: none; margin: 0; padding: 0; 
+width: 98%;
+  }
+#variables li { 
+  margin: 0 0px 3px 0px; 
+  padding: 0.4em; 
+  text-indent: 2px;
+  font-size: 13px; 
+  height: 18px; 
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "museo-sans",sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  z-index: 5;
+  }
+  
 svg {
     background: #F7F7F7;
     padding: 2px;
@@ -329,4 +332,11 @@ svg {
     border: 1px solid #ff0084;
     background: #ffffff;
     color: #ff0084;
+}
+.span2.list-var {
+    overflow: auto;
+    height: 640px;    
+}
+.span10.layouts_grid.ready.ui-droppable {
+    margin-left:15px;
 }

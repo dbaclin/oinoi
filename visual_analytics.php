@@ -200,7 +200,7 @@
         
         <script id="tpl-var-list" type="text/html">
             {{#variables}} 
-                 <li  class="ui-state-default variable" data-var="{{varName}}"><i class="icon-plus-sign"></i> {{varName}}</li>
+                 <li  class="ui-state-default variable" data-var="{{varName}}"><i class="icon-plus-sign"></i> {{varNameShort}}</li>
             {{/variables}}
         </script>
         
@@ -361,7 +361,8 @@
                         
                         allVariables.variables[i] = {
                             "varName":headers[i],
-                            "varIdx" : i + 1 
+                            "varIdx" : i + 1,
+                            "varNameShort":(headers[i].length > 20 ? headers[i].slice(0,20) + ".." : headers[i])
                         };
                          
                         
@@ -418,12 +419,9 @@
                     
                     case "date":
                         
-                
                         dimension = ndx.dimension(function(d) {
-                                        return d[name];
-                                });
-                        
-                        console.log("Dimension: " + dimension.group().top(Infinity)[0]);
+                                        return d[varName];
+                                    });
                         
                         chart = add_dc_line_chart(varName,dimension,gridster.min_widget_width * 4 - 30, gridster.min_widget_height * 2);
                         
@@ -635,9 +633,9 @@
                     .height(h)
                     .margins({
                         top: 5,
-                        right: 15,
-                        bottom: 15,
-                        left: 25})
+                        right: 10,
+                        bottom: 25,
+                        left: 35})
                     .dimension(dimension)
                     .group(dimension.group())
                     .elasticY(true)
@@ -694,15 +692,15 @@
 
                 
             function add_dc_line_chart(name,dimension,w,h){
-                /*
-                var chart = dc.barChart("#" + name + "-chart")
-                    .width(w)
+                
+                var chart = dc.barChart("#" + name + "-chart");
+               chart.width(w)
                     .height(h)
                     .margins({
-                        top: 10,
-                        right: 50,
-                        bottom: 30,
-                        left: 40})
+                        top: 5,
+                        right: 10,
+                        bottom: 25,
+                        left: 35})
                     .dimension(dimension)
                     .group(dimension.group())
                     .elasticY(true)
@@ -711,7 +709,7 @@
                     .xAxis();
                          
                    return chart;    
-                   */
+            /*
                 var min_bound = d3.min(json_data.rows, function(d) {return d[name]; });
                 var max_bound = d3.max(json_data.rows, function(d) {return d[name]; });
                 
@@ -735,7 +733,7 @@
                     .xAxis();
                     
                 return chart;
-                    
+                  */  
                                     
             }
             
