@@ -66,7 +66,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="brand" href="#">Trials</a>
+                    <a class="brand" href="./">Oinoi</a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li>
@@ -370,7 +370,28 @@
 
 
                     $('#variables').append(Mustache.render($('#tpl-var-list').html(),allVariables));
-                    $('#variables li').draggable({ revert: true });
+                    $('#variables li').draggable({revert: "invalid" ,
+           helper: function () { $copy = $(this).clone(); 
+            $copy.css({"list-style":"none",
+            "width":$(this).outerWidth(),
+            "margin": "0 0px 3px 0px", 
+  "padding": "0.4em", 
+  "text-indent": "2px",
+  "font-size": "13px", 
+  "height": "18px", 
+  "border-radius": "3px",
+  "cursor": "pointer",
+  "font-family": 'museo-sans,sans-serif',
+  "font-style": "normal",
+  "font-weight": 500,
+  "z-index": 5,
+  "border": "1px solid #ff0084",
+  "background": "#ffffff",
+  "color": "#ff0084"
+            }); return $copy; 
+            },
+            appendTo: 'body',
+            scroll: false});
                     $("#variables li").click(function() {
                         var variable_to_add = $(this).attr('data-var');
                         
@@ -388,7 +409,21 @@
                     
                     var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName});
                     
-                    var gridster_widget_element = gridster.add_widget(widget_html);
+                    var grid_squares = Math.floor($('.span10.layouts_grid.ready.ui-droppable ul').width() / (grid_size + 2*grid_margin));
+                    
+                    var best_position = [];
+                    
+                    thesoundbarrier:
+                    for(var j = 1; j < grid_squares; j++) {
+                        for(var i = 1; i < grid_squares; i++) {
+                            if(!gridster.is_occupied(i,j)) {
+                                best_position = [i,j];
+                                break thesoundbarrier;
+                            }
+                        }
+                    }
+                    console.log(best_position);
+                    var gridster_widget_element = gridster.add_widget(widget_html,1,1,best_position[0],best_position[1]);
                  
                     switch(data_summary[varName].type)
                     {
