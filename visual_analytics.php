@@ -46,6 +46,7 @@
     </head>
     
     <body>
+        <?php include_once('./google_tracking.php'); ?>
         <?php 
         function write_pasted_data($pasted_data) {
             $unique_id = uniqid();
@@ -191,7 +192,7 @@
                 
         </script>
 
-        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" data-row="1" data-col="1" data-sizex="1" data-sizey="1" >
+        <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" >
         <div class="card-content">
         <div id="{{varName}}-chart"><div class="card-title">{{varName}} <a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
         </script>    
@@ -242,14 +243,23 @@
                 $("#layouts_grid" ).droppable({
                   drop: function( event, ui ) {
                     var variable_to_add = ui.draggable.data('var');
-                    addElementOnGridBoard(variable_to_add);
+                    var global_offset = $('#layouts_grid').offset();
+                    
+                    var column_number = Math.round((ui.position.left - $(this).offset().left) / (grid_size + (2*grid_margin))) + 1;
+                    var row_number = Math.round((ui.position.top - $(this).offset().top) / (grid_size + (2*grid_margin))) + 1;
+                    //console.log("where we want to put it "+column_number,row_number);
+                    addElementOnGridBoard(variable_to_add,column_number,row_number);
                   }
                 });
                 
                
-                function addElementOnGridBoard(aVariableName) {
+                function addElementOnGridBoard(aVariableName,colNumber,rowNumber) {
                     if(dimGroup.get(aVariableName) === undefined) {
-                        var gridster_widget_element = add_card(aVariableName);
+                        
+                        colNumber = (typeof colNumber !== 'undefined' ? colNumber : 1 );
+                        rowNumber = (typeof rowNumber !== 'undefined' ? rowNumber : 1 );
+                        
+                        var gridster_widget_element = add_card(aVariableName,colNumber,rowNumber);
   
                         addResize(gridster_widget_element,aVariableName);
                         addResizeHandle(gridster_widget_element);
@@ -293,7 +303,7 @@
                             var height = $("#"+aVariableName+"-card").height();
                             
                             dimGroup.get(aVariableName).chart.width(width-5).height(height-30).render();
-                        }, 300);
+                        }, 200);
                     }
                 });
 
@@ -401,7 +411,7 @@
                 
             }
             
-             function add_card(varName){
+             function add_card(varName, colNumber, rowNumber){
                     
                     var dimension;
                     var chart;
@@ -414,15 +424,17 @@
                     var best_position = [];
                     
                     thesoundbarrier:
-                    for(var j = 1; j < grid_squares; j++) {
-                        for(var i = 1; i < grid_squares; i++) {
-                            if(!gridster.is_occupied(i,j)) {
+                    for(var j = rowNumber; j < grid_squares*2; j++) {
+                        for(var i = colNumber; i < grid_squares; i++) {
+                            if(!gridster.is_occupied(i,j)) 
+                            {
                                 best_position = [i,j];
                                 break thesoundbarrier;
                             }
                         }
                     }
-                    console.log(best_position);
+                    
+                    // console.log("where it's going to go: "+best_position);
                     var gridster_widget_element = gridster.add_widget(widget_html,1,1,best_position[0],best_position[1]);
                  
                     switch(data_summary[varName].type)
