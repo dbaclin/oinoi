@@ -104,7 +104,7 @@
     float: left;
     background: rgb(255,255,255);
     overflow: auto;
-    height: 640px;
+    height: 700px;
 }
 
 .layouts_grid > * {
@@ -118,13 +118,17 @@
 
 .layouts_grid ul {
     list-style-type: none;
-    min-height: 660px;
+    min-height: 700px;
 }
+.layout_block.gs_w.ui-resizable{
+    position: absolute;
+}
+/*
 .layouts_grid .gs_w{
     z-index: 2;
     position: absolute;
 }
-
+*/
 .ready .gs_w:not(.preview-holder) {
     -webkit-transition: opacity .3s, left .3s, top .3s;
     -moz-transition: opacity .3s, left .3s, top .3s;
@@ -281,7 +285,8 @@ h1, a, textarea, text, .dc-chart .axis text, span  {
     font-size: 15px;
     line-height: 26px;
     font-weight: 400;
-    text-indent: 15px;
+    text-indent: 0px;
+    padding-left:15px;
     cursor: pointer;
 }
 
@@ -317,6 +322,7 @@ svg {
 
 .reset {
     color: #ff0084;
+    margin-left: 5px;
 }
 .reset:hover {
     color: white;
@@ -339,4 +345,15 @@ svg {
 }
 .span10.layouts_grid.ready.ui-droppable {
     margin-left:15px;
+}
+ul.dropdown-menu {
+    min-height:0px;
+    position: absolute !important;
+}
+
+.btn.btn-primary.dropdown-toggle.measure-selection {
+    line-height: 10px;
+    font-size: 11px;
+    margin-bottom: 4px;
+    margin-left: 5px;
 }
