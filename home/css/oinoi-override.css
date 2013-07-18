@@ -1,0 +1,35 @@
+.howitworks {
+    width:100%;
+    height:205px;
+    float:left;
+    margin:0;
+    margin-bottom:18px;
+    padding:0
+}
+
+.howitworks {
+    width:100%;
+    height:205px;
+    float:left;
+    margin:0;
+    margin-bottom:18px;
+    padding:0
+}
+.howitworkspadding {
+    padding-top:101px
+}
+.ruler {
+    height:180px;
+    background-color:#b2b2ac;
+    width:1px;
+    float:left;
+    background-color:#b2b1ab;
+    box-shadow:1px 0px 0px #fff
+}
+.section, .halfsection, .gutter {
+    width:299px;
+    height:50px;
+    float:left;
+    position:relative;
+    text-align:center
+}

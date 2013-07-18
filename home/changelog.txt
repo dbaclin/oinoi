@@ -1,0 +1,11 @@
+v1.1:
+
+- Theme is now responsive
+- New section: Blog
+- New section: Project details
+- Twitter bootstrap updated to v2.2.1
+- jQuery updated to v1.8.3
+
+v1.0:
+
+- Initial version
