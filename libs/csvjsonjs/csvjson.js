@@ -46,6 +46,7 @@ var csvjson = {};
 		//var textdelim = isdef(args.textdelim) ? args.textdelim : "";
 
 		var csvlines = csvdata.split("\n");
+		var initialcsvheaders = splitCSV(csvlines[0], delim);
 		var csvheaders = splitCSV(csvlines[0], delim);
 		for(var i in csvheaders) {
 		  if(csvheaders[i].length == 0) csvheaders[i] = "_MISSING_" + i;
@@ -56,11 +57,15 @@ var csvjson = {};
           }
 		}
 		//console.log(csvheaders);
-		
+		var prettynames = {};
+		for(var i in csvheaders) {
+		  prettynames[csvheaders[i]] = initialcsvheaders[i];
+		}
 		var csvrows = csvlines.slice(1, csvlines.length);
 
 		var ret = {};
 		ret.headers = csvheaders;
+		ret.prettynames = prettynames;
 		ret.rows = [];
 
 		for(var r in csvrows) {

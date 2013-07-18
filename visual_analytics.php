@@ -708,7 +708,6 @@
                         
                 min_bound -= increment;
                 max_bound += increment;
-                console.log("Trying to add: "+ name+" min: "+min_bound+" max: "+max_bound);
 
                 chart = dc.barChart("#" + name + "-chart");
                 chart.width(w)
