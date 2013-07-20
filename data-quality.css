@@ -182,14 +182,14 @@ textarea{
 
 }
 
-
 body{
 
      /*background: rgb(248,248,248);*/
        background: white;
-       padding-top: 60px;
+    /*   padding-top: 60px; */
     /* 60px to make the container go all the way to the bottom of the topbar */
-        font-family: "museo-sans",sans-serif;
+     /*   font-family: "museo-sans",sans-serif;*/
+    font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-style: normal;
     font-weight: 500;
 
@@ -270,74 +270,62 @@ fill: rgb(0, 0, 0);
 font-size: 12px;
 }
 
-
-h1, a, textarea, text, .dc-chart .axis text, span  {
-    font-family: "museo-sans",sans-serif;
-    font-style: normal;
-    font-weight: 500;
-}
 .card-title {
     
-    border-radius: 3px;
-    color: cornflowerblue;
-    background-color: #e5ebf1;
-    margin-bottom: 5px;
-    font-size: 15px;
+    border-radius: 2px;
+    color: white;
+    background-color: rgb(170, 170, 170);
+    margin-bottom: 4px;
+    font-size: 13px;
     line-height: 26px;
-    font-weight: 400;
-    text-indent: 0px;
     padding-left:15px;
     cursor: pointer;
 }
 
 .icon-remove {
-    margin-right: 5px;
-    font-size: 14px;
-    color: #ff0084;
+    color: white;
 }
 
 #variables { list-style-type: none; margin: 0; padding: 0; 
 width: 98%;
   }
 #variables li { 
+  color: #444;
   margin: 0 0px 3px 0px; 
   padding: 0.4em; 
   text-indent: 2px;
   font-size: 13px; 
   height: 18px; 
-  border-radius: 3px;
+  border-radius: 2px;
   cursor: pointer;
-  font-family: "museo-sans",sans-serif;
-  font-style: normal;
-  font-weight: 500;
   z-index: 5;
+  font-weight: 500;
   }
   
 svg {
-    background: #F7F7F7;
+    background: rgb(246, 246, 246);
     padding: 2px;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 
 .reset {
-    color: #ff0084;
+    color: #444;
     margin-left: 5px;
 }
 .reset:hover {
-    color: white;
-    text-decoration: none;
+    color: #444;
 }
 
 .ui-state-default.variable.ui-draggable {
     border: 1px solid white;
-    background: #e5ebf1;
-    color: cornflowerblue;
+    background: rgb(246,246,246);
+    color: #444;
 }
 .ui-state-default.variable.ui-draggable:hover {
-    border: 1px solid #ff0084;
-    background: #ffffff;
-    color: #ff0084;
+    border: 1px solid #444;
+    background: white;
+    color: #444;
 }
 .span2.list-var {
     overflow: auto;
@@ -356,4 +344,29 @@ ul.dropdown-menu {
     font-size: 11px;
     margin-bottom: 4px;
     margin-left: 5px;
+}
+
+.container-fluid.main-page {
+    margin-top: 7px;
+}
+
+
+a[data-toggle="dropdown"] {
+    color: white;
+}
+
+.icon-filter.filter-header {
+    margin-bottom:-2px;
+}
+
+
+.ui-resizable-handle.ui-resizable-se.ui-icon.ui-icon-gripsmall-diagonal-se {
+    color: #444;
+}
+.container.upload {
+    margin-top: 7px;
+}
+.row.call-to-action {
+    padding:0px;
+    margin:0px;
 }

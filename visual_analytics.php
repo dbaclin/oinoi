@@ -1,54 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-    
-    <head>
-        <meta charset="utf-8">
-        <title>Oinoi, Analytics for all</title>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <!-- Le styles -->
-        <link href="./libs/bootstrap/css/bootstrap.css" rel="stylesheet">
-        <link href="./libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-        <link href="./libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css" rel="stylesheet">
-
-        <style>
-            body {
-                padding-top: 60px;
-                /* 60px to make the container go all the way to the bottom of the topbar */
-                
-            }
-        </style>
         
-        <link rel="stylesheet" type="text/css" href="./libs/gridster/dist/jquery.gridster.min.css">
-
-        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-            <script src="./assets/js/html5shiv.js"></script>
-        <![endif]-->
-        <!-- Fav and touch icons -->
-        <link rel="stylesheet" type="text/css" href="./libs/dc/dc.css" />
-
-		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-<!--		<link href="./libs/microsoftcss/css/m-styles.min.css" rel="stylesheet"> -->
-
-        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
-                
-        <script type="text/javascript" src="//use.typekit.net/rwt6rez.js"></script>
-        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="./assets/ico/apple-touch-icon-144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="./assets/ico/apple-touch-icon-114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="./assets/ico/apple-touch-icon-72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="./assets/ico/apple-touch-icon-57-precomposed.png">
-        <link rel="shortcut icon" href="./images/favicon.png">
-        
-        
-    </head>
-    
-    <body>
-        <?php include_once('./google_tracking.php'); ?>
         <?php 
         function write_pasted_data($pasted_data) {
             $unique_id = uniqid();
@@ -61,45 +12,17 @@
             return $unique_id . ".csv";
         }
         ?>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="brand" href="./">Oinoi</a>
-                    <div class="nav-collapse collapse">
-                        <ul class="nav">
-                            <li>
-                                <a href="#about">About</a>
-                            </li>
-                            <li>
-                                <a href="#contact">Contact</a>
-                            </li>
-                            <li>
-                                <a href="./">Analyse your data</a>
-                            </li>
-                            <li>
-                                <a href="#share" id="share"><i class="icon-share"></i> Share</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--/.nav-collapse -->
-                </div>
-            </div>
-        </div>
         
-        
-        
-        <div class="container-fluid">
+        <div class="container-fluid main-page">
           <div id="spinner">
                 
             </div>
           <div class="row-fluid">
             <div class="span2 list-var" style="align:right;">
               <ul id="variables" >
+              <li id="share" style="background: white; border: 1px solid #444; font-weight: 600; font-size: 14px; margin-bottom: 7px;">
+                <i class="icon-share"></i> Share Dashboard
+              </li>
               </ul>
             </div>
             <div class="span10 layouts_grid" id="layouts_grid">
@@ -108,50 +31,14 @@
             </div>
           </div>
         </div>
-       <!-- 
-        <div class="container">
-            <div id="spinner">
-                
-            </div>
-              <h1>Data quality report</h1>
-            
-            <div class="row">         
-                <div  class="span2 list-var">
-                    <ul id="variables" >
-                        
-                    </ul>
-                </div>
-            
-            
-                <div class="span10 layouts_grid" id="layouts_grid">
-                    <ul>
-                        
-                    </ul>
-                </div>
-            
-            </div>    
-        </div>-->
-
-        <script src="./libs/jquery/jquery-1.9.1.js"></script>
-        <script src="./libs/jquery/ui/jquery-ui.js"></script>
-
-
-        <script src="./libs/bootstrap/js/bootstrap.js"></script>
-        <script src="./libs/d3/d3.v3.js"></script>
-        <script src="./libs/crossfilter/crossfilter.js"></script>
-        <script src="./libs/dc/dc.js"></script>
-        <script type="text/javascript" src="./libs/csvjsonjs/csvjson.js"></script>
-        <script type="text/javascript" src="./libs/datejs/date.js"></script>
-        <script type="text/javascript" src="./libs/utils_functions.js"></script>
-        <script type="text/javascript" src="./libs/mustache/0.5.0-dev/mustache.js"></script>
-        <script type="text/javascript" src="./libs/spin/spin.min.js"></script>     
-        <script src="./libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
-        <script type="text/javascript" src="./libs/bootboxjs/bootbox.min.js"></script>
-<!--
-        <script type="text/javascript" src="./libs/microsoftcss/js/m-radio.min.js"></script>     
--->
+      
+      	<?php include_once("./libs.php"); ?>
          
          <script type="text/javascript">       
+         
+         $('ul.nav li').removeClass('active');
+         $('ul.nav li:contains(Analyze)').addClass('active');
+         
         var opts = {
           lines: 15, // The number of lines to draw
           length: 12, // The length of each line
@@ -174,32 +61,10 @@
         var spinner = new Spinner(opts).spin(target);
                     
          </script>                           
-                   <script id="tpl-gridster" type="text/html">
-                {{#variables}}
-                
-                 <li id="{{var_name}}-card" class="card" data-row="{{var_idx}}" data-col="1" data-sizex="{{cardSizeMin.x}}" data-sizey="{{cardSizeMin.y}}" card-size="0">                
-                    <div class="card-heading">
-                          <button class="close card" href="#{{var_name}}-card-collapse" data-toggle="collapse" type="button"  aria-hidden="true"><i class="icon-expand-alt"></i></button>
-                          <a class="card-toggle"  >{{var_name_short}}</a>
-                          
-                          <div class="btn-group hide" >
-                              <button class="close resize size-smaller">&#45;</button>
-                              <button class="close resize size-bigger">&#43;</button>
-                          </div>
-                    </div>
-                <div id="{{var_name}}-card-collapse" class="card-body collapse">
-                  <div id="{{var_name}}-chart"><a class="reset" href="javascript:dimGroup.get('{{var_name}}').chart.filterAll();dc.redrawAll();" style="display: none;">reset</a><div class="clearfix"></div></div>
-                </div>     
-            </li>
-                 
-                 
-                {{/variables}}
-                
-        </script>
 
         <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" varName="{{varName}}">
         <div class="card-content">
-        <div id="{{varName}}-chart"><div class="card-title">{{varName}} <span class="placeholder"></span><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
+        <div id="{{varName}}-chart"><div class="card-title"><span class="placeholder"></span><b> by </b>{{displayVarName}}<a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter filter-header"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
         </script>    
                                 
       
@@ -217,7 +82,7 @@
         </script>
         
         <script id="tpl-measure-choice" type="text/html">
-            <div class='btn-group' id='{{currentVariable}}-measure-selection'> <button class='btn btn-primary dropdown-toggle measure-selection' data-toggle='dropdown'>Count(#Records)</button> <ul class='dropdown-menu' style='position: absolute;'> <li><a href='javascript:changeDisplayedMetric("{{currentVariable}}","NA","reset");'>Count(#Records)</a></li> {{#measures}} <li class='dropdown-submenu'> <a tabindex='-1' href='#'>{{variableName}}</a> <ul class='dropdown-menu' style='position: absolute;'> {{#statistics}} <li><a tabindex='-1' href='javascript:changeDisplayedMetric("{{currentVariable}}","{{variableName}}","{{func}}");'>{{display}}</a></li> {{/statistics}} </ul> </li> {{/measures}} </ul> </div>
+            <span class='dropdown' id='{{currentVariable}}-measure-selection'> <a data-toggle='dropdown' href='#'>Count(#Records)</a> <ul class='dropdown-menu' style='position: absolute;'> <li><a href='javascript:changeDisplayedMetric("{{currentVariable}}","NA","reset");'>Count(#Records)</a></li> {{#measures}} <li class='dropdown-submenu'> <a tabindex='-1' href='#'>{{displayVariableName}}</a> <ul class='dropdown-menu' style='position: absolute;'> {{#statistics}} <li><a tabindex='-1' href='javascript:changeDisplayedMetric("{{currentVariable}}","{{variableName}}","{{func}}");'>{{display}}</a></li> {{/statistics}} </ul> </li> {{/measures}} </ul> </span>
         </script>
         
         
@@ -280,8 +145,11 @@
                             
                         dimGroup.get(aVariableName).chart.width(new_width-5).height(new_height-30).render();
                         */
-                        if(data_summary[aVariableName].type != "number")
-                            $('#'+aVariableName+'-chart').find('.placeholder').append(Mustache.render($('#tpl-measure-choice').html(),{currentVariable:aVariableName, measures:measures})); 
+                        //if(data_summary[aVariableName].type != "number")
+                        $('#'+aVariableName+'-chart').find('.placeholder')
+                            .append(Mustache.render($('#tpl-measure-choice').html(),
+                                {currentVariable:aVariableName, measures:measures}
+                         )); 
                     }
                 }
                 
@@ -364,7 +232,7 @@
                 function changeDisplayedMetric(aVariableName,aMesureName,aStatistic) {
                 
                 if(aStatistic != "reset") {
-                    $('#'+aVariableName+'-measure-selection').find('.measure-selection').text(aStatistic + "(" + aMesureName +")");
+                    $('#'+aVariableName+'-measure-selection').find('a[data-toggle=dropdown]').text(aStatistic + "(" + json_data.prettynames[aMesureName] +")");
                     
                     dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group().reduce(
                                     function (p, v) {
@@ -400,7 +268,7 @@
                     dimGroup.get(aVariableName).chart.title(getTitle());
                     
                 } else {
-                    $('#'+aVariableName+'-measure-selection').find('.measure-selection').text("Count(#Records)");
+                    $('#'+aVariableName+'-measure-selection').find('a[data-toggle=dropdown]').text("Count(#Records)");
                     dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group();
                     dimGroup.get(aVariableName).chart.group(dimGroup.get(aVariableName).grp);
                             
@@ -431,10 +299,12 @@
                         
                     for(var i = 0; i < headers.length; i++) {
                         
+                        var currentVarForDisplay = json_data.prettynames[headers[i]];
+                        
                         allVariables.variables[i] = {
                             "varName":headers[i],
                             "varIdx" : i + 1,
-                            "varNameShort":(headers[i].length > 20 ? headers[i].slice(0,20) + ".." : headers[i])
+                            "varNameShort":(currentVarForDisplay.length > 25 ? currentVarForDisplay.slice(0,25) + ".." : currentVarForDisplay)
                         };
                          
                         
@@ -442,7 +312,8 @@
 
 
                     $('#variables').append(Mustache.render($('#tpl-var-list').html(),allVariables));
-                    $('#variables li').draggable({revert: "invalid" ,
+                    
+                    $('#variables li[class="ui-state-default variable"]').draggable({revert: "invalid" ,
                                                    helper: function () { $copy = $(this).clone(); 
                                                     $copy.css({"list-style":"none",
                                                       "width":$(this).outerWidth(),
@@ -451,20 +322,20 @@
                                                       "text-indent": "2px",
                                                       "font-size": "13px", 
                                                       "height": "18px", 
-                                                      "border-radius": "3px",
+                                                      "border-radius": "2px",
                                                       "cursor": "pointer",
-                                                      "font-family": 'museo-sans,sans-serif',
                                                       "font-style": "normal",
                                                       "font-weight": 500,
                                                       "z-index": 5,
-                                                      "border": "1px solid #ff0084",
+                                                      "border": "1px solid #444",
                                                       "background": "#ffffff",
-                                                      "color": "#ff0084"
+                                                      "color": "#444"
                                                                 }); return $copy; 
                                                     },
                                                     appendTo: 'body',
                                                     scroll: false});
-                    $("#variables li").click(function() {
+                                                    
+                    $('#variables li[class="ui-state-default variable ui-draggable"]').click(function() {
                         var variable_to_add = $(this).attr('data-var');
                         
                         addElementOnGridBoard(variable_to_add);
@@ -475,12 +346,12 @@
             
              function add_card(varName, colNumber, rowNumber){
                     
-                    console.log("where we would like to put it: "+[colNumber,rowNumber]);
+                    //console.log("where we would like to put it: "+[colNumber,rowNumber]);
                     var dimension, group;
                     var chart;
                     var gridster = $(".layouts_grid ul").gridster().data('gridster');
                     
-                    var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName});
+                    var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName,"displayVarName":json_data.prettynames[varName]});
                     
                     var grid_squares = Math.floor($('.span10.layouts_grid.ready.ui-droppable ul').width() / (grid_size + 2*grid_margin));
                     
@@ -497,7 +368,7 @@
                         }
                     }
                     
-                    console.log("where it's going to go: "+best_position);
+                    //console.log("where it's going to go: "+best_position);
                     var gridster_widget_element = gridster.add_widget(widget_html,1,1,best_position[0],best_position[1]);
                  
                     switch(data_summary[varName].type)
@@ -684,7 +555,7 @@
                   {display:"Count Non Nulls",func:"CountNonNulls"}
                   ];
                 for(var key in data_summary) {
-                    if(data_summary[key].type == "number") measures = measures.concat([{variableName:key,statistics:statistics}]);
+                    if(data_summary[key].type == "number") measures = measures.concat([{variableName:key, displayVariableName: json_data.prettynames[key], statistics:statistics}]);
                 }
 
                 cleanDataset(json_data.rows, data_summary);
@@ -898,6 +769,3 @@
             });
             
         </script>
-    </body>
-
-</html>
