@@ -22,7 +22,7 @@ document.getElementById("main_form").submit();
   
   <div class="span6" align="center"><form action="upload.php" class="dropzone" id="my-dropzone" ></form> </div>
   <div class="span6" align="center">
-    <textarea rows="17" cols="10" id="pasted_data_temp" name="pasted_data_temp" placeholder="Paste some data"></textarea>  
+    <textarea rows="17" cols="10" id="pasted_data_temp" name="pasted_data_temp" placeholder="Paste some data from excel etc (needs to be tab delimited)"></textarea>  
   </div>
   </div>
   <div class="row-fluid">

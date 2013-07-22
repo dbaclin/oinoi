@@ -12,7 +12,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</a>
-					<a class="brand" href="index.html">
+					<a class="brand" href="index.php">
 						<i class="icon-bar-chart"></i><b> Oinoi, analytics for all</b>
 					</a>
 					<div class="nav-collapse">
