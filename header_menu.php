@@ -16,9 +16,9 @@
 						<i class="icon-bar-chart"></i><b> Oinoi, analytics for all</b>
 					</a>
 					<div class="nav-collapse">
-						<ul class="nav">
+						<ul class="nav" id="top-bar-menu">
 							<li><a href="index.php">Home</a></li>	
-							<li><a href="#">Gallery</a></li>
+							<li><a href="gallery.php">Gallery</a></li>
 							<li><a href="analyze.php">Analyze</a></li>
 							<li><a href="#">Pricing</a></li>
 							<li><a href="#">About us</a></li>
