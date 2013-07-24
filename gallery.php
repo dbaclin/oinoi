@@ -11,8 +11,8 @@
 <div id="content" class="container">
 	<div class="hero-unit">
 		<div class="ac">
-			<h1>Great dashboards created with Oinoi</h1>
-			<p>Click on a dashboard to start interacting with the real data!</p>
+			<h1>An impressive broad set of dashboards created with Oinoi</h1>
+			<p>From venture financing to NBA MVP awards, you can use Oinoi to analyze any data.  <br/>Yes, any data. Click on a dashboard and start interacting with the real data!</p>
 		</div>
 	</div>
 
