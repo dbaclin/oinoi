@@ -370,3 +370,15 @@ a[data-toggle="dropdown"] {
     padding:0px;
     margin:0px;
 }
+
+
+#free-trial-header-menu {
+    color: white!important;
+    background: #e8762c;
+}
+
+#free-trial-header-menu:hover {
+    color: white!important;
+    background: #da6315;
+    text-decoration:  none;
+}

@@ -7,9 +7,8 @@
 						    <li><a href="index.php">Home</a></li>	
 						    <li><a href="gallery.php">Gallery</a></li>	
 							<li><a href="analyze.php">Analyze</a></li>
-							<li><a href="pricing.php">Pricing</a></li>
-							<li><a href="about.php">About us</a></li>						
-						
+							<li><a href="plans.php">Pricing</a></li>
+				
 					</ul>
 					
 				</div>
@@ -22,9 +21,12 @@
 				<div class="span4">
 					<h3>Newsletter</h3>
 					<p>Subscribe to our monthly newsletter and be the first to know about our news!</p>
-					<form>
-						<input type="text" placeholder="Enter your E-mail" />
-						<input type="submit" class="btn" value="Ok" />
+					<form action="http://oinoi.us7.list-manage1.com/subscribe/post" method="POST">
+                            <input type="hidden" name="u" value="2f78f0f2dd971df1406749046">
+                            <input type="hidden" name="id" value="2f7a21a7ab">
+
+						<input type="email" autocapitalize="off" autocorrect="off" name="MERGE0" id="MERGE0" placeholder="Enter your E-mail" />
+						<input type="submit" value="Ok" class="btn btn-primary" style="margin-top: -10px!important;">
 					</form>
 				</div>
 			</div> <!-- end .row -->

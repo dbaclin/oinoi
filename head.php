@@ -1,6 +1,7 @@
     <head>
         <meta charset="utf-8">
         <title>Oinoi, Analytics for all</title>
+        <meta name="google-site-verification" content="hGNyrCyFXc_oW41uMGHdRPk7z-mWKCCHAiuno7kU4VI" />
         
         <meta name="description" content="Page description">
         <meta name="author" content="Oinoi Inc">
