@@ -65,6 +65,18 @@
 			</div>
 			<!-- end portfolio item-->
 							
+             <!-- portfolio item-->
+			<div class="span4 project zoom" data-tags="social">
+
+				<a class="thumbnail" href="./index.php?j=51efeb5ac5e2e">
+					<!-- image -->
+					<img src="./images/small-dash4.png" alt="" />
+					<!-- name -->
+					<b class="project-name">Understanding the Titanic catastrophy</b>
+				</a>
+			</div>
+			<!-- end portfolio item-->
+							
 		</div>
       </div>	
 	</div>

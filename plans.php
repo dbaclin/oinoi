@@ -69,10 +69,10 @@
 					<li>&#10004; Unlimited users</li>
 					<li>&#10004; 10TB of space</li>
 					<li>&#10004; Unlimited dashboards</li>
-					<li>&#10004; Unlimited dashboards</li>
 					<li>&#10004; Access to all features</li>
 					<li>&#10004; Premium datasources</li>
 					<li>&#10004; Phone and e-mail support</li>
+					
 				</ul>          
 				<hr />
 				<h3 class="ac">$499 / month</h3>
