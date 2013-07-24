@@ -301,7 +301,9 @@ width: 98%;
   text-indent: 2px;
   font-size: 13px; 
   height: 18px; 
-  border-radius: 2px;
+  border-radius: 2px!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
   cursor: pointer;
   z-index: 5;
   font-weight: 500;
@@ -391,8 +393,8 @@ a[data-toggle="dropdown"] {
 
 .slick-header-menu {
     background: rgb(246,246,246);
-    z-index: 300;
-    border-radius:3px;
+    z-index: 10;
+    border-radius:2px;
 
 }
 
@@ -437,3 +439,22 @@ a[data-toggle="dropdown"] {
     border:none!important;
 
 }
+
+html {
+    background: white!important;    
+}
+
+#tabs {
+    border: none;
+}
+
+
+.ui-tabs-nav.ui-helper-reset.ui-helper-clearfix.ui-widget-header.ui-corner-all {
+    border: none;
+    background: white;
+}
+
+div.tabs-no-padding {
+    padding: 0px!important;
+}
+

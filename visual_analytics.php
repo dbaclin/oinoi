@@ -15,27 +15,28 @@
         
         
         
+
          
-		 <div id="tabs">
+
+ <div id="tabs">
               <ul>
     <li><a href="#tabs-1">Wrangle</a></li>
     <li><a href="#tabs-2">Visualize</a></li>
     
   </ul>
-  <div id="tabs-1">
+  <div id="tabs-1" class="tabs-no-padding">
     <div class="container-fluid main-page">
           
           <div class="row-fluid">
             <div class="span2" >Do you want me to kiss your face with my fist?</div>
             <div class="span10" >
-                 <div id="myGrid" style="width:100%;height:500px;"></div>
+                 <div id="myGrid" style="width:100%;height:600px;"></div>
             </div>
          </div>
      
      </div>
   </div>
-  <div id="tabs-2">
-       
+  <div id="tabs-2" class="tabs-no-padding">
     <div class="container-fluid main-page">
           <div id="spinner"> </div>
           
@@ -53,13 +54,11 @@
         </div>
       </div>
     </div>
-    
-    
-  </div>
-  
+    </div>
 </div>
-        
-        
+
+    
+
         
         
       
@@ -116,9 +115,10 @@
             <span class='dropdown' id='{{currentVariable}}-measure-selection'> <a data-toggle='dropdown' href='#'>Count(#Records)</a> <ul class='dropdown-menu' style='position: absolute;'> <li><a href='javascript:changeDisplayedMetric("{{currentVariable}}","NA","reset");'>Count(#Records)</a></li> {{#measures}} <li class='dropdown-submenu'> <a tabindex='-1' href='#'>{{displayVariableName}}</a> <ul class='dropdown-menu' style='position: absolute;'> {{#statistics}} <li><a tabindex='-1' href='javascript:changeDisplayedMetric("{{currentVariable}}","{{variableName}}","{{func}}");'>{{display}}</a></li> {{/statistics}} </ul> </li> {{/measures}} </ul> </span>
         </script>
         
-        
         <script type="text/javascript">
         
+             
+            
             var layout;
             var grid_size = 100;
             var grid_margin = 5;
@@ -157,6 +157,8 @@
                     addElementOnGridBoard(variable_to_add,column_number,row_number);
                   }
                 });
+                
+                $( "#tabs" ).tabs();
                 
                
                 function addElementOnGridBoard(aVariableName,colNumber,rowNumber) {
@@ -720,8 +722,87 @@
                                     
             }
             
+            function add_slick_grid(someJsonData) {
+            var slickGrid;
+
+            var columns = [];     
+            for(var i in someJsonData.headers) {
+              var field_id = someJsonData.headers[i];
+              columns[i] = {id:field_id, name: someJsonData.prettynames[field_id], field:field_id };
+            }
+            
+              for (var i = 0; i < columns.length; i++) {
+                columns[i].header = {
+                  menu: {
+                    items: [
+                      {
+                        iconImage: "./images/sort-asc.gif",
+                        title: "Sort Ascending",
+                        command: "sort-asc"
+                      },
+                      {
+                        iconImage: "./images/sort-desc.gif",
+                        title: "Sort Descending",
+                        command: "sort-desc"
+                      },
+                      {
+                        title: "Hide Column",
+                        command: "hide",
+                        disabled: true,
+                        tooltip: "Can't hide this column"
+                      },
+                      {
+                        iconCssClass: "icon-help",
+                        title: "Help",
+                        command: "help"
+                      }
+                    ]
+                  }
+                };
+              }
+            
+            
+              var options = {
+                enableColumnReorder: false
+              };
+            
+            
+                slickGrid = new Slick.Grid("#myGrid", someJsonData.rows, columns, options);
+            
+                var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
+            
+                headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
+                  var menu = args.menu;
+            
+                  // We can add or modify the menu here, or cancel it by returning false.
+                  var i = menu.items.length;
+                  menu.items.push({
+                    title: "Menu item " + i,
+                    command: "item" + i
+                  });
+                });
+            
+                headerMenuPlugin.onCommand.subscribe(function(e, args) {
+                  alert("Command: " + args.command);
+                });
+            
+                slickGrid.registerPlugin(headerMenuPlugin);
+            }
+            
             var json_data;
+            var slickGrid;
             var file_name;
+            
+            function initialization(someData) {
+                json_data = csvjson.csv2json(someData);
+                console.log("done loading initial data");
+                            
+                loadDataset(json_data);
+                            
+                add_variable_list(json_data.headers);
+                
+                add_slick_grid(json_data);
+            }
             
             var json_config_file = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
             if(json_config_file.length > 0) {
@@ -732,13 +813,7 @@
                     
                     $.ajax("./uploads/" + file_name, {
                         success: function(csvdata) {
-                          
-                            json_data = csvjson.csv2json(csvdata);
-                            console.log("done loading initial data");
-                            
-                            loadDataset(json_data);
-                            
-                            add_variable_list(json_data.headers);
+                            initialization(csvdata);
                             
                             for(var i in variables_to_display) {
                                 addElementOnGridBoard(variables_to_display[i]);
@@ -766,12 +841,8 @@
                 $.ajax("./uploads/" + file_name, {
                     success: function(data) {
                       
-                        json_data = csvjson.csv2json(data);
-                        console.log("done loading initial data");
+                        initialization(data);
                         
-                        loadDataset(json_data);
-                        
-                        add_variable_list(json_data.headers);
                         //buildDashboard(json_data);
                         spinner.stop();
 
@@ -800,89 +871,4 @@
             });
             
         </script>
-        <script type="text/javascript">
-             $( "#tabs" ).tabs();
-             
-             
-               var grid;
-  var columns = [
-    {id: "title", name: "Title", field: "title"},
-    {id: "duration", name: "Duration", field: "duration"},
-    {id: "%", name: "% Complete", field: "percentComplete"},
-    {id: "start", name: "Start", field: "start"},
-    {id: "finish", name: "Finish", field: "finish"},
-    {id: "effort-driven", name: "Effort Driven", field: "effortDriven"}
-  ];
-
-  for (var i = 0; i < columns.length; i++) {
-    columns[i].header = {
-      menu: {
-        items: [
-          {
-            iconImage: "./images/sort-asc.gif",
-            title: "Sort Ascending",
-            command: "sort-asc"
-          },
-          {
-            iconImage: "./images/sort-desc.gif",
-            title: "Sort Descending",
-            command: "sort-desc"
-          },
-          {
-            title: "Hide Column",
-            command: "hide",
-            disabled: true,
-            tooltip: "Can't hide this column"
-          },
-          {
-            iconCssClass: "icon-help",
-            title: "Help",
-            command: "help"
-          }
-        ]
-      }
-    };
-  }
-
-
-  var options = {
-    enableColumnReorder: false
-  };
-
-
-    var data = [];
-    for (var i = 0; i < 500; i++) {
-      data[i] = {
-        title: "Task " + i,
-        duration: "5 days",
-        percentComplete: Math.round(Math.random() * 100),
-        start: "01/01/2009",
-        finish: "01/05/2009",
-        effortDriven: (i % 5 == 0)
-      };
-    }
-
-    grid = new Slick.Grid("#myGrid", data, columns, options);
-
-    var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
-
-    headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
-      var menu = args.menu;
-
-      // We can add or modify the menu here, or cancel it by returning false.
-      var i = menu.items.length;
-      menu.items.push({
-        title: "Menu item " + i,
-        command: "item" + i
-      });
-    });
-
-    headerMenuPlugin.onCommand.subscribe(function(e, args) {
-      alert("Command: " + args.command);
-    });
-
-    grid.registerPlugin(headerMenuPlugin);
-
-
-             
-         </script>
+        
