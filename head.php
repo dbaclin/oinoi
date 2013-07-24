@@ -19,14 +19,23 @@
         <![endif]-->
         <link href="./libs/dropzone/css/dropzone.css" type="text/css" rel="stylesheet" />
          
-        <!-- Load Open sans from Google Font Directory -->
+        <!-- Load Open sans from Google Font Directory   -->
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800' rel='stylesheet' type='text/css'>
 
         
         <link rel="stylesheet" type="text/css" href="./libs/dc/dc.css" />
 
+        <link rel="stylesheet" href="./libs/slickgrid/slick.grid.css" type="text/css"/>
+      <link rel="stylesheet" href="libs/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
+      <link rel="stylesheet" href="./libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
+     
+        
+        
         <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
         <link rel="shortcut icon" href="./images/favicon.png">
+        
+        
+        
         
         
     </head>

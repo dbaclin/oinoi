@@ -29,3 +29,9 @@ UserVoice.push(['showTab', 'classic_widget', {
 }]);
 </script>
 
+
+
+<script src="./libs/slickgrid/lib/jquery.event.drag-2.2.js"></script>
+<script src="./libs/slickgrid/slick.core.js"></script>
+<script src="./libs/slickgrid/slick.grid.js"></script>
+<script src="./libs/slickgrid/plugins/slick.headermenu.js"></script>
