@@ -20,8 +20,7 @@
 							<li><a href="index.php">Home</a></li>	
 							<li><a href="gallery.php">Gallery</a></li>
 							<li><a href="analyze.php">Analyze</a></li>
-							<li><a href="#">Pricing</a></li>
-							<li><a href="#">About us</a></li>
+							<li><a href="plans.php">Pricing</a></li>
 							
 						</ul>
 						
