@@ -458,3 +458,7 @@ div.tabs-no-padding {
     padding: 0px!important;
 }
 
+.modal-backdrop.in {
+    background:none;    
+}
+

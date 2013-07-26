@@ -9,6 +9,9 @@
 <script type="text/javascript" src="./libs/utils_functions.js"></script>
 <script type="text/javascript" src="./libs/mustache/0.5.0-dev/mustache.js"></script>
 <script type="text/javascript" src="./libs/spin/spin.min.js"></script>
+
+<script src="./libs/slickgrid/lib/jquery.event.drag-2.2.js"></script>
+
 <script src="./libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" src="./libs/bootboxjs/bootbox.min.js"></script>
 <!-- UserVoice JavaScript SDK (only needed once on a page) -->
@@ -30,7 +33,7 @@ UserVoice.push(['showTab', 'classic_widget', {
 </script>
 
 
-<!--<script src="./libs/slickgrid/lib/jquery.event.drag-2.2.js"></script>-->
+
 <script src="./libs/slickgrid/slick.core.js"></script>
 <script src="./libs/slickgrid/slick.grid.js"></script>
 <script src="./libs/slickgrid/plugins/slick.headermenu.js"></script>

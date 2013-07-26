@@ -57,10 +57,44 @@
     </div>
 </div>
 
-    
-
+<div aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide ui-draggable" id="myModalLeft" >
+ <div class="modal-body">
+  <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+      
+      <p>Keep only the first <input type="number" style="width: 35px;vertical-align: baseline;"> characters</p>
         
+    </div>
+    <div class="modal-footer">
+      <button data-dismiss="modal" class="btn">Cancel</button>
+      <button class="btn btn-primary">Ok</button>
+    </div>
+  </div>
+  
+ <div aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide ui-draggable" id="myModalLeftToString" >
+ <div class="modal-body">
+  <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+      
+      <p>Keep only the first characters up to string <input type="text" style="width: 100px;vertical-align: baseline;"> </p>
         
+    </div>
+    <div class="modal-footer">
+      <button data-dismiss="modal" class="btn">Cancel</button>
+      <button class="btn btn-primary">Ok</button>
+    </div>
+  </div>
+         
+  <div aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide ui-draggable" id="myModalReplaceString" >
+ <div class="modal-body">
+  <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+      
+      <p>Replace all occurences of <input type="text" style="width: 150px;vertical-align: baseline;"> with <input type="text" style="width: 150px;vertical-align: baseline;"></p>
+        
+    </div>
+    <div class="modal-footer">
+      <button data-dismiss="modal" class="btn">Cancel</button>
+      <button class="btn btn-primary">Ok</button>
+    </div>
+  </div>       
       
       	<?php include_once("./libs.php"); ?>
          
@@ -118,7 +152,6 @@
         <script type="text/javascript">
         
              
-            
             var layout;
             var grid_size = 100;
             var grid_margin = 5;
@@ -722,9 +755,16 @@
                                     
             }
             
+            function applyFunction(functionName, parameters, variableName) {
+               
+                for(var i = 0; i < json_data.rows.length; i++) { 
+                    json_data.rows[i][variableName] = functionName(json_data.rows[i][variableName],parameters); 
+                };
+                slickGrid.invalidate();
+            }
+    
             function add_slick_grid(someJsonData) {
-            var slickGrid;
-
+            
             var columns = [];     
             for(var i in someJsonData.headers) {
               var field_id = someJsonData.headers[i];
@@ -736,25 +776,16 @@
                   menu: {
                     items: [
                       {
-                        iconImage: "./images/sort-asc.gif",
-                        title: "Sort Ascending",
-                        command: "sort-asc"
+                        title: "Keep first characters",
+                        command: "left"
                       },
                       {
-                        iconImage: "./images/sort-desc.gif",
-                        title: "Sort Descending",
-                        command: "sort-desc"
+                        title: "Keep first characters up to a certain string",
+                        command: "leftToString"
                       },
                       {
-                        title: "Hide Column",
-                        command: "hide",
-                        disabled: true,
-                        tooltip: "Can't hide this column"
-                      },
-                      {
-                        iconCssClass: "icon-help",
-                        title: "Help",
-                        command: "help"
+                        title: "Replace string",
+                        command: "replaceString"
                       }
                     ]
                   }
@@ -770,7 +801,7 @@
                 slickGrid = new Slick.Grid("#myGrid", someJsonData.rows, columns, options);
             
                 var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
-            
+            /*
                 headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
                   var menu = args.menu;
             
@@ -781,12 +812,69 @@
                     command: "item" + i
                   });
                 });
-            
+            */
+                
+                $("#myModalLeft").draggable({
+                    handle: ".modal-body"
+                });   
+                        
+
+                
                 headerMenuPlugin.onCommand.subscribe(function(e, args) {
-                  alert("Command: " + args.command);
+                  if(args.command == "left")
+                    {
+                        $("#myModalLeft").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
+                                $("#myModalLeft button.btn-primary").off('click').unbind('click');
+                                $("#myModalLeft").unbind('on');
+                        });
+                        $("#myModalLeft button.btn-primary").click( function() {
+                                $("#myModalLeft").modal('hide');     // dismiss the dialog
+                                var inputParameter = parseInt($('#myModalLeft input').val());
+                                if(!isNaN(inputParameter)) applyFunction(function(d,n) { return d.substring(0,n) },inputParameter,args.column.field);
+                        });
+
+                        $("#myModalLeft").modal('toggle');
+                    } else if (args.command == "leftToString") 
+                    {
+                        $("#myModalLeftToString").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
+                                $("#myModalLeftToString button.btn-primary").off('click').unbind('click');
+                                $("#myModalLeftToString").unbind('on');
+                        });
+                        $("#myModalLeftToString button.btn-primary").click( function() {
+                                $("#myModalLeftToString").modal('hide');     // dismiss the dialog
+                                var inputParameter = $('#myModalLeftToString input').val();
+                                if(inputParameter.length > 0)  applyFunction(function(d,n) { 
+                                                                                var idx = d.indexOf(n);
+                                                                                idx = (idx == -1 ? d.length : idx);
+                                                                                return d.substring(0,idx); 
+                                                                            },inputParameter,args.column.field);
+                        });
+
+                        $("#myModalLeftToString").modal('toggle');
+                        
+                    } else if (args.command == "replaceString") 
+                    {
+                        $("#myModalReplaceString").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
+                                $("#myModalReplaceString button.btn-primary").off('click').unbind('click');
+                                $("#myModalReplaceString").unbind('on');
+                        });
+                        $("#myModalReplaceString button.btn-primary").click( function() {
+                                $("#myModalReplaceString").modal('hide');     // dismiss the dialog
+                                var replaceFrom = $($('#myModalReplaceString input')[0]).val();
+                                var replaceTo = $($('#myModalReplaceString input')[1]).val();
+                                if(replaceFrom.length > 0) applyFunction(function(d,n) { 
+                                        return d.replace(new RegExp(n[0], 'g'),n[1]) // need to replace g with gi if we want non case sensistive replace
+                                    },[replaceFrom,replaceTo],args.column.field);
+                        });
+
+                        $("#myModalReplaceString").modal('toggle');
+    
+                    }
                 });
             
                 slickGrid.registerPlugin(headerMenuPlugin);
+                
+                //slickGrid.autosizeColumns();
             }
             
             var json_data;
