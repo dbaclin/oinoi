@@ -28,7 +28,20 @@
     <div class="container-fluid main-page">
           
           <div class="row-fluid">
-            <div class="span2" >Do you want me to kiss your face with my fist?</div>
+            <div class="span2">
+                <div id="suggestions-list">
+                 <div><a href="javascript:cleanDataMenuFunction('replace');">replace all occurences of <b class="selectedValue"></b> in <b class="selectedVariable"></b> with </a><input id="replaceInput" type="text" style="width: 100px;vertical-align: baseline;padding: 0px; "></div>
+ <div><a href="#">keep all characters of <b class="selectedVariable"></b> up to </a><input id="upToInput" type="text" style="width: 100px;vertical-align: baseline; padding: 0px; "></div>
+ <div><a href="#">keep all characters of <b class="selectedVariable"></b> starting from </a><input id="fromToInput" type="text" style="width: 100px;vertical-align: baseline; padding: 0px; "></div>
+ <div><a href="#">keep all characters of <b class="selectedVariable"></b> between </a><input id="leftCharInput" type="text" style="width: 60px;vertical-align: baseline; padding: 0px;"> and <input id="rightCharInput" type="text" style="width: 60px;vertical-align: baseline; padding: 0px;"></div>
+ <div><a href="#">keep the first </a><input id="leftInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"> characters of <b class="selectedVariable"></b></div>
+ <div><a href="#">keep all characters of <b class="selectedVariable"></b> between positions </a><input id="leftPosInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"> and <input id="rightPosInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"></div>
+ <div><a href="#">keep only the records where the <b class="selectedVariable"></b> contains <b class="selectedValue"></b></a></div> 
+ <div><a href="#">delete all records where the <b class="selectedVariable"></b> contains <b class="selectedValue"></b></a></div>
+ <div><a href="#">delete all records where the <b class="selectedVariable"></b> is empty</a></div>
+ 
+             </div>
+            </div>
             <div class="span10" >
                  <div id="myGrid" style="width:100%;height:600px;"></div>
             </div>
@@ -37,7 +50,7 @@
      </div>
   </div>
   <div id="tabs-2" class="tabs-no-padding">
-    <div class="container-fluid main-page">
+    <div class="container-fluid main-page" >
           <div id="spinner"> </div>
           
           <div class="row-fluid">
@@ -755,6 +768,22 @@
                                     
             }
             
+            function cleanDataMenuFunction(command) {
+                if(command == "replace") {
+                    var replaceFrom = $($('.selectedValue')[0]).text();
+                    if(replaceFrom === "*") replaceFrom = '\\*';
+                    
+                    var replaceTo = $('#replaceInput').val();
+                    if(replaceFrom.length > 0) 
+                        applyFunction(function(d,n) { 
+                                        return d.replace(new RegExp(n[0], 'g'),n[1]) // need to replace g with gi if we want non case sensistive replace
+                                            },[replaceFrom,replaceTo],$($('.selectedVariable')[0]).text());
+                } else {
+                
+                }
+            
+            }
+            
             function applyFunction(functionName, parameters, variableName) {
                
                 for(var i = 0; i < json_data.rows.length; i++) { 
@@ -794,7 +823,8 @@
             
             
               var options = {
-                enableColumnReorder: false
+                enableColumnReorder: false, 
+                enableTextSelectionOnCells: true
               };
             
             
@@ -814,9 +844,28 @@
                 });
             */
                 
-                $("#myModalLeft").draggable({
+                $('.modal.hide.ui-draggable').draggable({
                     handle: ".modal-body"
                 });   
+                        
+                $('#myGrid').mouseup(function() {
+                    ///$('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
+                    $('.selectedValue').text(getSelectionText());
+                });
+                
+                $('#myGrid').click(function() {
+                    $('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
+                });
+                
+                function getSelectionText() {
+                var text = "";
+                if (window.getSelection) {
+                    text = window.getSelection().toString();
+                } else if (document.selection && document.selection.type != "Control") {
+                    text = document.selection.createRange().text;
+                }
+                return text;
+                }
                         
 
                 
@@ -861,6 +910,7 @@
                         $("#myModalReplaceString button.btn-primary").click( function() {
                                 $("#myModalReplaceString").modal('hide');     // dismiss the dialog
                                 var replaceFrom = $($('#myModalReplaceString input')[0]).val();
+                                if(replaceFrom === "*") replaceFrom = '\\*';
                                 var replaceTo = $($('#myModalReplaceString input')[1]).val();
                                 if(replaceFrom.length > 0) applyFunction(function(d,n) { 
                                         return d.replace(new RegExp(n[0], 'g'),n[1]) // need to replace g with gi if we want non case sensistive replace
