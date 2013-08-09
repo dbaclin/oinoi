@@ -111,6 +111,8 @@
       
       	<?php include_once("./libs.php"); ?>
          
+        <script type="text/javascript" src="./dataset.js"></script> 
+         
          <script type="text/javascript">       
          
          $('ul.nav li').removeClass('active');
@@ -792,12 +794,13 @@
                 slickGrid.invalidate();
             }
     
-            function add_slick_grid(someJsonData) {
+            function add_slick_grid(someDataset) {
             
+            /*
             var columns = [];     
             for(var i in someJsonData.headers) {
               var field_id = someJsonData.headers[i];
-              columns[i] = {id:field_id, name: someJsonData.prettynames[field_id], field:field_id };
+              columns[i] = {id:field_id, name: someJsonData.prettynames[field_id], field:field_id, editor: (data_summary[field_id] == "date" ? Slick.Editors.Date : Slick.Editors.Text), blabla: "pouet" };
             }
             
               for (var i = 0; i < columns.length; i++) {
@@ -820,34 +823,22 @@
                   }
                 };
               }
-            
+              */
             
               var options = {
-                enableColumnReorder: false, 
-                enableTextSelectionOnCells: true
+                //enableColumnReorder: false, 
+                enableTextSelectionOnCells: true,
+                editable: true,
+                enableAddRow: true,
+                enableCellNavigation: true,
+                asyncEditorLoading: false,
+                autoEdit: true
               };
             
             
-                slickGrid = new Slick.Grid("#myGrid", someJsonData.rows, columns, options);
-            
-                var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
-            /*
-                headerMenuPlugin.onBeforeMenuShow.subscribe(function(e, args) {
-                  var menu = args.menu;
-            
-                  // We can add or modify the menu here, or cancel it by returning false.
-                  var i = menu.items.length;
-                  menu.items.push({
-                    title: "Menu item " + i,
-                    command: "item" + i
-                  });
-                });
-            */
+                slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);
+                slickGrid.setSelectionModel(new Slick.CellSelectionModel());
                 
-                $('.modal.hide.ui-draggable').draggable({
-                    handle: ".modal-body"
-                });   
-                        
                 $('#myGrid').mouseup(function() {
                     ///$('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
                     $('.selectedValue').text(getSelectionText());
@@ -855,6 +846,7 @@
                 
                 $('#myGrid').click(function() {
                     $('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
+                    //$('.selectedValue').text(someJsonData.rows[slickGrid.getActiveCell().row][slickGrid.getColumns()[slickGrid.getActiveCell().cell].field]);
                 });
                 
                 function getSelectionText() {
@@ -866,8 +858,18 @@
                 }
                 return text;
                 }
+                
+                /*
+                var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
+                
+                
+                $('.modal.hide.ui-draggable').draggable({
+                    handle: ".modal-body"
+                });   
                         
-
+                
+                        
+                
                 
                 headerMenuPlugin.onCommand.subscribe(function(e, args) {
                   if(args.command == "left")
@@ -923,23 +925,28 @@
                 });
             
                 slickGrid.registerPlugin(headerMenuPlugin);
-                
+                */
                 //slickGrid.autosizeColumns();
             }
             
             var json_data;
             var slickGrid;
             var file_name;
+            var dataset;
             
             function initialization(someData) {
                 json_data = csvjson.csv2json(someData);
                 console.log("done loading initial data");
-                            
-                loadDataset(json_data);
-                            
-                add_variable_list(json_data.headers);
+                  
+                dataset = new Dataset(json_data);       
+                add_slick_grid(dataset);     
+                                                
+                //loadDataset(json_data);
                 
-                add_slick_grid(json_data);
+                            
+                //add_variable_list(json_data.headers);
+                
+                //add_slick_grid(json_data);
             }
             
             var json_config_file = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";

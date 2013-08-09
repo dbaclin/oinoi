@@ -32,8 +32,13 @@ UserVoice.push(['showTab', 'classic_widget', {
 }]);
 </script>
 
-
-
 <script src="./libs/slickgrid/slick.core.js"></script>
-<script src="./libs/slickgrid/slick.grid.js"></script>
 <script src="./libs/slickgrid/plugins/slick.headermenu.js"></script>
+<script src="./libs/slickgrid/plugins/slick.cellrangedecorator.js"></script>
+<script src="./libs/slickgrid/plugins/slick.cellrangeselector.js"></script>
+<script src="./libs/slickgrid/plugins/slick.cellselectionmodel.js"></script>
+<script src="./libs/slickgrid/slick.formatters.js"></script>
+<script src="./libs/slickgrid/slick.editors.js"></script>
+<script src="./libs/slickgrid/slick.grid.js"></script>
+
+<script src="./libs/underscore/underscore-min.js"></script>
