@@ -5,6 +5,7 @@ uploads/
 json_configs/
 datasets/
 *.csv
+blog/
 
 #################
 ## Eclipse
