@@ -154,6 +154,7 @@
 
           this.getColumnStatistics(columnId);
           this.columns[columnId].type = newType;
+          this.setColumnTypeEditor(columnId);
       }
 
       this.unFlatten = function (columnIds, newColumnNameCategory, newColumnNameValue, replaceRows) {
