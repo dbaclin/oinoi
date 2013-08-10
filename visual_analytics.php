@@ -928,8 +928,8 @@
                 }
                 return value;
             }
-        
-
+            // prevent crash when re-ordering a column that goes over a cell that was being edited
+            $('#myGrid').find('div.slick-header.ui-state-default').click(function() { slickGrid.resetActiveCell(); });
 
             /*
                 slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);

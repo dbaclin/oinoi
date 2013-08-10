@@ -233,9 +233,10 @@
             }
             
             seen = _.keys(seen);
-            for(var i = 0, len = seen.length; i < len; i++) {
-                if(column.type == "number") seen[i] = (seen[i] - 0) || null;
-                else if(column.type == "date") seen[i] = Date.parse(seen[i]); 
+            if(column.type == "date"){
+                seen = _.map(seen,function(d) {return d == null ? null : Date.parse(d);} );
+            } else if(column.type =="number") {
+                seen = _.map(seen,function(d) { return d == null ? null : +d;} );
             }
             return _.sortBy(seen, function (v) { return v; });
         }
@@ -263,9 +264,10 @@
             }
             
             seen = _.keys(seen);
-            for(var i = 0, len = seen.length; i < len; i++) {
-                if(column.type == "number") seen[i] = (seen[i] - 0) || null;
-                else if(column.type == "date") seen[i] = Date.parse(seen[i]); 
+            if(column.type == "date"){
+                seen = _.map(seen,function(d) {return d == null ? null : Date.parse(d);} );
+            } else if(column.type =="number") {
+                seen = _.map(seen,function(d) { return d == null ? null : +d;} );
             }
             return _.sortBy(seen, function (v) { return v; });
         }
