@@ -1,0 +1,57 @@
+﻿.slick-cell {
+    border-color: transparent #D4D4D4 #D4D4D4 transparent;
+    border-style: solid solid solid solid;
+    border-width: 0px 1px 1px 0px;
+    padding: 1px 1px 0px 2px;
+    background-color: White;
+}
+
+.slick-header-columns {
+    border-bottom: 1px solid #BBBBBB;
+    color: #5E5E5E;
+}
+
+.selected-header {
+    background-color: #E2E2E2;
+    color: #217346;
+    font-weight: bold;
+}
+
+.slick-column-name {
+    text-transform: uppercase;
+    margin-right: 14px;
+    display: block;
+    text-align: center;
+}
+
+.header-overlay {
+    background-color: #217346;
+}
+
+.cell-overlay, .selection-cell-overlay {
+    background-color: #217346;
+}
+
+input.editor-text {
+    background: none;
+    border: 0 none;
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+    width: 100%;
+}
+
+.handle-overlay {
+    border: 1px solid white;
+    padding: 2px;
+    background-color: #217346;
+    position: absolute;
+    width: 1px;
+    z-index: 1000;
+    cursor: crosshair;
+}
+
+.overlay-handle-decorator {
+    border: 2px solid #217346;
+    z-index: 1000;
+}

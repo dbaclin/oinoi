@@ -16,39 +16,10 @@
         "PercentComplete": PercentCompleteFormatter,
         "PercentCompleteBar": PercentCompleteBarFormatter,
         "YesNo": YesNoFormatter,
-        "Checkmark": CheckmarkFormatter,
-        "Date":DateFormatter,
-        "Number":NumberFormatter,
-        "Text":TextFormatter
+        "Checkmark": CheckmarkFormatter
       }
     }
   });
-
-  function DateFormatter(row, cell, value, columnDef, dataContext) {
-    if(value == null) return "";
-    else if(typeof value == "object" && value.getMonth) { // test likely date type
-      var curr_date = value.getDate();
-      var curr_month = value.getMonth() + 1; //Months are zero based
-      var curr_year = value.getFullYear();
-      return curr_year + "-" + (curr_month < 10 ? "0" : "") + curr_month + "-" + (curr_date < 10 ? "0" : "") + curr_date ;
-    } else {
-      return "<span style='color:red;'>" + value + "</span>";
-    }
-  }
-
-  function NumberFormatter(row, cell, value, columnDef, dataContext) {
-    if(value == null) return "";
-    else if(typeof value == "number") {
-      return "<div style='text-align:right'>" + Number(value).toFixed(2) + " </div>";
-    } else {
-      return "<span style='color:red;'>" + value + "</span>";
-    }
-  }
-
-  function TextFormatter(row, cell, value, columnDef, dataContext) {
-    if(value == null) return "";
-    else return value;
-  }
 
   function PercentCompleteFormatter(row, cell, value, columnDef, dataContext) {
     if (value == null || value === "") {

@@ -7,11 +7,11 @@
         <meta name="author" content="Oinoi Inc">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-        <!-- Custom css <link rel="stylesheet" href="./home/css/bootstrap/bootstrap.min.css">-->
+        <!-- <link rel="stylesheet" href="./home/css/bootstrap/bootstrap.min.css">-->
         <link href="./home/css/oinoi-override.css" rel="stylesheet">
         <link href="./home/css/style.min.css" rel="stylesheet">
         
-        <link href="./libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+<!--         <link href="./libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css" rel="stylesheet"> -->
         
         <link href="./home/css/font-awesome/font-awesome.css" rel="stylesheet">
         <!--[if IE 7]>
@@ -27,12 +27,18 @@
 
 
         <link rel="stylesheet" href="./libs/slickgrid/slick.grid.css" type="text/css"/>
+
+        <link rel="stylesheet" href="./libs/jquery/themes/base/jquery.ui.datepicker.css" type="text/css"/>
         
-      <link rel="stylesheet" href="libs/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
+     <!--  <link rel="stylesheet" href="libs/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/> -->
       <link rel="stylesheet" href="./libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
-     
-        
+
         <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
+
+      <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-common.css" type="text/css" />
+      <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-gdoc-style.css" type="text/css" />
+        
+
         <link rel="shortcut icon" href="./images/favicon.png">
         
         

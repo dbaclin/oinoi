@@ -10,7 +10,6 @@
     "Slick": {
       "Editors": {
         "Text": TextEditor,
-		    "Float": FloatEditor,
         "Integer": IntegerEditor,
         "Date": DateEditor,
         "YesNoSelect": YesNoSelectEditor,
@@ -81,71 +80,6 @@
         }
       }
 
-      return {
-        valid: true,
-        msg: null
-      };
-    };
-
-    this.init();
-  }
-  
-    function FloatEditor(args) {
-    var $input;
-    var defaultValue;
-    var scope = this;
-
-    this.init = function () {
-      $input = $("<INPUT type=text class='editor-text' />");
-
-      $input.bind("keydown.nav", function (e) {
-        if (e.keyCode === $.ui.keyCode.LEFT || e.keyCode === $.ui.keyCode.RIGHT) {
-          e.stopImmediatePropagation();
-        }
-      });
-
-      $input.appendTo(args.container);
-      $input.focus().select();
-    };
-
-    this.destroy = function () {
-      $input.remove();
-    };
-
-    this.focus = function () {
-      $input.focus();
-    };
-
-    this.loadValue = function (item) {
-      defaultValue = item[args.column.field];
-      $input.val(defaultValue);
-      $input[0].defaultValue = defaultValue;
-      $input.select();
-    };
-
-    this.serializeValue = function () {
-      return !isNaN($input.val() - 0) ? $input.val() - 0 : null;
-      // return ($input.val() - 0) || null; // check that it's indeed a number
-    };
-
-    this.applyValue = function (item, state) {
-      item[args.column.field] = state;
-    };
-
-    this.isValueChanged = function () {
-      return ($input.val() != defaultValue);
-      // return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
-    };
-
-    this.validate = function () {
-      /*
-      if (isNaN($input.val())) {
-        return {
-          valid: false,
-          msg: "Please enter a valid number"
-        };
-      }
-      */
       return {
         valid: true,
         msg: null
@@ -230,14 +164,13 @@
       $input.datepicker({
         showOn: "button",
         buttonImageOnly: true,
-        buttonImage: "./libs/slickgrid/images/calendar.gif",
+        buttonImage: "../images/calendar.gif",
         beforeShow: function () {
           calendarOpen = true
         },
         onClose: function () {
           calendarOpen = false
-        },
-        dateFormat:"yy-mm-dd"
+        }
       });
       $input.width($input.width() - 18);
     };
@@ -286,8 +219,6 @@
     };
 
     this.applyValue = function (item, state) {
-      if(state == "") sate = null;
-      else state = Date.parse(state);
       item[args.column.field] = state;
     };
 

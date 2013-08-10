@@ -793,58 +793,154 @@
                 };
                 slickGrid.invalidate();
             }
+
+            function refreshData() {
+                var currentCell = slickGrid.getActiveCell();
+                if(currentCell !== null) slickGrid.resetActiveCell(); 
+                slickGrid.resetActiveCell();
+                //dataView.beginUpdate();
+                dataView.setItems(dataset.rows);
+                //dataView.endUpdate();
+                slickGrid.setColumns(dataset.getColumns());
+                if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
+            }
     
             function add_slick_grid(someDataset) {
             
-            /*
-            var columns = [];     
-            for(var i in someJsonData.headers) {
-              var field_id = someJsonData.headers[i];
-              columns[i] = {id:field_id, name: someJsonData.prettynames[field_id], field:field_id, editor: (data_summary[field_id] == "date" ? Slick.Editors.Date : Slick.Editors.Text), blabla: "pouet" };
-            }
             
-              for (var i = 0; i < columns.length; i++) {
-                columns[i].header = {
-                  menu: {
-                    items: [
-                      {
-                        title: "Keep first characters",
-                        command: "left"
-                      },
-                      {
-                        title: "Keep first characters up to a certain string",
-                        command: "leftToString"
-                      },
-                      {
-                        title: "Replace string",
-                        command: "replaceString"
-                      }
-                    ]
-                  }
+             var options = {
+              autoEdit:true,
+              asyncEditorLoading: true,
+            enableCellNavigation: true,
+            enableColumnReorder: true,
+            explicitInitialization: true,
+            editable: true
+        };
+          
+            dataView = new Slick.Data.DataView();
+
+            slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
+
+            slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+
+            dataView.onRowCountChanged.subscribe(function (e, args) {
+                slickGrid.updateRowCount();
+                slickGrid.render();
+            });
+
+            dataView.onRowsChanged.subscribe(function (e, args) {
+                slickGrid.invalidateRows(args.rows);
+                slickGrid.render();
+            });
+
+            dataView.beginUpdate();
+            dataView.setItems(dataset.rows);
+            dataView.setFilter(filter);
+            dataView.endUpdate();
+
+            var filterPlugin = new Ext.Plugins.HeaderFilter({});
+
+            filterPlugin.onFilterApplied.subscribe(function () {
+                dataView.refresh();
+                slickGrid.resetActiveCell();
+
+                var status;
+
+                if (dataView.getLength() === dataView.getItems().length) {
+                    status = "";
+                } else {
+                    status = dataView.getLength() + ' OF ' + dataView.getItems().length + ' RECORDS FOUND';
+                }
+                //$('#status-label').text(status);
+            });
+
+            filterPlugin.onCommand.subscribe(function (e, args) {
+                var comparer = function (a, b) {
+                    return a[args.column.field] > b[args.column.field];
                 };
-              }
-              */
-            
-              var options = {
-                //enableColumnReorder: false, 
-                enableTextSelectionOnCells: true,
-                editable: true,
-                enableAddRow: true,
-                enableCellNavigation: true,
-                asyncEditorLoading: false,
-                autoEdit: true
-              };
-            
-            
+
+                switch (args.command) {
+                    case "sort-asc":
+                        // dataView.sort(comparer, true);
+                        dataset.rows = _.sortBy(dataset.rows, function(row) { return row[args.column.field]; });
+                        dataView.setItems(dataset.rows);
+                        break;
+                    case "sort-desc":
+                        dataset.rows = _.sortBy(dataset.rows, function(row) {return row[args.column.field]; }).reverse();
+                        dataView.setItems(dataset.rows);
+                        // dataView.sort(comparer, false);
+                        break;
+                    case "duplicate-column":
+                        dataset.addColumn(args.column.name,"return row."+args.column.field+";");
+                        refreshData();
+                        break;
+                    case "delete-column":
+                        dataset.removeColumn(args.column.field);
+                        refreshData();
+                        break;
+                }
+            });
+
+            slickGrid.registerPlugin(filterPlugin);
+
+            var overlayPlugin = new Ext.Plugins.Overlays({ decoratorWidth: 1});
+
+            overlayPlugin.onFillUpDown.subscribe(function (e, args) {
+                var column = slickGrid.getColumns()[args.range.fromCell];
+
+                if (!column.editor) {
+                    return;
+                }
+
+                var value = dataView.getItem(args.range.fromRow)[column.field];
+
+                dataView.beginUpdate();
+
+                for (var i = args.range.fromRow + 1; i <= args.range.toRow; i++) {
+                    dataView.getItem(i)[column.field] = value;
+                    slickGrid.invalidateRow(i);
+                }
+
+                dataView.endUpdate();
+                slickGrid.render();
+            });
+
+            slickGrid.registerPlugin(overlayPlugin);
+
+            slickGrid.init();
+
+            function filter(item) {
+                var columns = slickGrid.getColumns();
+
+                var value = true;
+
+                for (var i = 0; i < columns.length; i++) {
+                    var col = columns[i];
+                    var filterValues = col.filterValues;
+
+                    if (filterValues && filterValues.length > 0) {
+                        if(col.type == "date") {
+                          value = value & _.contains(_.map(filterValues,function(d){return +d;}), +item[col.field]);
+                        } else {
+                          value = value & _.contains(filterValues, item[col.field]);
+                        }
+                    }
+                }
+                return value;
+            }
+        
+
+
+            /*
                 slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);
                 slickGrid.setSelectionModel(new Slick.CellSelectionModel());
                 
-                $('#myGrid').mouseup(function() {
+                $('#myGrid').find('div.grid-canvas').mouseup(function() {
                     ///$('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
                     $('.selectedValue').text(getSelectionText());
                 });
                 
-                $('#myGrid').click(function() {
+                $('#myGrid').find('div.grid-canvas').click(function() {
                     $('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
                     //$('.selectedValue').text(someJsonData.rows[slickGrid.getActiveCell().row][slickGrid.getColumns()[slickGrid.getActiveCell().cell].field]);
                 });
@@ -858,7 +954,7 @@
                 }
                 return text;
                 }
-                
+                */
                 /*
                 var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
                 
@@ -933,12 +1029,14 @@
             var slickGrid;
             var file_name;
             var dataset;
+            var dataView;
             
             function initialization(someData) {
                 json_data = csvjson.csv2json(someData);
                 console.log("done loading initial data");
                   
-                dataset = new Dataset(json_data);       
+                dataset = new Dataset(json_data);
+
                 add_slick_grid(dataset);     
                                                 
                 //loadDataset(json_data);
