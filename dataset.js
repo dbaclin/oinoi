@@ -10,6 +10,16 @@
           }
       }
       
+      this.applyFunctionOnRows = function (expression) {
+          var myfun = new Function("row", expression);
+          var newdataset = _.filter(this.rows, myfun);
+          if(newdataset.length > 0) {
+            this.rows = newdataset
+          } else {
+            alert("function: " + expression + " would result in an empty dataset");
+          }
+      }
+      
       this.getColumns = function() {
            if(!_.has(this.columns,"id")){
               this.addIdColumn("id","Id"); 
@@ -196,10 +206,16 @@
       }
       
       this.linkColumn = function(columnId,columnName) {
+          var colWidth = columnName.length * 7 + 30;
+          for(var i = 0, len = this.rows.length; i < 20 && i < len; i++) {
+            colWidth = Math.max(colWidth,(this.rows[i][columnId] + "").length * 7);
+          }
+          colWidth = Math.max(50,Math.min(colWidth, 200));
           this.columns[columnId] = {
               id: columnId,
               field: columnId,
-              name: columnName
+              name: columnName,
+              width: colWidth
           };
           this.setAutoType(columnId);
       }
@@ -225,7 +241,7 @@
           for (var i = 0; i < this.rows.length; i++) {
               var key = [];
               for (var j = 0; j < columnIdsDimensions.length; j++) {
-                  key.push(this.rows[i][columnIdsDimensions[j]])
+                  key.push(this.rows[i][columnIdsDimensions[j]]);
               }
               var keyForHolder = JSON.stringify(key);
 
@@ -261,12 +277,7 @@
 
 
       for (var i = 0; i < obj.headers.length; i++) {
-          this.columns[obj.headers[i]] = {
-              id: obj.headers[i],
-              field: obj.headers[i],
-              name: obj.prettynames[obj.headers[i]]
-          };
-          this.setAutoType(obj.headers[i]);
+          this.linkColumn(obj.headers[i], obj.prettynames[obj.headers[i]]);
       }
 
   }

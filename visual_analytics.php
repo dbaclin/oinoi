@@ -30,16 +30,56 @@
           <div class="row-fluid">
             <div class="span2">
                 <div id="suggestions-list">
-                 <div><a href="javascript:cleanDataMenuFunction('replace');">replace all occurences of <b class="selectedValue"></b> in <b class="selectedVariable"></b> with </a><input id="replaceInput" type="text" style="width: 100px;vertical-align: baseline;padding: 0px; "></div>
- <div><a href="#">keep all characters of <b class="selectedVariable"></b> up to </a><input id="upToInput" type="text" style="width: 100px;vertical-align: baseline; padding: 0px; "></div>
- <div><a href="#">keep all characters of <b class="selectedVariable"></b> starting from </a><input id="fromToInput" type="text" style="width: 100px;vertical-align: baseline; padding: 0px; "></div>
- <div><a href="#">keep all characters of <b class="selectedVariable"></b> between </a><input id="leftCharInput" type="text" style="width: 60px;vertical-align: baseline; padding: 0px;"> and <input id="rightCharInput" type="text" style="width: 60px;vertical-align: baseline; padding: 0px;"></div>
- <div><a href="#">keep the first </a><input id="leftInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"> characters of <b class="selectedVariable"></b></div>
- <div><a href="#">keep all characters of <b class="selectedVariable"></b> between positions </a><input id="leftPosInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"> and <input id="rightPosInput" type="number" style="width: 40px;vertical-align: baseline;padding: 0px;"></div>
- <div><a href="#">keep only the records where the <b class="selectedVariable"></b> contains <b class="selectedValue"></b></a></div> 
- <div><a href="#">delete all records where the <b class="selectedVariable"></b> contains <b class="selectedValue"></b></a></div>
- <div><a href="#">delete all records where the <b class="selectedVariable"></b> is empty</a></div>
- 
+                 <div id="replace-from-to"><a href="#">replace all occurences of </a>
+                  <input class="suggestion from selectedValue" type="text"><a href="#"> in <b class="selectedVariable"></b> with</a> 
+                    <input class="suggestion to" type="text">
+                </div>
+                <div id="keep-upto">
+                <a href="#">keep all characters of <b class="selectedVariable"></b> up to</a> 
+                  <input type="text" class="suggestion upto">
+                </div>
+                <div id="keep-startingfrom">
+                <a href="#">keep all characters of <b class="selectedVariable"></b> starting from</a> 
+                  <input type="text" class="suggestion startingfrom">
+                </div>
+                <div id="keep-between-left-right">
+                <a href="#">keep all characters of <b class="selectedVariable"></b> between</a> 
+                  <input type="text" class="suggestion left"><a href="#"> and </a>
+                  <input type="text" class="suggestion right">
+                </div>                
+                <div id="keep-fixed-left">              
+                  <a href="#">keep the first</a> 
+                  <input type="number" class="suggestion left">
+                  <a href="#"> characters of <b class="selectedVariable"></b></a> 
+                </div>
+                <div id="keep-between-fixed-left-right">
+                <a href="#">keep all characters of <b class="selectedVariable"></b> between positions</a> 
+                  <input type="number" class="suggestion left"><a href="#"> and </a>
+                  <input type="number" class="suggestion right">
+                </div>  
+                <div id="apply-type-on-variable">
+                <a href="#">convert <b class="selectedVariable"></b> to </a>
+                  <select class="suggestion type">
+                  <option></option>
+                  <option>string</option>
+                  <option>number</option>  
+                  <option>date</option>
+                </select>
+                </div>
+                <div id="apply-expression-on-variable">
+                <a href="#">apply on <b class="selectedVariable"></b> the following expression</a>
+                  <input type="text" class="suggestion where expression">
+                </div>
+                <div id="keep-only-records-where">
+                <a href="#">keep only the records satisfying the following condition</a> 
+                  <input type="text" class="suggestion where expression">
+                </div>
+                <div id="create-new-variable-expression">
+                <a href="#">create a new variable variable named </a>
+                  <input class="suggestion new-variable-name" type="text">
+                <a href="#"> using the expression </a> 
+                  <input type="text" class="suggestion where expression">
+                </div>
              </div>
             </div>
             <div class="span10" >
@@ -769,7 +809,7 @@
                   */  
                                     
             }
-            
+            /*
             function cleanDataMenuFunction(command) {
                 if(command == "replace") {
                     var replaceFrom = $($('.selectedValue')[0]).text();
@@ -793,6 +833,7 @@
                 };
                 slickGrid.invalidate();
             }
+            */
 
             function refreshData() {
                 var currentCell = slickGrid.getActiveCell();
@@ -803,6 +844,118 @@
                 //dataView.endUpdate();
                 slickGrid.setColumns(dataset.getColumns());
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
+            }
+
+            function protectStringForRegExp(str) {
+              var res = "";
+              var specialChars = ['"',"'","$","^","*","-","[","]","?",".","{","}","|","+","(",")","\\","/"];
+              for(var i = 0, len = str.length; i < len; i++ ){
+                if(_.contains(specialChars, str.charAt(i))) res = res + "\\" + str.charAt(i);
+                else res = res + str.charAt(i);
+              }
+              return res;
+            }
+
+            function processSuggestion(SuggestionId) {
+              var suggestion = $('#' + SuggestionId);
+              switch(SuggestionId) {
+                case "replace-from-to":
+                  var from = protectStringForRegExp(suggestion.find('.from').val());
+                  var to = protectStringForRegExp(suggestion.find('.to').val());
+                  var myregex = new RegExp(from, 'g');
+                  //console.log(myregex);
+                  if(from.length){
+                    var functionString = "return (row." + selectedVariable + " + '').replace("+myregex+",'"+to+"') ;";
+                    //console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-upto":
+                  var upto = protectStringForRegExp(suggestion.find('.upto').val());
+                  if(upto.length){
+                    var functionString = "var str = (row." + selectedVariable + " + ''); var idx = str.indexOf('"+upto+"');"+
+                                         "return idx == -1 ? row." + selectedVariable +" : str.substr(0,idx) ;";
+                    console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-startingfrom":
+                  var startingfrom = protectStringForRegExp(suggestion.find('.startingfrom').val());
+                  if(startingfrom.length){
+                    var functionString = "var str = (row." + selectedVariable + " + ''); var idx = str.indexOf('"+startingfrom+"');"+
+                                         "return idx == -1 ? row." + selectedVariable +" : str.substr(idx+1) ;";
+                    console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-between-left-right":
+                  var left = protectStringForRegExp(suggestion.find('.left').val());
+                  var right = protectStringForRegExp(suggestion.find('.right').val());
+                  if(left.length * right.length){
+                    var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                         "var idx_left = str.indexOf('"+left+"');"+
+                                         "var idx_right = str.indexOf('"+right+"',idx_left+1);"+
+                                         "return idx_left == -1 || idx_right == -1 ? row." + selectedVariable +" : str.substring(idx_left+1,idx_right) ;";
+                    console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-fixed-left":
+                  var left = suggestion.find('.left').val() - 0;
+                  if(!isNaN(left) && left > 0){
+                    var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                         "return str.substr(0,"+left+") ;";
+                    console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-between-fixed-left-right":
+                  var left = suggestion.find('.left').val() - 0 - 1;
+                  var right = suggestion.find('.right').val() - 0 - 1;
+                  if(!isNaN(left) && left >= 0 && !isNaN(right) && right >= left) {
+                    var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                         "return str.substring("+left+","+right+") ;";
+                    console.log(functionString);
+                    dataset.applyFunction(selectedVariable,functionString);  
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "keep-only-records-where":
+                  var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                  if(functionString.length > 0) {
+                    dataset.applyFunctionOnRows(functionString);
+                    refreshData();
+                  }
+                  break;
+                case "create-new-variable-expression":
+                  var newVariableName = suggestion.find('.new-variable-name').val();
+                  var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                  if(newVariableName.length > 0 && functionString.length > 0) {
+                    dataset.addColumn(newVariableName,functionString);
+                    refreshData();
+                  }
+                  break;
+                case "apply-expression-on-variable":
+                  var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                  if(functionString.length > 0) {
+                    dataset.applyFunction(selectedVariable,functionString);
+                    slickGrid.invalidate();
+                  }
+                  break;
+                case "apply-type-on-variable":
+                  var newType = suggestion.find('.type').val();
+                  dataset.applyType(selectedVariable,newType);
+                  refreshData();
+                  break;
+                default:
+                  console.log("unknown suggestion id: "+SuggestionId);
+              }
+
             }
     
             function add_slick_grid(someDataset) {
@@ -815,7 +968,7 @@
             enableColumnReorder: true,
             explicitInitialization: true,
             editable: true
-        };
+            };
           
             dataView = new Slick.Data.DataView();
 
@@ -928,8 +1081,42 @@
                 }
                 return value;
             }
+
+            function updateSuggestionVariableName() {
+                var activeCell = slickGrid.getActiveCell();
+                if(activeCell != null) {
+                  selectedVariable = slickGrid.getColumns()[activeCell.cell].id;
+                  $('#suggestions-list').find('.selectedVariable').text(dataset.columns[selectedVariable].name);
+                }
+            }
+            function updateSuggestionSelectedValue() {
+                function getSelectionText() {
+                  var text = "";
+                  if (window.getSelection) {
+                      text = window.getSelection().toString();
+                  } else if (document.selection && document.selection.type != "Control") {
+                      text = document.selection.createRange().text;
+                  }
+                  return text;
+                }
+                var selectedValue = getSelectionText();
+                $('#suggestions-list').find('.selectedValue').val(getSelectionText());
+            }
+
             // prevent crash when re-ordering a column that goes over a cell that was being edited
-            $('#myGrid').find('div.slick-header.ui-state-default').click(function() { slickGrid.resetActiveCell(); });
+            $('#myGrid').find('div.slick-header').mousedown(function() { 
+                updateSuggestionVariableName();
+                slickGrid.resetActiveCell(); 
+            });
+
+            $('#myGrid').find('div.slick-viewport').click(function() {
+                updateSuggestionVariableName();
+            });
+            $('#myGrid').find('div.slick-viewport').mouseup(function() {
+                updateSuggestionSelectedValue();
+            });
+
+            $('#suggestions-list').find('a').click( function(args) { processSuggestion($(this).parent().attr('id')); });
 
             /*
                 slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);
@@ -1030,6 +1217,7 @@
             var file_name;
             var dataset;
             var dataView;
+            var selectedVariable;
             
             function initialization(someData) {
                 json_data = csvjson.csv2json(someData);

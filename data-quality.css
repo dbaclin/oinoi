@@ -492,7 +492,9 @@ input.editor-text {
 }
 
 input[type="text"]:focus,
-input[type="text"]:active
+input[type="text"]:active,
+input[type="number"]:focus,
+input[type="number"]:active
  {
 border-color: none!important;
 outline: none!important;
@@ -512,4 +514,21 @@ white-space: nowrap;
 }
 label {
 font-size: inherit!important; 
+}
+
+input.suggestion {
+    width: 100px;
+    vertical-align: baseline;
+    padding: 0px;
+    font-size: 12px;
+}
+input.suggestion[type="number"] {
+    width: 40px;
+}
+input.suggestion.where.expression[type="text"] {
+    width: 100%;
+}
+select.suggestion {
+    font-size:12px;
+    font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
