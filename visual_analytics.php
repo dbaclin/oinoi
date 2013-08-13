@@ -1268,12 +1268,12 @@
 
             $('#ui-id-1').click(function() {
               //
-              //console.log("wrangling");
+              console.log("wrangling");
             });
             $('#ui-id-2').click(function() {
-              //console.log("vizualisation");
+              console.log("vizualisation");
               var newVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
-              if(_.difference(previousVariables,newVariables).length) {
+              if(_.difference(previousVariables,newVariables).length + _.difference(newVariables,previousVariables).length) {
                 console.log("removing vars");
                 $('.ui-state-default.variable.ui-draggable').remove();
                 add_variable_list(dataset);
