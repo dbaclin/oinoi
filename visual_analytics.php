@@ -267,9 +267,26 @@
                         dimGroup.get(aVariableName).chart.width(new_width-5).height(new_height-30).render();
                         */
                         //if(data_summary[aVariableName].type != "number")
+
+                         var statistics = 
+                         [{display:"Sum",func:"Sum"},
+                          {display:"Average",func:"Avg"},
+                          {display:"Maximum",func:"Max"},
+                          {display:"Minimum",func:"Min"},
+                          {display:"Standard Deviation",func:"StdDev"},
+                          {display:"Count",func:"Count"},
+                          {display:"Count Nulls",func:"CountNulls"},
+                          {display:"Count Non Nulls",func:"CountNonNulls"}
+                          ];
+                         var measuresForChart = [];
+                         var measures = dataset.getMeasures();
+                         for(var i = 0, len = measures.length; i < len; i++){
+                            measuresForChart.push({variableName:measures[i], displayVariableName: dataset.columns[measures[i]].name, statistics:statistics})
+                         }
+
                         $('#'+aVariableName+'-chart').find('.placeholder')
                             .append(Mustache.render($('#tpl-measure-choice').html(),
-                                {currentVariable:aVariableName, measures:measures}
+                                {currentVariable:aVariableName, measures:measuresForChart}
                          )); 
                     }
                 }
@@ -353,7 +370,7 @@
                 function changeDisplayedMetric(aVariableName,aMesureName,aStatistic) {
                 
                 if(aStatistic != "reset") {
-                    $('#'+aVariableName+'-measure-selection').find('a[data-toggle=dropdown]').text(aStatistic + "(" + json_data.prettynames[aMesureName] +")");
+                    $('#'+aVariableName+'-measure-selection').find('a[data-toggle=dropdown]').text(aStatistic + "(" + dataset.columns[aMesureName].name +")");
                     
                     dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group().reduce(
                                     function (p, v) {
@@ -410,15 +427,13 @@
         <script type="text/javascript">
             var dimGroup = new HashTable();
             var ndx;
-            var all;
-            var measures = [];
-            
+            var all;            
             
             function add_variable_list(someDataset){
                     
                     var allVariables = { "variables" : []};
                     
-                    var allColumns = _.keys(someDataset.columns);
+                    var allColumns = _.map(dataset.getColumns(),function(d) { return d.id; });
 
                     for(var i = 0, len = allColumns.length; i < len; i++) {
                         
@@ -472,7 +487,7 @@
                     var chart;
                     var gridster = $(".layouts_grid ul").gridster().data('gridster');
                     
-                    var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName,"displayVarName":json_data.prettynames[varName]});
+                    var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName,"displayVarName":dataset.columns[varName].name});
                     
                     var grid_squares = Math.floor($('.span10.layouts_grid.ready.ui-droppable ul').width() / (grid_size + 2*grid_margin));
                     
@@ -675,6 +690,7 @@
                   {display:"Count Nulls",func:"CountNulls"},
                   {display:"Count Non Nulls",func:"CountNonNulls"}
                   ];
+
                 for(var key in data_summary) {
                     if(data_summary[key].type == "number") measures = measures.concat([{variableName:key, displayVariableName: json_data.prettynames[key], statistics:statistics}]);
                 }
@@ -1015,11 +1031,15 @@
                 switch (args.command) {
                     case "sort-asc":
                         // dataView.sort(comparer, true);
-                        dataset.rows = _.sortBy(dataset.rows, function(row) { return row[args.column.field]; });
+                        dataset.rows = _.sortBy(dataset.rows, function(row) { 
+                              return row[args.column.field] == null ? (args.column.type == "number" ? -Infinity : "")
+                                                                    : row[args.column.field]; });
                         dataView.setItems(dataset.rows);
                         break;
                     case "sort-desc":
-                        dataset.rows = _.sortBy(dataset.rows, function(row) {return row[args.column.field]; }).reverse();
+                        dataset.rows = _.sortBy(dataset.rows, function(row) { 
+                              return row[args.column.field] == null ? (args.column.type == "number" ? -Infinity : "")
+                                                                    : row[args.column.field]; }).reverse();
                         dataView.setItems(dataset.rows);
                         // dataView.sort(comparer, false);
                         break;
@@ -1117,6 +1137,8 @@
             });
 
             $('#suggestions-list').find('a').click( function(args) { processSuggestion($(this).parent().attr('id')); });
+
+
 
             /*
                 slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);
@@ -1218,6 +1240,7 @@
             var dataset;
             var dataView;
             var selectedVariable;
+            var previousVariables;
             
             function initialization(someData) {
                 json_data = csvjson.csv2json(someData);
@@ -1226,6 +1249,8 @@
                 dataset = new Dataset(json_data);
 
                 add_slick_grid(dataset);
+
+                previousVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
 
                 ndx = crossfilter(dataset.rows);
                 all = ndx.groupAll();     
@@ -1237,6 +1262,24 @@
                 
                 //add_slick_grid(json_data);
             }
+
+
+
+            $('#ui-id-1').click(function() {
+              //
+              //console.log("wrangling");
+            });
+            $('#ui-id-2').click(function() {
+              //console.log("vizualisation");
+              var newVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
+              if(_.difference(previousVariables,newVariables).length) {
+                console.log("removing vars");
+                $('.ui-state-default.variable.ui-draggable').remove();
+                add_variable_list(dataset);
+                previousVariables = newVariables;
+              }
+            });
+
             
             var json_config_file = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
             if(json_config_file.length > 0) {

@@ -12,6 +12,7 @@
         <link href="./home/css/style.min.css" rel="stylesheet">
         
 <!--         <link href="./libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css" rel="stylesheet"> -->
+        <link href="./libs/jquery/ui/css/flick/jquery-simplified.css" rel="stylesheet">
         
         <link href="./home/css/font-awesome/font-awesome.css" rel="stylesheet">
         <!--[if IE 7]>

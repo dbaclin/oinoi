@@ -24,11 +24,16 @@
            if(!_.has(this.columns,"id")){
               this.addIdColumn("id","Id"); 
            }
-           var res = [this.columns["id"]];
+           //var res = [this.columns["id"]];
+           var res = [];
            for(var k in _.omit(this.columns,"id")) {
                 res.push(this.columns[k])
            }
            return res;
+      }
+
+      this.getMeasures = function() {
+        return _.filter(_.keys(this.columns),function(d) { return d != "id" && this.columns[d].type == "number"; }, this);
       }
 
       this.getNewColumnName = function (columnDisplayName) {
@@ -75,7 +80,7 @@
 
       this.getColumnStatistics = function (columnId) {
           var columnStatistics = {};
-          columnStatistics.count = 0;
+
 
           var sliceOfData = this.rows.slice(0, 100);
 
@@ -89,6 +94,9 @@
               return d[columnId];
           });
 
+          columnStatistics.count = 0;
+          columnStatistics.nbNull = 0;
+          columnStatistics.nbNonNull = 0;
           columnStatistics.nbNumber = 0;
           columnStatistics.nbString = 0;
           columnStatistics.nbDate = 0;
@@ -100,10 +108,12 @@
           sliceOfData.reduce(function (previousValue, currentValue, index, array) {
 
               previousValue.count++;
+              if(currentValue[columnId] === null) columnStatistics.nbNull++;
 
-              if (typeof currentValue[columnId] == "number")
+              if (typeof currentValue[columnId] == "number" 
+                  || (currentValue[columnId] != null && currentValue[columnId].length > 0 && !isNaN(currentValue[columnId].replace(/[\$£€ ,]/g,"")-0)))
                   previousValue.nbNumber++;
-              else if (!isNaN(new Date(currentValue[columnId])))
+              else if (new Date(currentValue[columnId]).toString() != "Invalid Date")
                   previousValue.nbDate++;
               else if (typeof currentValue[columnId] == "string" && currentValue[columnId].length > 0)
                   previousValue.nbString++;
@@ -119,7 +129,7 @@
               columnStatistics);
 
           columnStatistics.nbDistinct = sizeOfDict(columnStatistics.nbDistinct);
-
+          columnStatistics.nbNonNull = columnStatistics.count - columnStatistics.nbNull;
           this.columns[columnId].statistics = columnStatistics;
           return this.columns[columnId].statistics;
       }
@@ -141,8 +151,8 @@
 
           var columnStatistics = this.columns[columnId].statistics;
 
-          if ((columnStatistics.nbNumber / columnStatistics.count) > 0.95) this.columns[columnId].type = "number";
-          else if ((columnStatistics.nbDate / columnStatistics.count) > 0.95) this.columns[columnId].type = "date";
+          if ((columnStatistics.nbNumber / columnStatistics.nbNonNull) > 0.95) this.columns[columnId].type = "number";
+          else if ((columnStatistics.nbDate / columnStatistics.nbNonNull) > 0.95) this.columns[columnId].type = "date";
           else this.columns[columnId].type = "string";
 
           this.applyType(columnId,this.columns[columnId].type);
@@ -156,7 +166,7 @@
               if (currentValue != null && typeof currentValue != newType) {
                   if (newType == "date") this.rows[i][columnId] = Date.parse(currentValue);
                   else if (newType == "number") {
-                      var localFloat = ((currentValue + "").replace(/,/g,"") - 0); // remove all , in the input numbers
+                      var localFloat = ((currentValue + "").replace(/[\$£€ ,]/g,"") - 0); // remove all , in the input numbers
                       this.rows[i][columnId] = isNaN(localFloat) ? null : localFloat;
                   } else if (newType == "string") {
                       this.rows[i][columnId] = currentValue.toString();

@@ -40,6 +40,15 @@ var csvjson = {};
 	 * 	the CSV data. Defaults to nothing (an empty string).
 	 */
 	csvjson.csv2json = function(csvdata, args) {
+		function cleanString(str) {
+              var res = "";
+              var specialChars = ['"',"'","$","^","*","-","[","]","?",".","{","}","|","+","(",")","\\","/"," ","%","&"];
+              for(var i = 0, len = str.length; i < len; i++ ){
+                if(_.contains(specialChars, str.charAt(i))) res = res + "_" ;
+                else res = res + str.charAt(i);
+              }
+              return res;
+        }
 		args = args || {};
 		var delim = isdef(args.delim) ? args.delim : ",";
 		// Unused
@@ -48,18 +57,26 @@ var csvjson = {};
 		var csvlines = csvdata.split("\n");
 		var initialcsvheaders = splitCSV(csvlines[0], delim);
 		var csvheaders = splitCSV(csvlines[0], delim);
+		var newcsvheaders = [];
 		for(var i in csvheaders) {
-		  if(csvheaders[i].length == 0) csvheaders[i] = "_MISSING_" + i;
+		  if(csvheaders[i].length == 0) newcsvheaders[i] = "_MISSING_" + i;
 		  else {
-		      
-		      csvheaders[i] = csvheaders[i].trim().replace(/%/g,"_Prct").replace(/\//g,"_").replace(/ /g,"_").replace(/"/g,"").replace(/'/g,"").replace(/\./g,"_");
-		      if(!isNaN(+csvheaders[i][0])) csvheaders[i] = "_" + csvheaders[i];
+		      var newColName = cleanString(csvheaders[i].trim());
+		      var idx = 0;
+		      while(_.contains(newcsvheaders,newColName)) {
+		      	newColName = cleanString(csvheaders[i].trim()) + "_" + idx;
+		      	idx++;
+		      } 
+		      newcsvheaders[i] = newColName;
+		      if(!isNaN(+newcsvheaders[i][0])) newcsvheaders[i] = "_" + newcsvheaders[i];
           }
 		}
 		//console.log(csvheaders);
 		var prettynames = {};
+		csvheaders = newcsvheaders;
+
 		for(var i in csvheaders) {
-		  prettynames[csvheaders[i]] = initialcsvheaders[i];
+		  prettynames[csvheaders[i]] = initialcsvheaders[i].trim();
 		}
 		var csvrows = csvlines.slice(1, csvlines.length);
 
@@ -79,13 +96,9 @@ var csvjson = {};
 				var rowob = {};
 				for(var i in rowitems) {
 					if (rowitems.hasOwnProperty(i)) {
-						var item = rowitems[i];
-
-						// Try to (intelligently) cast the item to a number, if applicable
-						if(!isNaN(item*1)) {
-							item = item*1;
-						}
-
+						var item = rowitems[i].trim();
+						if(item.length == 0) item = null;
+						else if(!isNaN(item - 0)) item = item - 0;
 						rowob[csvheaders[i]] = item;
 					}
 				}

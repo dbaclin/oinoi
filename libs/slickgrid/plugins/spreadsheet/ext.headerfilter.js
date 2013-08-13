@@ -215,6 +215,10 @@
 
         function handleApply(e, columnDef) {
             hideMenu();
+            console.log(columnDef.filterValues);
+            if(_.contains(columnDef.filterValues,"null")) {
+                columnDef.filterValues = _.map(columnDef.filterValues,function(d) { return (d == "null") ? null : d; });
+            }
 
             self.onFilterApplied.notify({ "grid": grid, "column": columnDef }, e, self);
 
