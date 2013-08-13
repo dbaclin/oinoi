@@ -519,7 +519,7 @@
                         break;
                     case "string":
                         dimension = ndx.dimension(function(d) {
-                                    return d[varName];
+                                      return d[varName] == null ? "EMPTY" : d[varName]; // return d[varName];
                                 });
                         var allKeysValues = dimension.group().top(Infinity);
                         var allKeysValuesStore = {};
@@ -528,7 +528,8 @@
                         }
                         dimension.remove();
                         dimension = ndx.dimension(function(d) {
-                            return (9999999999 - allKeysValuesStore[d[varName]]) + "" + d[varName];
+                            var v = d[varName] == null ? "EMPTY" : d[varName];
+                            return (9999999999 - allKeysValuesStore[v]) + "" + v;
                         });
                         group = dimension.group();
 
