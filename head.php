@@ -20,8 +20,8 @@
         <link href="./libs/dropzone/css/dropzone.css" type="text/css" rel="stylesheet" />
          
         <!-- Load Open sans from Google Font Directory   -->
-        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800' rel='stylesheet' type='text/css'>
-
+        <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800' rel='stylesheet' type='text/css'> -->
+        <link href='./fonts/google-fonts.css' rel='stylesheet' type='text/css'>
         
         <link rel="stylesheet" type="text/css" href="./libs/dc/dc.css" />
 

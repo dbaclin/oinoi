@@ -414,21 +414,21 @@
             var measures = [];
             
             
-            function add_variable_list(headers){
+            function add_variable_list(someDataset){
                     
                     var allVariables = { "variables" : []};
+                    
+                    var allColumns = _.keys(someDataset.columns);
+
+                    for(var i = 0, len = allColumns.length; i < len; i++) {
                         
-                    for(var i = 0; i < headers.length; i++) {
-                        
-                        var currentVarForDisplay = json_data.prettynames[headers[i]];
+                        var currentVarForDisplay = someDataset.columns[allColumns[i]].name;
                         
                         allVariables.variables[i] = {
-                            "varName":headers[i],
+                            "varName":allColumns[i],
                             "varIdx" : i + 1,
                             "varNameShort":(currentVarForDisplay.length > 25 ? currentVarForDisplay.slice(0,25) + ".." : currentVarForDisplay)
                         };
-                         
-                        
                     }
 
 
@@ -492,7 +492,7 @@
                     //console.log("where it's going to go: "+best_position);
                     var gridster_widget_element = gridster.add_widget(widget_html,1,1,best_position[0],best_position[1]);
                  
-                    switch(data_summary[varName].type)
+                    switch(dataset.columns[varName].type)
                     {
                     case "number":
                         dimension = ndx.dimension(function(d) {
@@ -1225,12 +1225,15 @@
                   
                 dataset = new Dataset(json_data);
 
-                add_slick_grid(dataset);     
+                add_slick_grid(dataset);
+
+                ndx = crossfilter(dataset.rows);
+                all = ndx.groupAll();     
                                                 
                 //loadDataset(json_data);
                 
                             
-                //add_variable_list(json_data.headers);
+                add_variable_list(dataset);
                 
                 //add_slick_grid(json_data);
             }
