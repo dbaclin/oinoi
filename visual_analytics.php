@@ -80,6 +80,12 @@
                 <a href="#"> using the expression </a> 
                   <input type="text" class="suggestion where expression">
                 </div>
+                <div id="supaquick-unflatten">
+                <a href="#">Unflatten dataset </a>
+                </div>
+                <div id="supaquick-group-by">
+                <a href="#">Group by dataset </a>
+                </div>
              </div>
             </div>
             <div class="span10" >
@@ -851,16 +857,55 @@
                 slickGrid.invalidate();
             }
             */
+            function supaquick_unflatten() {
+                dataset.unFlatten(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"Month","Month_Value",1);
+                refreshData();
+            }
+
+            function supaquick_groupBy() {
+              var dimensionsForGroupBy = ["Tyres", "Code", "Qty", "OnHand", "Ords", "Pend", "Bask", "MSL", "Min", "Max", "Last_Cost"];
+              var groupByResult = dataset.groupBy(dimensionsForGroupBy,
+                              {"Month_Value":{"sum":{init: function() {return 0;},
+                                                               loop: function(previousValue,newValue) {return previousValue+newValue;},
+                                                               final: function(finalValue) {return finalValue;}
+                                                               }}});
+              var groupByKeys = _.keys(groupByResult);
+              var groupByResultAsArray = [];
+              for(var i = 0, len = groupByKeys.length; i < len; i++) {
+                  var currentItem = JSON.parse(groupByKeys[i])
+                  var newItem = {};
+                  for(var idxItem = 0, lenItem = currentItem.length; idxItem < lenItem; idxItem++) {
+                      newItem[dimensionsForGroupBy[idxItem]] = currentItem[idxItem];
+                  }
+                  var measureNames = _.keys(groupByResult[groupByKeys[i]]);
+                  for(var idxMeasure = 0, measuresLen = measureNames.length; idxMeasure < measuresLen; idxMeasure++) {
+                      var currentMeasure = JSON.parse(measureNames[idxMeasure]);
+                      newItem[currentMeasure[0] + "_" + currentMeasure[1]] = groupByResult[groupByKeys[i]][measureNames[idxMeasure]];
+                  } 
+                  groupByResultAsArray.push(newItem);
+              }
+
+              dataset.removeColumn("id");
+              dataset.removeColumn("Month");
+              dataset.removeColumn("Month_Value");
+              dataset.rows = groupByResultAsArray;
+              dataset.linkColumn("Month_Value_sum","Month_Value_sum");
+              refreshData();
+            }
 
             function refreshData() {
                 var currentCell = slickGrid.getActiveCell();
                 if(currentCell !== null) slickGrid.resetActiveCell(); 
                 slickGrid.resetActiveCell();
+                var cols = dataset.getColumns();
                 //dataView.beginUpdate();
                 dataView.setItems(dataset.rows);
                 //dataView.endUpdate();
-                slickGrid.setColumns(dataset.getColumns());
+                slickGrid.setColumns(cols);
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
+                ndx = crossfilter(dataset.rows);
+                all = ndx.groupAll();     
+                
             }
 
             function protectStringForRegExp(str) {
@@ -933,7 +978,7 @@
                   break;
                 case "keep-between-fixed-left-right":
                   var left = suggestion.find('.left').val() - 0 - 1;
-                  var right = suggestion.find('.right').val() - 0 - 1;
+                  var right = suggestion.find('.right').val() - 0 ;
                   if(!isNaN(left) && left >= 0 && !isNaN(right) && right >= left) {
                     var functionString = "var str = (row." + selectedVariable + " + '');" +
                                          "return str.substring("+left+","+right+") ;";
@@ -968,6 +1013,12 @@
                   var newType = suggestion.find('.type').val();
                   dataset.applyType(selectedVariable,newType);
                   refreshData();
+                  break;
+                case "supaquick-group-by":
+                  supaquick_groupBy();
+                  break;
+                case "supaquick-unflatten":
+                  supaquick_unflatten();
                   break;
                 default:
                   console.log("unknown suggestion id: "+SuggestionId);
