@@ -532,3 +532,22 @@ select.suggestion {
     font-size:12px;
     font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
+.slick-header-menu .filter
+{
+    height: 200px;
+}
+
+#myGrid .slick-cell.id-column
+{
+    text-align: right;
+    background-color: #F3F3F3;
+}
+
+#myGrid .slick-cell {
+    background-color: inherit;
+}
+
+#myGrid .slick-row.row-currently-selected {
+    background-color: #ddd;
+}

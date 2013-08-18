@@ -66,6 +66,13 @@
                   <option>date</option>
                 </select>
                 </div>
+                 <div id="rename-variable">
+                <a href="#">rename variable <b class="selectedVariable"></b> to </a> 
+                  <input type="text" class="suggestion name">
+                </div>     
+                 <div id="remove-selected-lines">
+                <a href="#">remove selected lines</a> 
+                </div>     
                 <div id="apply-expression-on-variable">
                 <a href="#">apply on <b class="selectedVariable"></b> the following expression</a>
                   <input type="text" class="suggestion where expression">
@@ -897,11 +904,33 @@
                 var currentCell = slickGrid.getActiveCell();
                 if(currentCell !== null) slickGrid.resetActiveCell(); 
                 slickGrid.resetActiveCell();
+                dataset.addIdColumn();
                 var cols = dataset.getColumns();
                 //dataView.beginUpdate();
                 dataView.setItems(dataset.rows);
                 //dataView.endUpdate();
-                slickGrid.setColumns(cols);
+                var newColumns = _.map(cols, function(element) { var x = {}; x[element.id] = {type:element.type, name:element.name}; return x; } );
+                if(!_.isEqual(newColumns,previousColumns)) {
+                  previousColumns = newColumns;
+                  var slickGridColumns = _.map(slickGrid.getColumns(), function(element) { return element.id; });
+                  var newColsForSlickGrid = [];
+                  for(var i = 0, len = slickGridColumns.length; i < len; i++) {
+                    var currentElement = _.find(cols,function (element) { return element.id === slickGridColumns[i]; });
+                    if(currentElement != undefined) {
+                      newColsForSlickGrid.push(currentElement);
+                    }
+                  }
+                  var lastColsToPush = _.difference(_.map(cols, function(element) { return element.id; }), 
+                                                    _.map(newColsForSlickGrid,function(element) { return element.id; }));
+                  for(var i = 0, len = lastColsToPush.length; i < len; i++) {
+                    var currentElement = _.find(cols,function (element) { return element.id === lastColsToPush[i]; });
+                    if(currentElement != undefined) {
+                      newColsForSlickGrid.push(currentElement);
+                    }
+                  }
+                  slickGrid.setColumns(newColsForSlickGrid);
+                }
+                slickGrid.invalidate();
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
                 ndx = crossfilter(dataset.rows);
                 all = ndx.groupAll();     
@@ -1014,6 +1043,15 @@
                   dataset.applyType(selectedVariable,newType);
                   refreshData();
                   break;
+                case "rename-variable":
+                  var newName = suggestion.find('.name').val().trim();
+                  dataset.renameColumn(selectedVariable,newName);
+                  refreshData();
+                  break;
+                case "remove-selected-lines":
+                  dataset.removeLines(slickGrid.getSelectedRows());
+                  refreshData();
+                  break;
                 case "supaquick-group-by":
                   supaquick_groupBy();
                   break;
@@ -1086,13 +1124,13 @@
                         dataset.rows = _.sortBy(dataset.rows, function(row) { 
                               return row[args.column.field] == null ? (args.column.type == "number" ? -Infinity : "")
                                                                     : row[args.column.field]; });
-                        dataView.setItems(dataset.rows);
+                        refreshData();
                         break;
                     case "sort-desc":
                         dataset.rows = _.sortBy(dataset.rows, function(row) { 
                               return row[args.column.field] == null ? (args.column.type == "number" ? -Infinity : "")
                                                                     : row[args.column.field]; }).reverse();
-                        dataView.setItems(dataset.rows);
+                        refreshData();
                         // dataView.sort(comparer, false);
                         break;
                     case "duplicate-column":
@@ -1190,6 +1228,15 @@
 
             $('#suggestions-list').find('a').click( function(args) { processSuggestion($(this).parent().attr('id')); });
 
+            dataView.getItemMetadata = function (row) {
+                if (_.contains(slickGrid.getSelectedRows(),row)) {
+                    return { "cssClasses":"row-currently-selected" };
+                }
+            };
+
+            slickGrid.onSelectedRowsChanged.subscribe(function(e, args) { slickGrid.invalidate(); });
+
+            previousColumns = _.map(slickGrid.getColumns(), function(element) { var x = {}; x[element.id] = {type:element.type, name:element.name}; return x; } );
 
 
             /*
@@ -1293,6 +1340,7 @@
             var dataView;
             var selectedVariable;
             var previousVariables;
+            var previousColumns;
             
             function initialization(someData) {
                 json_data = csvjson.csv2json(someData);

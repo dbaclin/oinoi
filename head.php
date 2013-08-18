@@ -34,10 +34,10 @@
      <!--  <link rel="stylesheet" href="libs/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/> -->
       <link rel="stylesheet" href="./libs/slickgrid/plugins/slick.headermenu.css" type="text/css"/>
 
-        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
-
       <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-common.css" type="text/css" />
       <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-gdoc-style.css" type="text/css" />
+
+        <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
         
 
         <link rel="shortcut icon" href="./images/favicon.png">

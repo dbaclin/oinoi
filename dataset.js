@@ -22,10 +22,10 @@
       
       this.getColumns = function() {
            if(!_.has(this.columns,"id")){
-              this.addIdColumn("id","Id"); 
+              this.addIdColumn(); 
            }
-           //var res = [this.columns["id"]];
-           var res = [];
+           var res = [this.columns["id"]];
+           //var res = [];
            for(var k in _.omit(this.columns,"id")) {
                 res.push(this.columns[k])
            }
@@ -76,6 +76,10 @@
               if (this.columns[i].name == displayColumnName) return i;
           }
           return null;
+      }
+
+      this.removeLines = function(rowIndexes) {
+        this.rows = _.reject(this.rows, function(element) { return _.contains(rowIndexes,element.id-1); });
       }
 
       this.getColumnStatistics = function (columnId) {
@@ -231,12 +235,19 @@
       }
 
       this.addIdColumn = function() {
-       if(this.rows.length > 0 && !_.has(this.rows[0],"id")) {
-        for(var i = 0, len = this.rows.length; i < len; i++){
-          this.rows[i]["id"] = i+1;
+       
+        for(var i = 0, len = this.rows.length; i < len; ){
+          this.rows[i]["id"] = ++i;
         }
-        this.linkColumn("id","Id");
-       }  
+        this.columns["id"] = {
+          id: "id",
+          field: "id",
+          name: "",
+          width: 40,
+          cssClass: "id-column",
+          type: undefined
+        }
+       
       }
 
       this.groupBy = function (columnIdsDimensions, columnIdsMeasuresAndMetrics) {
