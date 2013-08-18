@@ -73,6 +73,9 @@
                  <div id="remove-selected-lines">
                 <a href="#">remove selected lines</a> 
                 </div>     
+                 <div id="change-header">
+                <a href="#">use first line as column names</a> 
+                </div>     
                 <div id="apply-expression-on-variable">
                 <a href="#">apply on <b class="selectedVariable"></b> the following expression</a>
                   <input type="text" class="suggestion where expression">
@@ -1078,6 +1081,18 @@
                   dataset.removeLines(_.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} ));
                   refreshData();
                   break;
+                case "change-header":
+                  var newHeader = []; 
+                  var columnIdsToReplace = _.map(slickGrid.getColumns(),function(d) { return d.id; }).slice(1); // remove id column
+                  for(var i = 0, len = columnIdsToReplace.length; i < len; i++) {
+                    var headerValue = dataset.rows[0][columnIdsToReplace[i]];
+                    headerValue = headerValue == null ? "" : headerValue;
+                    newHeader.push(headerValue);
+                  }
+                  dataset.rows = dataset.rows.slice(1); // remove the header row from the grid
+                  dataset.changeHeader(columnIdsToReplace,newHeader);
+                  refreshData();
+                  break;
                 case "supaquick-group-by":
                   supaquick_groupBy();
                   break;
@@ -1107,7 +1122,7 @@
 
             slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
 
-           // slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+            //slickGrid.setSelectionModel(new Slick.CellSelectionModel());
             slickGrid.setSelectionModel(new Slick.RowSelectionModel());
             
             
@@ -1303,6 +1318,19 @@
             slickGrid.onSelectedRowsChanged.subscribe(function(e, args) { slickGrid.invalidate(); });
 
             previousColumns = _.map(slickGrid.getColumns(), function(element) { var x = {}; x[element.id] = {type:element.type, name:element.name}; return x; } );
+
+            shortcut.add("Ctrl+A",function() {
+              var rowsToSelect = [];
+              for(var i = 0, len = dataView.getLength(); i < len; i++) {
+                rowsToSelect.push(i);
+              }
+              slickGrid.setSelectedRows(rowsToSelect);
+            },{'target':'myGrid'});
+
+            shortcut.add("Shift+Delete",function() {
+              processSuggestion('remove-selected-lines');
+            },{'target':'myGrid'});
+
 
 
             /*

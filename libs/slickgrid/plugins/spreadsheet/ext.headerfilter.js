@@ -218,7 +218,7 @@
             console.log(columnDef.filterValues);
             if(_.contains(columnDef.filterValues,"null")) {
                 columnDef.filterValues = _.map(columnDef.filterValues,function(d) { return (d == "null") ? null : d; });
-            }
+            } 
 
             self.onFilterApplied.notify({ "grid": grid, "column": columnDef }, e, self);
 
@@ -240,7 +240,8 @@
             if(column.type == "date"){
                 seen = _.map(seen,function(d) {return d == null ? null : Date.parse(d);} );
             } else if(column.type =="number") {
-                seen = _.map(seen,function(d) { return d == null ? null : +d;} );
+                seen = _.map(seen,function(d) { return !isNaN(d - 0) ? d - 0 : 
+                                                       d == null ? null : d;} );
             }
             return _.sortBy(seen, function (v) { return v; });
         }
@@ -268,10 +269,11 @@
             }
             
             seen = _.keys(seen);
-            if(column.type == "date"){
+           if(column.type == "date"){
                 seen = _.map(seen,function(d) {return d == null ? null : Date.parse(d);} );
             } else if(column.type =="number") {
-                seen = _.map(seen,function(d) { return d == null ? null : +d;} );
+                seen = _.map(seen,function(d) { return !isNaN(d - 0) ? d - 0: 
+                                                       d == null ? null : d;} );
             }
             return _.sortBy(seen, function (v) { return v; });
         }

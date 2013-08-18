@@ -82,6 +82,13 @@
         this.rows = _.reject(this.rows, function(element) { return _.contains(rowIndexes,element.id); });
       }
 
+      this.changeHeader = function(columnIds, newHeader) {
+        for(var i = 0, len = columnIds.length; i < len; i++) {
+          this.renameColumn(columnIds[i], newHeader[i]);
+          this.columns[columnIds[i]].width = this.getColumnSize(columnIds[i], newHeader[i]);
+        }
+      }
+
       this.getColumnStatistics = function (columnId) {
           var columnStatistics = {};
 
@@ -117,7 +124,7 @@
               if (typeof currentValue[columnId] == "number" 
                   || (currentValue[columnId] != null && currentValue[columnId].length > 0 && !isNaN(currentValue[columnId].replace(/[\$£€ ,]/g,"")-0)))
                   previousValue.nbNumber++;
-              else if (new Date(currentValue[columnId]).toString() != "Invalid Date")
+              else if (currentValue[columnId] != null && new Date(currentValue[columnId]).toString() != "Invalid Date")
                   previousValue.nbDate++;
               else if (typeof currentValue[columnId] == "string" && currentValue[columnId].length > 0)
                   previousValue.nbString++;
@@ -168,10 +175,12 @@
           for (var i = 0, len=this.rows.length; i < len; i++) {
               var currentValue = this.rows[i][columnId];
               if (currentValue != null && typeof currentValue != newType) {
-                  if (newType == "date") this.rows[i][columnId] = Date.parse(currentValue);
+                  if (newType == "date") this.rows[i][columnId] = currentValue == null ? null : Date.parse(currentValue);
                   else if (newType == "number") {
-                      var localFloat = ((currentValue + "").replace(/[\$£€ ,]/g,"") - 0); // remove all , in the input numbers
-                      this.rows[i][columnId] = isNaN(localFloat) ? null : localFloat;
+                      var valueToTransform = (currentValue + "").replace(/[\$£€ ,]/g,"");
+                      var localFloat = (valueToTransform - 0); // remove all , in the input numbers
+                      this.rows[i][columnId] = !isNaN(localFloat) ? localFloat : 
+                                               valueToTransform.length > 1 ? valueToTransform : null;
                   } else if (newType == "string") {
                       this.rows[i][columnId] = currentValue.toString();
                   }
@@ -218,18 +227,23 @@
           
           return data;
       }
-      
-      this.linkColumn = function(columnId,columnName) {
+
+      this.getColumnSize = function(columnId, columnName) {
           var colWidth = columnName.length * 7 + 30;
           for(var i = 0, len = this.rows.length; i < 20 && i < len; i++) {
             colWidth = Math.max(colWidth,(this.rows[i][columnId] + "").length * 7);
           }
           colWidth = Math.max(50,Math.min(colWidth, 200));
+          return colWidth;
+      }
+      
+      this.linkColumn = function(columnId,columnName) {
+          
           this.columns[columnId] = {
               id: columnId,
               field: columnId,
               name: columnName,
-              width: colWidth
+              width: this.getColumnSize(columnId, columnName)
           };
           this.setAutoType(columnId);
       }
