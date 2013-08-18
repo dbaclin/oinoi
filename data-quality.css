@@ -551,3 +551,26 @@ select.suggestion {
 #myGrid .slick-row.row-currently-selected {
     background-color: #ddd;
 }
+
+ .slick-row.selected .cell-selection {
+      background-color: transparent; /* show default selected row background */
+    }
+
+.ui-menu { width: 150px; }
+
+.slick-header-menuitem:hover {
+
+    border:none;
+    background:rgb(238,238,238);
+}
+
+.slick-header-menucontent a, a:visited {
+    color: black;
+    text-decoration:none;
+
+}
+
+.slick-header-menucontent:hover {
+    text-decoration:none;
+
+}

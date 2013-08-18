@@ -97,7 +97,33 @@
             </div>
             <div class="span10" >
                  <div id="myGrid" style="width:100%;height:600px;"></div>
+                 
+           
+                 
+                <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Rename Column</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Remove Column</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Create calculated field</a></li>
+                  <li>-</li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Replace</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Group by</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Unflatten</a></li>
+                  
+                  <li class="slick-header-menuitem" class="slick-header-menucontent">
+                    <a href="#">Change type</a>
+                    <ul class="slick-header-menu">
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">String</a></li>
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Number</a></li>
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Date</a></li>
+                    </ul>
+                  </li>
+                </ul> 
+                 
+                 
+                 
             </div>
+            
+            
          </div>
      
      </div>
@@ -1066,6 +1092,7 @@
     
             function add_slick_grid(someDataset) {
             
+            $( "#contextMenu" ).menu();
             
              var options = {
               autoEdit:true,
@@ -1080,8 +1107,10 @@
 
             slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
 
-            slickGrid.setSelectionModel(new Slick.CellSelectionModel());
-
+           // slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+            slickGrid.setSelectionModel(new Slick.RowSelectionModel());
+            
+            
             dataView.onRowCountChanged.subscribe(function (e, args) {
                 slickGrid.updateRowCount();
                 slickGrid.render();
@@ -1091,6 +1120,43 @@
                 slickGrid.invalidateRows(args.rows);
                 slickGrid.render();
             });
+            
+            
+            slickGrid.onContextMenu.subscribe(function (e) {
+              e.preventDefault();
+              var cell = slickGrid.getCellFromEvent(e);
+              
+              console.log("cell.row " + cell.row + "and top " + e.pageY + "and left " + e.pageX);
+              
+              $("#contextMenu")
+                  .data("row", cell.row)
+                  .css("top", e.pageY)
+                  .css("left", e.pageX)
+                  .show();
+        
+                  $("body").one("click", function () {
+                        $("#contextMenu").hide();
+                  });
+            });
+
+            
+            $("#contextMenu").click(function (e) {
+                
+                  
+                  console.log("yop  it works ..."+ e);
+                  console.log(e.target);
+                  var huhu = $(e.target).attr("data");
+                  console.log(huhu);
+                  /*if (!$(e.target).is("li")) {
+                  return;
+                }
+                if (!slickGrid.getEditorLock().commitCurrentEdit()) {
+                  return;
+                }
+                var row = $(this).data("row");
+                data[row].priority = $(e.target).attr("data");
+                slickGrid.updateRow(row); */
+              });
 
             dataView.beginUpdate();
             dataView.setItems(dataset.rows);
