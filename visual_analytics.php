@@ -1075,7 +1075,7 @@
                   refreshData();
                   break;
                 case "remove-selected-lines":
-                  dataset.removeLines(slickGrid.getSelectedRows());
+                  dataset.removeLines(_.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} ));
                   refreshData();
                   break;
                 case "supaquick-group-by":

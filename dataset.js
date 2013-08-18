@@ -79,7 +79,7 @@
       }
 
       this.removeLines = function(rowIndexes) {
-        this.rows = _.reject(this.rows, function(element) { return _.contains(rowIndexes,element.id-1); });
+        this.rows = _.reject(this.rows, function(element) { return _.contains(rowIndexes,element.id); });
       }
 
       this.getColumnStatistics = function (columnId) {
