@@ -1107,8 +1107,8 @@
 
             slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
 
-           // slickGrid.setSelectionModel(new Slick.CellSelectionModel());
-            slickGrid.setSelectionModel(new Slick.RowSelectionModel());
+            slickGrid.setSelectionModel(new Slick.CellSelectionModel());
+           // slickGrid.setSelectionModel(new Slick.RowSelectionModel());
             
             
             dataView.onRowCountChanged.subscribe(function (e, args) {
