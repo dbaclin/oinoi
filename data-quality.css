@@ -552,8 +552,9 @@ select.suggestion {
     background-color: #ddd;
 }
 
+/*
  .slick-row.selected .cell-selection {
-      background-color: transparent; /* show default selected row background */
+      background-color: transparent; 
     }
 
 .ui-menu { width: 150px; }
@@ -574,3 +575,4 @@ select.suggestion {
     text-decoration:none;
 
 }
+*/
