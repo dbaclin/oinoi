@@ -294,6 +294,7 @@ font-size: 12px;
 #variables { list-style-type: none; margin: 0; padding: 0; 
 width: 98%;
   }
+
 #variables li { 
   color: #444;
   margin: 0 0px 3px 0px; 
@@ -516,21 +517,74 @@ label {
 font-size: inherit!important; 
 }
 
-input.suggestion {
+#suggestionsTitle{
+    font-size: 14px;
+    margin-bottom: 5px;
+
+}
+
+
+.addButton {
+background-image: url("./images/add-icon16.png");
+}
+
+.selected.editorButton {
+visibility: visible;
+}
+
+.editorButton {
+visibility: hidden;
+height: 16px;
+width: 16px;
+float: right;
+opacity: .4;
+cursor: hand;
+}
+
+.editorButton:hover{
+    opacity:1;
+}
+
+.suggestion {
+    vertical-align: center;
+    padding: 0px;
+    font-size: 12px;
+    margin: 5px;
+}
+
+.suggestion:hover{
+
+    background-color: #D6F6F6;
+    text-decoration: bold;
+    cursor: hand;
+
+}
+
+.suggestion  input{
     width: 100px;
     vertical-align: baseline;
     padding: 0px;
     font-size: 12px;
+    margin: 5px;
 }
-input.suggestion[type="number"] {
+
+
+
+.suggestion input[type="number"] {
     width: 40px;
 }
-input.suggestion.where.expression[type="text"] {
+.suggestion input[type="text"].where.expression {
     width: 100%;
 }
-select.suggestion {
+
+.suggestion input[type="text"] {
+    width: 70px;
+}
+
+.suggestion select {
     font-size:12px;
     font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    width: 70px;
 }
 
 .slick-header-menu .filter
@@ -576,3 +630,15 @@ select.suggestion {
 
 }
 */
+
+.card-title a {
+font-weight: bold;
+text-decoration: underline;
+
+}
+
+.card-title li a {
+font-weight: normal;
+text-decoration: none;
+
+}

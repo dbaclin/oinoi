@@ -28,77 +28,85 @@
     <div class="container-fluid main-page">
           
           <div class="row-fluid">
-            <div class="span2">
+            <div class="span3">
+
+                
+
                 <div id="suggestions-list">
-                 <div id="replace-from-to"><a href="#">replace all occurences of </a>
-                  <input class="suggestion from selectedValue" type="text"><a href="#"> in <b class="selectedVariable"></b> with</a> 
-                    <input class="suggestion to" type="text">
+                <span id="suggestionsTitle">Suggestions for variable <b class="selectedVariable"></b></span>
+
+                <div class="suggestion"id="replace-from-to"><a href="#">Replace </a>
+                  <input class="from selectedValue" type="text"><a href="#">  with</a> 
+                    <input class="to" type="text"> <div class="editorButton addButton"></div>
                 </div>
-                <div id="keep-upto">
-                <a href="#">keep all characters of <b class="selectedVariable"></b> up to</a> 
-                  <input type="text" class="suggestion upto">
+
+                <div class="suggestion" id="keep-upto">
+                <a href="#">Keep text up to</a> 
+                  <input type="text" class=" upto">
+                  <div class="editorButton addButton"></div>
                 </div>
-                <div id="keep-startingfrom">
-                <a href="#">keep all characters of <b class="selectedVariable"></b> starting from</a> 
-                  <input type="text" class="suggestion startingfrom">
+                <div class="suggestion" id="keep-startingfrom">
+                <a href="#">Keep text from</a> 
+                  <input type="text" class=" startingfrom">
+                  <div class="editorButton addButton"></div>
                 </div>
-                <div id="keep-between-left-right">
-                <a href="#">keep all characters of <b class="selectedVariable"></b> between</a> 
-                  <input type="text" class="suggestion left"><a href="#"> and </a>
-                  <input type="text" class="suggestion right">
+                <div class="suggestion" id="keep-between-left-right">
+                <a href="#">Keep text between</a> 
+                  <input type="text" class=" left"><a href="#"> and </a>
+                  <input type="text" class=" right">
                 </div>                
-                <div id="keep-fixed-left">              
-                  <a href="#">keep the first</a> 
-                  <input type="number" class="suggestion left">
-                  <a href="#"> characters of <b class="selectedVariable"></b></a> 
+                <div class="suggestion" id="keep-fixed-left">              
+                  <a href="#">Keep the first</a> 
+                  <input type="number" class=" left">
+                  <a href="#"> characters </a> 
                 </div>
-                <div id="keep-between-fixed-left-right">
-                <a href="#">keep all characters of <b class="selectedVariable"></b> between positions</a> 
-                  <input type="number" class="suggestion left"><a href="#"> and </a>
-                  <input type="number" class="suggestion right">
+                <div class="suggestion" id="keep-between-fixed-left-right">
+                <a href="#">Keep text between positions</a> 
+                  <input type="number" class=" left"><a href="#"> and </a>
+                  <input type="number" class=" right">
                 </div>  
-                <div id="apply-type-on-variable">
-                <a href="#">convert <b class="selectedVariable"></b> to </a>
-                  <select class="suggestion type">
+                <div class="suggestion" id="apply-type-on-variable">
+                <a href="#">Convert <b class="selectedVariable"></b> to </a>
+                  <select class=" type">
                   <option></option>
                   <option>string</option>
                   <option>number</option>  
                   <option>date</option>
                 </select>
                 </div>
-                 <div id="rename-variable">
-                <a href="#">rename variable <b class="selectedVariable"></b> to </a> 
+                 <div class="suggestion" id="rename-variable">
+                <a href="#">Rename column <b class="selectedVariable"></b> to </a> 
                   <input type="text" class="suggestion name">
                 </div>     
-                 <div id="remove-selected-lines">
-                <a href="#">remove selected lines</a> 
+                 <div class="suggestion" id="remove-selected-lines">
+                <a href="#">Remove selected lines</a> 
                 </div>     
-                 <div id="change-header">
-                <a href="#">use first line as column names</a> 
+                 <div class="suggestion" id="change-header">
+                <a href="#">Use first line as column names</a> 
                 </div>     
-                <div id="apply-expression-on-variable">
-                <a href="#">apply on <b class="selectedVariable"></b> the following expression</a>
+                <div class="suggestion" id="apply-expression-on-variable">
+                <a href="#">Apply the expression</a>
                   <input type="text" class="suggestion where expression">
                 </div>
-                <div id="keep-only-records-where">
-                <a href="#">keep only the records satisfying the following condition</a> 
+                <div class="suggestion" id="keep-only-records-where">
+                <a href="#">Keep records if</a> 
                   <input type="text" class="suggestion where expression">
                 </div>
-                <div id="create-new-variable-expression">
-                <a href="#">create a new variable variable named </a>
+                <div class="suggestion" id="create-new-variable-expression">
+                <a href="#">Create a new variable</a>
                   <input class="suggestion new-variable-name" type="text">
                 <a href="#"> using the expression </a> 
                   <input type="text" class="suggestion where expression">
                 </div>
-                <div id="supaquick-unflatten">
+                <div class="suggestion" id="supaquick-unflatten">
                 <a href="#">Unflatten dataset </a>
                 </div>
-                <div id="supaquick-group-by">
+                <div class="suggestion" id="supaquick-group-by">
                 <a href="#">Group by dataset </a>
                 </div>
              </div>
             </div>
-            <div class="span10" >
+            <div class="span9" >
                  <div id="myGrid" style="width:100%;height:600px;"></div>
                  
            
@@ -183,6 +191,22 @@
   <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
       
       <p>Replace all occurences of <input type="text" style="width: 150px;vertical-align: baseline;"> with <input type="text" style="width: 150px;vertical-align: baseline;"></p>
+        
+    </div>
+    <div class="modal-footer">
+      <button data-dismiss="modal" class="btn">Cancel</button>
+      <button class="btn btn-primary">Ok</button>
+    </div>
+  </div>       
+
+  <div aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide ui-draggable" id="myModalSuggestion" >
+ <div class="modal-body">
+  <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+      
+      <div class="suggestion" data-type="replace-from-to"><a href="#">Replace </a>
+                  <input class="from selectedValue" type="text"><a href="#">  with</a> 
+                    <input class="to" type="text"> <div class="editorButton addButton"></div>
+      </div>
         
     </div>
     <div class="modal-footer">
@@ -471,6 +495,197 @@
             var ndx;
             var all;            
             
+
+            function define_transformation(){
+                return  {'replace-from-to': {
+                    tag_id: 'replace-from-to' ,
+                    html: function() { return '<div class="suggestion"id="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" type="text"><a href="#">  with</a> <input class="to" type="text"> <div class="editorButton addButton"></div></div>'},
+                    action: function(){
+                      var suggestion = $('#' + this.tag_id);
+                      var from = protectStringForRegExp(suggestion.find('.from').val());
+                      var to = protectStringForRegExp(suggestion.find('.to').val());
+                      var myregex = new RegExp(from, 'g');
+                  
+                      if(from.length){
+                      var functionString = "return (row." + selectedVariable + " + '').replace("+myregex+",'"+to+"') ;";
+                    
+                      dataset.applyFunction(selectedVariable,functionString);  
+                      slickGrid.invalidate();
+
+                      }; 
+                   }
+                  },
+                  'keep-upto': {
+                    tag_id: 'keep-upto' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class=" upto"><div class="editorButton addButton"></div></div>'},
+                    action: function(){
+                      var upto = protectStringForRegExp(suggestion.find('.upto').val());
+                      if(upto.length){
+                        var functionString = "var str = (row." + selectedVariable + " + ''); var idx = str.indexOf('"+upto+"');"+
+                                             "return idx == -1 ? row." + selectedVariable +" : str.substr(0,idx) ;";
+                        console.log(functionString);
+                        dataset.applyFunction(selectedVariable,functionString);  
+                        slickGrid.invalidate();
+                      }; 
+                    }
+                  },
+                   'keep-startingfrom': {
+                    tag_id: 'keep-startingfrom' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class=" startingfrom"><div class="editorButton addButton"></div></div>'},
+                    action: function(){
+                      var startingfrom = protectStringForRegExp(suggestion.find('.startingfrom').val());
+                      if(startingfrom.length){
+                        var functionString = "var str = (row." + selectedVariable + " + ''); var idx = str.indexOf('"+startingfrom+"');"+
+                                             "return idx == -1 ? row." + selectedVariable +" : str.substr(idx+1) ;";
+                        console.log(functionString);
+                        dataset.applyFunction(selectedVariable,functionString);  
+                        slickGrid.invalidate();
+                      }
+                    }
+                  },  
+                   'keep-between-left-right': {
+                    tag_id: 'keep-between-left-right' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep text between</a><input type="text" class=" left"><a href="#"> and </a><input type="text" class=" right"></div>'},
+                    action: function(){
+                      var left = protectStringForRegExp(suggestion.find('.left').val());
+                      var right = protectStringForRegExp(suggestion.find('.right').val());
+                      if(left.length * right.length){
+                        var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                             "var idx_left = str.indexOf('"+left+"');"+
+                                             "var idx_right = str.indexOf('"+right+"',idx_left+1);"+
+                                             "return idx_left == -1 || idx_right == -1 ? row." + selectedVariable +" : str.substring(idx_left+1,idx_right) ;";
+                        console.log(functionString);
+                        dataset.applyFunction(selectedVariable,functionString);  
+                        slickGrid.invalidate();
+                      }
+                    }
+                  },
+                  'keep-fixed-left': {
+                    tag_id: 'keep-fixed-left' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep the first</a> <input type="number" class=" left"><a href="#"> characters </a></div>'},
+                    action: function(){
+                      var left = suggestion.find('.left').val() - 0;
+                      if(!isNaN(left) && left > 0){
+                        var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                             "return str.substr(0,"+left+") ;";
+                        console.log(functionString);
+                        dataset.applyFunction(selectedVariable,functionString);  
+                        slickGrid.invalidate();
+                      }
+                    }
+                  },
+                   'keep-between-fixed-left-right': {
+                    tag_id: 'keep-between-fixed-left-right' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep text between positions</a> <input type="number" class=" left"><a href="#"> and </a><input type="number" class=" right"></div>'},
+                    action: function(){
+                      var left = suggestion.find('.left').val() - 0 - 1;
+                      var right = suggestion.find('.right').val() - 0 ;
+                      if(!isNaN(left) && left >= 0 && !isNaN(right) && right >= left) {
+                        var functionString = "var str = (row." + selectedVariable + " + '');" +
+                                             "return str.substring("+left+","+right+") ;";
+                        console.log(functionString);
+                        dataset.applyFunction(selectedVariable,functionString);  
+                        slickGrid.invalidate();
+                      }
+                    }
+                  },
+                  'keep-only-records-where': {
+                    tag_id: 'keep-only-records-where' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Keep records if</a><input type="text" class="suggestion where expression"></div>'},
+                    
+ 
+                    action: function(){
+                      var newVariableName = suggestion.find('.new-variable-name').val();
+                      var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                      if(newVariableName.length > 0 && functionString.length > 0) {
+                        dataset.addColumn(newVariableName,functionString);
+                        refreshData();
+                      }
+                    }
+                  },
+                   'create-new-variable-expression': {
+                    tag_id: 'create-new-variable-expression' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Create a new variable</a><input class="suggestion new-variable-name" type="text"><a href="#"> using the expression </a> <input type="text" class="suggestion where expression"></div>'},
+                    action: function(){
+                      var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                      if(functionString.length > 0) {
+                        dataset.applyFunctionOnRows(functionString);
+                        refreshData();
+                      }
+                    }
+                  },
+                   'apply-expression-on-variable': {
+                    tag_id: 'apply-expression-on-variable' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Apply the expression</a><input type="text" class="suggestion where expression"></div>'},
+                    action: function(){
+                      var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                      if(functionString.length > 0) {
+                        dataset.applyFunction(selectedVariable,functionString);
+                        slickGrid.invalidate();
+                      }
+                    }
+                  },
+                  'apply-type-on-variable': {
+                    tag_id: 'apply-type-on-variable' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Convert <b class="selectedVariable"></b> to </a><select class=" type"><option></option><option>string</option><option>number</option><option>date</option></select></div>'},                    
+                   
+                    action: function(){
+                      var newName = suggestion.find('.name').val().trim();
+                      dataset.renameColumn(selectedVariable,newName);
+                      refreshData();
+                    }
+                  },
+                    'rename-variable': {
+                    tag_id: 'rename-variable' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Rename column <b class="selectedVariable"></b> to </a> <input type="text" class="suggestion name"></div> '},                    
+                    action: function(){
+                      var newType = suggestion.find('.type').val();
+                      dataset.applyType(selectedVariable,newType);
+                      refreshData();
+                    }
+                  },
+                  'remove-selected-lines': {
+                    tag_id: 'remove-selected-lines' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Remove selected lines</a> </div> '},                    
+                    action: function(){
+                      dataset.removeLines(_.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} ));
+                      refreshData();
+                    }
+                  },
+                  'change-header': {
+                    tag_id: 'change-header' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Use first line as column names</a></div>'},                    
+                    action: function(){
+                      var newHeader = []; 
+                      var columnIdsToReplace = _.map(slickGrid.getColumns(),function(d) { return d.id; }).slice(1); // remove id column
+                      for(var i = 0, len = columnIdsToReplace.length; i < len; i++) {
+                        var headerValue = dataset.rows[0][columnIdsToReplace[i]];
+                        headerValue = headerValue == null ? "" : headerValue;
+                        newHeader.push(headerValue);
+                      }
+                      dataset.rows = dataset.rows.slice(1); // remove the header row from the grid
+                      dataset.changeHeader(columnIdsToReplace,newHeader);
+                      refreshData();
+                    }
+                  },
+                   'supaquick-group-by': {
+                    tag_id: 'supaquick-group-by' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Group by dataset </a></div>'},                    
+                    action: function(){
+                      supaquick_groupBy();
+                    }
+                  },
+                  'supaquick-unflatten': {
+                    tag_id: 'supaquick-unflatten' ,
+                    html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Unflatten dataset </a></div>'},                    
+                    action: function(){
+                      supaquick_unflatten();
+                    }
+                  }                 
+                };
+            }
+                var transformation = define_transformation();
+
             function add_variable_list(someDataset){
                     
                     var allVariables = { "variables" : []};
@@ -977,7 +1192,14 @@
             }
 
             function processSuggestion(SuggestionId) {
-              var suggestion = $('#' + SuggestionId);
+              if(transformation[SuggestionId] !== null){
+                transformation[SuggestionId].action();
+              } else {
+                console.log("unknown suggestion id: "+ SuggestionId);
+
+              }
+              
+             /* var suggestion = $('#' + SuggestionId);
               switch(SuggestionId) {
                 case "replace-from-to":
                   var from = protectStringForRegExp(suggestion.find('.from').val());
@@ -1100,8 +1322,10 @@
                   supaquick_unflatten();
                   break;
                 default:
-                  console.log("unknown suggestion id: "+SuggestionId);
-              }
+                 console.log("unknown suggestion id: "+SuggestionId);
+                 }*/
+                 
+              
 
             }
     
@@ -1122,13 +1346,10 @@
 
             slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
 
-<<<<<<< HEAD
+
             slickGrid.setSelectionModel(new Slick.CellSelectionModel());
            // slickGrid.setSelectionModel(new Slick.RowSelectionModel());
-=======
-            //slickGrid.setSelectionModel(new Slick.CellSelectionModel());
-            slickGrid.setSelectionModel(new Slick.RowSelectionModel());
->>>>>>> c1210d528ff47e3475b7f1a89ea934e7555628cd
+
             
             
             dataView.onRowCountChanged.subscribe(function (e, args) {
@@ -1150,7 +1371,7 @@
               
               $("#contextMenu")
                   .data("row", cell.row)
-                  .css("top", e.pageY)
+                  .css("top", e.pageY - 70)
                   .css("left", e.pageX)
                   .show();
         
@@ -1158,6 +1379,33 @@
                         $("#contextMenu").hide();
                   });
             });
+
+            $("#myModalLeft").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
+              $("#myModalLeft button.btn-primary").off('click').unbind('click');
+              $("#myModalLeft").unbind('on');
+            });
+            
+            $("#myModalLeft button.btn-primary").click( function() {
+              $("#myModalLeft").modal('hide');     // dismiss the dialog
+              var inputParameter = parseInt($('#myModalLeft input').val());
+              if(!isNaN(inputParameter)) applyFunction(function(d,n) { return d.substring(0,n) },inputParameter,args.column.field);
+            });
+
+ $("#myModalReplaceString").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
+                                $("#myModalReplaceString button.btn-primary").off('click').unbind('click');
+                                $("#myModalReplaceString").unbind('on');
+                        });
+                        $("#myModalReplaceString button.btn-primary").click( function() {
+                                $("#myModalReplaceString").modal('hide');     // dismiss the dialog
+                                var replaceFrom = $($('#myModalReplaceString input')[0]).val();
+                                if(replaceFrom === "*") replaceFrom = '\\*';
+                                var replaceTo = $($('#myModalReplaceString input')[1]).val();
+                                if(replaceFrom.length > 0) applyFunction(function(d,n) { 
+                                        return d.replace(new RegExp(n[0], 'g'),n[1]) // need to replace g with gi if we want non case sensistive replace
+                                    },[replaceFrom,replaceTo],args.column.field);
+                        });
+
+                        
 
             
             $("#contextMenu").click(function (e) {
@@ -1167,6 +1415,13 @@
                   console.log(e.target);
                   var huhu = $(e.target).attr("data");
                   console.log(huhu);
+
+
+
+                      $("#myModalSuggestion").modal('toggle');
+                      //  $("#myModalLeft").modal('toggle');
+         
+
                   /*if (!$(e.target).is("li")) {
                   return;
                 }
