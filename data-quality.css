@@ -523,6 +523,12 @@ font-size: inherit!important;
 
 }
 
+#suggestionsList{
+    font-size: 12px;
+    margin-top: 15px;
+
+}
+
 
 .addButton {
 background-image: url("./images/add-icon16.png");
