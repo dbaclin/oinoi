@@ -65,7 +65,7 @@
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Unflatten</a></li>
                   
                   <li class="slick-header-menuitem" class="slick-header-menucontent">
-                    <a href="#" >Keep text/a>
+                    <a href="#" >Keep text</a>
                     <ul class="slick-header-menu">
                       <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
                       <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-starting-from">from</a></li>
@@ -1506,24 +1506,24 @@
             
             function addJQEvents(){
               $('#myGrid').find('div.slick-header').mousedown(function() { 
-                    console.log("mouse down " + getSelectionText());
+                   
                     updateSuggestionsList();
                     slickGrid.resetActiveCell(); 
                 });
 
                 $('#myGrid').find('div.slick-viewport').click(function() {
-                  console.log("click");
+                  
                   updateSuggestionsList();
                 });
 
                 $('#myGrid').find('div.slick-viewport').mouseup(function() {
-                  console.log("mouse up"  + getSelectionText());
+                  
                   updateSuggestionsList();
                   //updateSuggestionSelectedValue();
                 });
 
                  $('#myGrid').find('div.slick-viewport').keyup(function() {
-                  console.log("key press"  + getSelectionText());
+                 
                   updateSuggestionsList();
                   //updateSuggestionSelectedValue();
                 });
