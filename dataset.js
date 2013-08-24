@@ -215,12 +215,13 @@
           var columnIdCategory = this.getNewColumnName(newColumnNameCategory);
           var columnIdValue = this.getNewColumnName(newColumnNameValue);
 
+
           var data = [];
           var id = 1;
           for (var i = 0; i < this.rows.length; i++) {
               for (var k in columnIds) {
                   var newrecord = _.pick(this.rows[i], columnIdsToKeep);
-                  newrecord[columnIdCategory] = columnIds[k];
+                  newrecord[columnIdCategory] = this.columns[columnIds[k]].name;
                   newrecord[columnIdValue] = this.rows[i][columnIds[k]];
                   newrecord["id"] = id++;
                   data.push(newrecord);
