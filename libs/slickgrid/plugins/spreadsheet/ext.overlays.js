@@ -101,13 +101,13 @@
             $rowOverlay.show();
 
             var column = grid.getColumns()[currentColumn];
-
+/*
             $(".slick-header > div > div")
                 .removeClass("selected-header");
 
             $('[id$=' + column.id + ']', '.slick-header')
                 .addClass('selected-header');
-
+*/
             var headerHeight = $('.slick-header').height();
             var cellPosition = grid.getActiveCellPosition();
             var gridPosition = grid.getGridPosition();

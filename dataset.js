@@ -57,9 +57,19 @@
           return columnId;
       }
 
+      this.copyColumn  = function(columnId) {
+         var newColumnId = this.getNewColumnName(columnId);
+         for (var i = 0, len = this.rows.length; i < len; i++) {
+            this.rows[i][newColumnId] = this.rows[i][columnId];
+         }
+         this.columns[newColumnId] = deepCopy(this.columns[columnId]);
+         this.columns[newColumnId].id = newColumnId;
+         this.columns[newColumnId].field = newColumnId;
+      }
+
       this.removeColumn = function (columnId) {
           if (this.columns.hasOwnProperty(columnId)) {
-              for (var i = 0; i < this.rows.length; i++) {
+              for (var i = 0, len = this.rows.length; i < len; i++) {
                   delete(this.rows[i][columnId]);
               }
 

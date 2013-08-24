@@ -401,9 +401,10 @@
           function defineTransformation(){
               return  {'replace-from-to': {
                   tag_id: 'replace-from-to' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","column","columns"],
                   html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" type="text"><a href="#">  with</a> <input class="to" type="text"> <div class="editorButton addButton"></div></div>'},
                   action: function(aVariable){
+                    
                     if(typeof aVariable != "undefined"){
                       var suggestion = $('#' + this.tag_id);
                       var from = protectStringForRegExp(suggestion.find('.from').val());
@@ -411,11 +412,18 @@
                       var myregex = new RegExp(from, 'g');
                   
                       if(from.length){
-                        var functionString = "return (row." + aVariable + " + '').replace("+myregex+",'"+to+"') ;";
-                      
-                        dataset.applyFunction(aVariable,functionString);  
+                        if(typeof aVariable == "string") {
+                          var functionString = "return (row." + aVariable + " + '').replace("+myregex+",'"+to+"') ;";
+                        
+                          dataset.applyFunction(aVariable,functionString);  
+                        
+                        } else {
+                          for(var i = 0, len = aVariable.length; i < len; i++) {
+                             var functionString = "return (row." + aVariable[i] + " + '').replace("+myregex+",'"+to+"') ;";
+                             dataset.applyFunction(aVariable[i],functionString); 
+                          }
+                        }
                         slickGrid.invalidate();
-
                       };   
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
                     
@@ -552,14 +560,15 @@
                 },
                 'apply-type-on-variable': {
                   tag_id: 'apply-type-on-variable' ,
-                  applyTo: ["column"],
+                  applyTo: ["column","columns"],
                   html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Convert to </a><select class=" type"><option></option><option>string</option><option>number</option><option>date</option></select></div>'},                    
-                  action: function(aVariable, newType){
-                   if(newType == null){
-                      var newType = suggestion.find('.type').val();
-                   }
-                                          
-                    dataset.applyType(aVariable,newType);
+                  action: function(aVariable){
+                   var suggestion = $('#' + this.tag_id);
+                   var newType = suggestion.find('.type').val();
+
+                   for(var i = 0, len = aVariable.length; i < len; i++) {
+                    dataset.applyType(aVariable[i],newType);
+                   }                      
                     refreshData();
 
                   }
@@ -584,6 +593,30 @@
                     refreshData();
                   }
                 },
+                'remove-selected-columns': {
+                  tag_id: 'remove-selected-columns' ,
+                  applyTo: ["column", "columns"],
+                  html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Remove selected columns</a> </div> '},                    
+                  action: function(){
+                    for(var i = 0, len = selectedColumns.length; i < len; i++) {
+                      dataset.removeColumn(selectedColumns[i]);  
+                    }
+                    refreshData();
+                  }
+                },
+                'unflatten-selected-columns': {
+                  tag_id: 'unflatten-selected-columns' ,
+                  applyTo: ["columns"],
+                  html: function() { return '<div class="suggestion" id="' + this.tag_id +'"><a href="#">Unflatten selected columns creating a new category variable </a> <input type="text" class="suggestion name"></div> '},                    
+                  action: function(){
+                    var suggestion = $('#' + this.tag_id);
+                    var newName = suggestion.find('.name').val().trim();
+                    
+                    dataset.unFlatten(selectedColumns,newName,newName + " Value", 1);
+
+                    refreshData();
+                  }
+                },
                 'change-header': {
                   tag_id: 'change-header' ,
                   applyTo: ["firstLine"],
@@ -600,7 +633,8 @@
                     dataset.changeHeader(columnIdsToReplace,newHeader);
                     refreshData();
                   }
-                },
+                }
+                /*,
                  'supaquick-group-by': {
                   tag_id: 'supaquick-group-by' ,
                   applyTo: ["rows"],
@@ -616,7 +650,7 @@
                   action: function(){
                     supaquickUnflatten();
                   }
-                }                 
+                }*/                 
               };
           }
                 
@@ -1085,7 +1119,7 @@
 
             function processSuggestion(actionID, selectedVariable) {
               if(transformation[actionID] !== null){
-                console.log("var is " + selectedVariable);
+                //console.log("var is " + selectedVariable);
                 transformation[actionID].action(selectedVariable);
               } else {
                 console.log("unknown suggestion id: "+ actionID);
@@ -1114,7 +1148,9 @@
                   }else{
                     text = " for selected rows";
                   }
-
+                  $('#suggestionsTitle').find('.selectedVariable').text(text);
+                } else if(selectedColumns.length > 0) {
+                  text = " for selected columns";
                   $('#suggestionsTitle').find('.selectedVariable').text(text);
                 }
             }
@@ -1123,7 +1159,7 @@
 
               var selectedValue = getSelectionText();
               var selectedVariable = getSelectedVariable();
-              console.log("start update " + selectedVariable);
+              // console.log("start update " + selectedVariable);
               var activeCell = slickGrid.getActiveCell();
               var selectedRows = slickGrid.getSelectedRows();
               var keepSuggestionApplyingTo;
@@ -1145,7 +1181,10 @@
                     keepSuggestionApplyingTo = "cell";                       
                   }
                 }
-               }
+               } else if(selectedColumns.length > 0) {
+                  keepSuggestionApplyingTo = selectedColumns.length == 1 ? "column" : "columns"; 
+               }  
+               console.log("Suggestions for : "+keepSuggestionApplyingTo);
               
                
               var suggestionsToShow  = _.filter(transformation, function(p){ return _.contains(p.applyTo, keepSuggestionApplyingTo); });
@@ -1173,14 +1212,12 @@
 
             function getSelectedVariable(){
                var activeCell = slickGrid.getActiveCell();
-                
-                
+                                
                 if(activeCell != null) {
                   return slickGrid.getColumns()[activeCell.cell].id;
-                }  
-                else return null;
-
-
+                } else if(selectedColumns.length > 0) {
+                  return selectedColumns;
+                } else return null;
 
             }
 
@@ -1281,7 +1318,7 @@
                   slickGrid.invalidateRows(args.rows);
                   slickGrid.render();
               });
-                   
+                   /*
               slickGrid.onContextMenu.subscribe(function (e) {
                 e.preventDefault();
                 var cell = slickGrid.getCellFromEvent(e);
@@ -1302,8 +1339,8 @@
                           $("#contextMenu").hide();
                     });
               });
-
-
+              */
+            
               dataView.beginUpdate();
               dataView.setItems(dataset.rows);
               dataView.setFilter(filter);
@@ -1346,7 +1383,7 @@
                           // dataView.sort(comparer, false);
                           break;
                       case "duplicate-column":
-                          dataset.addColumn(args.column.name,"return row."+args.column.field+";");
+                          dataset.copyColumn(args.column.id);
                           refreshData();
                           break;
                       case "delete-column":
@@ -1393,9 +1430,13 @@
                 };
               
                 slickGrid.onSelectedRowsChanged.subscribe(function(e, args) { 
-                  updateSuggestionsList(args.rows);
-                  slickGrid.invalidate(); 
-
+                  if(args.rows.length > 0) {
+                      selectedColumns = [];
+                      $('#myGrid').find(".slick-header > div > div").removeClass("selected-header");
+                      //console.log("selected rows: "+ args.rows);
+                      updateSuggestionsList(args.rows);
+                      slickGrid.invalidate(); 
+                  } 
                 });
 
                 previousColumns = _.map(slickGrid.getColumns(), function(element) { var x = {}; x[element.id] = {type:element.type, name:element.name}; return x; } );
@@ -1411,7 +1452,109 @@
                 shortcut.add("Shift+Delete",function() {
                   processSuggestion('remove-selected-lines');
                 },{'target':'myGrid'});
+
+
+                function sift3B(s1, s2, maxOffset, maxDistance) {
+                    if (s1 == null||!s1.length) {
+                        if (s2 == null) {
+                            return 0;
+                        }
+                        return s2.length;
+                    }
+
+                    if (s2 == null||!s2.length) {
+                        return s1.length;
+                    }
+
+                    var c1 = 0;
+                    var c2 = 0;
+                    var lcs = 0;
+                    var temporaryDistance;
+
+                    while ((c1 < s1.length) && (c2 < s2.length)) {
+                        if (s1.charAt(c1) == s2.charAt(c2)) {
+                            lcs++;
+                        } else {
+                            if (c1<c2) {
+                                c2=c1;
+                            } else {
+                                c1=c2;
+                            }
+                            for (var i = 0; i < maxOffset; i++) {
+                                if ((c1 + i < s1.length) && (s1.charAt(c1 + i) == s2.charAt(c2))) {
+                                    c1+= i;
+                                    break;
+                                }
+                                if ((c2 + i < s2.length) && (s1.charAt(c1) == s2.charAt(c2 + i))) {
+                                    c2+= i;
+                                    break;
+                                }
+                            }
+                        }
+                        c1++;
+                        c2++;
+                        if (maxDistance)
+                        {
+                            temporaryDistance=(c1+c2)/1.5-lcs;
+                            if (temporaryDistance>=maxDistance) return Math.round(temporaryDistance);
+                        }
+                    }
+                    return Math.round((s1.length + s2.length) / 1.5 - lcs);
+                }
+
+                function closestMatch(stringArray, str) {
+                    var distances = _.map(stringArray, function(e) { return sift3B(e,str); } );
+                    var currentMin = {val: +Infinity, idx: -1 } ;
+                    for(var i = 0, len = distances.length; i < len; i++) {
+                        if(currentMin.val > distances[i]) currentMin = { val: distances[i], idx: i};
+                    }
+                    return stringArray[currentMin.idx];
+                }
+
+                slickGrid.onHeaderClick.subscribe(function(event, col ) {  
+                    var selectedColumnId = col.column.id;
+                    slickGrid.setSelectedRows([]);
+                    slickGrid.invalidate();
+                    if(event.ctrlKey) {
+                        // shift or ctrl click
+                        selectedColumns = _.union(selectedColumns, selectedColumnId);
+                    } else if(event.shiftKey) {
+                        var currentSlickGridColumns = _.map(slickGrid.getColumns(),function(e) { return e.id; });
+                        var columnsToAdd = [];
+                        var maxIdx = _.max(_.map(selectedColumns,function(e) {return currentSlickGridColumns.indexOf(e);}));
+                        var colIdx = currentSlickGridColumns.indexOf(selectedColumnId);
+                        if(maxIdx == -Infinity) maxIdx = colIdx; 
+                        if(colIdx > maxIdx) {
+                            var tmp = maxIdx;
+                            maxIdx = colIdx;
+                            colIdx = tmp;
+                        }
+                        var i = colIdx;
+                        while(i <= maxIdx) {
+                            columnsToAdd.push(currentSlickGridColumns[i]);
+                            i++;
+                        }
+                        selectedColumns = _.union(selectedColumns, columnsToAdd);
+                    } else {
+                        selectedColumns = [selectedColumnId];    
+                    }
+                    $('#myGrid').find(".slick-header > div > div").removeClass("selected-header");
+                    for(var i = 0, len = selectedColumns.length; i < len; i++ ) {
+                        var columnElement = $('#myGrid').find('[id$=' + selectedColumns[i] + ']', '.slick-header');
+                        if(columnElement.length > 1) {  
+                            var columnIdInSlickGrid = closestMatch(_.map(columnElement,function(e) { return $(e).attr('id'); }),selectedColumns[i]);
+                            columnElement = $('#myGrid').find('#'+columnIdInSlickGrid);
+                        } 
+                        columnElement.addClass('selected-header');
+                    }
+                                
+                    //console.log("selected columns:" + selectedColumns);  
+                    updateSuggestionsList();
+                });
+
             } 
+
+
 
 
               /*
@@ -1537,7 +1680,7 @@
                   console.log("vizualisation");
                   var newVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
                   if(_.difference(previousVariables,newVariables).length + _.difference(newVariables,previousVariables).length) {
-                    console.log("removing vars");
+                    //console.log("removing vars");
                     $('.ui-state-default.variable.ui-draggable').remove();
                     addVariableList(dataset);
                     previousVariables = newVariables;
@@ -1552,6 +1695,7 @@
             var file_name;
             var dataset;
             var dataView;
+            var selectedColumns = [];
             var selectedVariable;
             var previousVariables;
             var previousColumns;
@@ -1563,6 +1707,7 @@
             for(var i = 0; i < 10; i++) {
                 colorCategory10 = colorCategory10.concat(colorCategory10);
              }
+
 
             var test;
             
