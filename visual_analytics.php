@@ -773,9 +773,9 @@
                   tag_id: 'remove-selected-columns' ,
                   applyTo: ["column", "columns"],
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected columns</a> </div> '},                    
-                  action: function(){
-                    for(var i = 0, len = selectedColumns.length; i < len; i++) {
-                      dataset.removeColumn(selectedColumns[i]);  
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.removeColumn(args.selectedVariable[i]);  
                     }
                     refreshData();
                   }
