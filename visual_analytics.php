@@ -443,24 +443,8 @@
 
           }
 
-/*
-          function indexOfKeywords(query, keywords){
-
-            if(query.indexOf(keywords[0]) > -1)
-              return query.indexOf(keywords[0])
-            else{
-              if(keywords.length > 1 ){
-                keywords.shift()
-                indexOfKeywords(query, keywords);
-              }
-              else
-                return -1;
-            }
-              
-          }
-*/
-          
-          function analyzeSearchInput(aQuery){
+   
+          function processQuery(aQuery){
             
             var queryKeywords = aQuery.split(" ");//split aSearchInput into a set of strings
             var allVariablesName = _.map(slickGrid.getColumns(), function(e) { return e.name; });
@@ -468,62 +452,108 @@
             var actionArgs = {};
             var selectedVariable = "undefined";
 
-            if(queryKeywords[0] == "rename"){
-              action = "rename-variable";
-              var queryEdited = aQuery.replace(queryKeywords[0],"").trim();
-              
-              selectedVariable = queryEdited.substring(0, queryEdited.indexOf('to')).trim(); //default case the  keywords after the action name and up to the keyword "to" is the variable name
-              if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
-                selectedVariable = findListElementinQuery(queryEdited, allVariablesName);
-              }
-
-              if(selectedVariable != "undefined"){
+            switch(queryKeywords[0])
+            {
+              case "rename": 
+                action = "rename-variable";
+                var queryEdited = aQuery.replace(queryKeywords[0],"").trim();
                 
-                queryEdited = queryEdited.replace(selectedVariable,"").trim();
+                selectedVariable = queryEdited.substring(0, queryEdited.indexOf('to')).trim(); //default case the  keywords after the action name and up to the keyword "to" is the variable name
+                if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
+                  selectedVariable = findListElementinQuery(queryEdited, allVariablesName);
+                }
+
+                if(selectedVariable != "undefined"){
+                  
+                  queryEdited = queryEdited.replace(selectedVariable,"").trim();
+                  
+                  var newColumnName;
+                  var from = queryEdited.indexOf('to') > -1 ? queryEdited.indexOf('to') + 2 : 0; //either we find the keyword 'to' or we take the remaining string in the query
+                  var to = queryEdited.length;
+                  
+                  newColumnName = queryEdited.substring(from, to).trim().replace(/'/g,"").replace(/"/g,"");
+
+                  selectedVariable = _.find(dataset.getColumns(), function(c){ return c.name == selectedVariable; }).id;//convert column name to id
+                  actionArgs = {selectedVariable: selectedVariable, newName: newColumnName };
+                }
+                else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+
+              case "replace": 
+                action = "replace-from-to";
+                queryKeywords.shift();//remove the first keyword which is the action
+
+                var selectedVariable = queryKeywords[queryKeywords.indexOf("in") + 1]; // selected Variable should be right after the keyword in
                 
-                var newColumnName;
-                var from = queryEdited.indexOf('to') > -1 ? queryEdited.indexOf('to') + 2 : 0; //either we find the keyword 'to' or we take the remaining string in the query
-                var to = queryEdited.length;
+
+                if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
+                  selectedVariable = findListElementinQuery(aQuery, allVariablesName);
+                }
+                else {
+                  queryKeywords.splice(queryKeywords.indexOf("in"),1); // remove the keyword in that was preceding the variable name
+                }
+
+                queryKeywords.splice(queryKeywords.indexOf(selectedVariable),1); // remove the variable name from the query
                 
-                newColumnName = queryEdited.substring(from, to).trim().replace(/'/g,"").replace(/"/g,"");
-
-                selectedVariable = _.find(dataset.getColumns(), function(c){ return c.name == selectedVariable; }).id;//convert column name to id
-                actionArgs = {selectedVariable: selectedVariable, newName: newColumnName };
-              }
-              else // as we couldnt define to which variable the action applies, we cancel
-                action = "undefined";              
-            } 
-
-            if(queryKeywords[0] == "replace"){
-              action = "replace-from-to";
-              queryKeywords.shift();//remove the first keyword which is the action
-
-              var selectedVariable = queryKeywords[queryKeywords.indexOf("in") + 1]; // selected Variable should be right after the keyword in
-              
-
-              if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
-                selectedVariable = findListElementinQuery(aQuery, allVariablesName);
-              }
-              else {
-                queryKeywords.splice(queryKeywords.indexOf("in"),1); // remove the keyword in that was preceding the variable name
-              }
-
-              queryKeywords.splice(queryKeywords.indexOf(selectedVariable),1); // remove the variable name from the query
-              
-              
-              var pivot = queryKeywords.indexOf("by");
-              
-              if(pivot > 0){
-                actionArgs = {
-                    selectedVariable: selectedVariable, 
-                    from:  _.first(queryKeywords, pivot ).join(" "),
-                    to:  _.rest(queryKeywords, pivot +1).join(" ")
-                  };
                 
-                console.log("from " + actionArgs.from + " and to " + actionArgs.to);
-              } 
-              else action = "undefined";              
+                var pivot = queryKeywords.indexOf("by");
+                
+                if(pivot > 0){
+                  actionArgs = {
+                      selectedVariable: selectedVariable, 
+                      from:  _.first(queryKeywords, pivot ).join(" "),
+                      to:  _.rest(queryKeywords, pivot +1).join(" ")
+                    };
+                  
+                  console.log("from " + actionArgs.from + " and to " + actionArgs.to);
+                } 
+                else action = "undefined";              
+                break;
+                case "remove":
+                    action = "remove-selected-lines";
+                    queryKeywords.shift();//remove the first keyword which is the action
+                    if( findListElementinQuery(queryKeywords, allVariablesName) != "undefined" ){ //if we found a variable, then we remove it. 
+                      action = "remove-column";
+                      actionArgs = { 
+                         selectedVariable: findListElementinQuery(queryKeywords, allVariablesName)
+                      } 
+                    } else{ // if no variables, we assumes the user wants to delete rows
+                      
 
+                      var rowsToDelete = aQuery.match(/\d+\.?\d*/g);
+
+                      
+                      if( queryKeywords.indexOf("to") > 0 || queryKeywords.indexOf("and") > 0 && rowsToDelete.length == 2) {// check if user hasnt defined a range like remove lines 2 to 10
+                        rowsToDelete.sort(function(a, b) { return a - b });
+                        var lowEnd = rowsToDelete[0] ;
+                        var highEnd = rowsToDelete[1];
+                        rowsToDelete = [];
+                        for (var i = lowEnd; i <= highEnd; i++) {
+                          rowsToDelete.push(i);
+                        }
+                      }
+
+                      if( queryKeywords.indexOf("top") > -1 || queryKeywords.indexOf("first") > -1 ) {// check if user hasnt defined a range like remove lines 2 to 10
+                        var highEnd = queryKeywords[queryKeywords.indexOf("top") + 1];
+                        var lowEnd = 1;
+
+                        rowsToDelete = [];
+                        for (var i = lowEnd; i <= highEnd; i++) {
+                          rowsToDelete.push(i);
+                        }
+                      }
+
+
+                      actionArgs = { 
+                        selectedLines: _.map(rowsToDelete, function(num){ return +num; }) // convert rowsToDelete to int
+                      }    
+
+                    } 
+                  
+                  break;
+
+                default:
+                  action = "undefined";
             }
 
             if(action != "undefined")
@@ -730,8 +760,12 @@
                   tag_id: 'remove-selected-lines' ,
                   applyTo: ["row", "rows"],
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected lines</a> </div> '},                    
-                  action: function(){
-                    dataset.removeLines(_.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} ));
+                  action: function(args){
+                    if(typeof args.selectedLines == "undefined")
+                      args.selectedLines = _.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} );
+
+                    console.log("going to remove " + args.selectedLines)
+                    dataset.removeLines(args.selectedLines);
                     refreshData();
                   }
                 },
@@ -1418,7 +1452,7 @@
                 };
 
                 $("#myModalSuggestion .suggestion input").each(function(){args[$(this).attr("args")] = $(this).val() ;}); //add all the value inside all the input of the action
-
+                console.log("args are " + args);
                 transformation[actionSelected].action(args);
                 $("#myModalSuggestion").modal('toggle');     // dismiss the dialog
               });
@@ -1845,7 +1879,7 @@
 
 
               $('#searchBox').bind("enterKey",function(e){
-                analyzeSearchInput($('#searchBox').val());
+                processQuery($('#searchBox').val());
               });
 
               $('#searchBox').keyup(function(e){
