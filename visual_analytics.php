@@ -1297,7 +1297,7 @@
             function processSuggestion(actionID, actionArgs) {
               if(transformation[actionID] !== null){
 
-                console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
+                //console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
                 transformation[actionID].action(actionArgs);
 
               } else {
@@ -1467,8 +1467,16 @@
                   for (var i = 0; i < columns.length; i++) {
                       var col = columns[i];
                       var filterValues = col.filterValues;
+                      var filterWildCard = col.filterWildCard;
 
-                      if (filterValues && filterValues.length > 0) {
+                      if (filterWildCard && filterWildCard.length > 0) {
+                          if(col.type == "date") {
+                            value = value & (item[col.field] != null ? item[col.field].toString("yyyy-MM-dd").indexOf(filterWildCard) >= 0 : false);
+                          } else {
+                            value = value & (item[col.field] != null ? (item[col.field] + '').indexOf(filterWildCard) >= 0 : false);
+                          }
+                      }
+                      else if (filterValues && filterValues.length > 0) {
                           if(col.type == "date") {
                             value = value & _.contains(_.map(filterValues,function(d){return +d;}), +item[col.field]);
                           } else {
@@ -1645,7 +1653,11 @@
                 },{'target':'myGrid'});
 
                 shortcut.add("Shift+Delete",function() {
-                  processSuggestion('remove-selected-lines');
+                  if(slickGrid.getSelectedRows().length > 0) {
+                      processSuggestion('remove-selected-lines',{});
+                  } else if(selectedColumns.length > 0) {
+                    processSuggestion('remove-selected-columns',{selectedVariable:this.getSelectedVariable()});
+                  }
                 },{'target':'myGrid'});
 
 

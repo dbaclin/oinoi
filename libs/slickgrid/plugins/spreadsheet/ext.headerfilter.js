@@ -23,7 +23,9 @@
             buttonImage: "./images/down.png",
             filterImage: "./images/filter.png",
             sortAscImage: "./images/sort-asc.png",
-            sortDescImage: "./images/sort-desc.png"
+            sortDescImage: "./images/sort-desc.png",
+            deleteImage: "./images/icon-trash.png",
+            copyImage: "./images/icon-copy.png"
         };
         var $menu;
 
@@ -98,11 +100,33 @@
              .appendTo($item);
         }
 
+        function addMenuInputItem(menu, columnDef, title, command, image) {
+            var $item = $("<div class='slick-header-menuitem'>")
+                         .data("command", command)
+                         .data("column", columnDef)
+                         .appendTo(menu);
+
+            var $icon = $("<div class='slick-header-menuicon'>")
+                         .appendTo($item);
+
+            if (image) {
+                $icon.css("background-image", "url(" + image + ")");
+            }
+
+            $("<span class='slick-header-menucontent'><input type='text' args='wildcard' style='width: 180px; padding: 0px; margin: 0px;'>")
+             .appendTo($item);
+
+            if(columnDef.filterWildCard && columnDef.filterWildCard.length > 0) { 
+                $item.find('input').val(columnDef.filterWildCard);
+            }
+        }
+
         function showFilter(e) {
             var $menuButton = $(this);
             var columnDef = $menuButton.data("column");
 
             columnDef.filterValues = columnDef.filterValues || [];
+            columnDef.filterWildCard = columnDef.filterWildCard || "";
 
             // WorkingFilters is a copy of the filters to enable apply/cancel behaviour
             var workingFilters = columnDef.filterValues.slice(0);
@@ -126,8 +150,9 @@
 
             addMenuItem($menu, columnDef, 'Sort Ascending', 'sort-asc', options.sortAscImage);
             addMenuItem($menu, columnDef, 'Sort Descending', 'sort-desc', options.sortDescImage);
-            addMenuItem($menu, columnDef, 'Duplicte Column', 'duplicate-column', null);
-            addMenuItem($menu, columnDef, 'Delete Column', 'delete-column', null);
+            addMenuItem($menu, columnDef, 'Duplicte Column', 'duplicate-column', options.copyImage);
+            addMenuItem($menu, columnDef, 'Delete Column', 'delete-column', options.deleteImage);
+            addMenuInputItem($menu, columnDef, 'Filter Column', 'filter-column-wildcard', options.filterImage);
 
             var filterOptions = "<label><input type='checkbox' value='-1' />(Select All)</label>";
 
@@ -147,7 +172,9 @@
                 .appendTo($menu)
                 .bind('click', function (ev) {
                     columnDef.filterValues = workingFilters.splice(0);
-                    setButtonImage($menuButton, columnDef.filterValues.length > 0);
+                    columnDef.filterWildCard = ($menu.find('input').val().length == 0 ? null : $menu.find('input').val());
+                    setButtonImage($menuButton, (columnDef.filterWildCard != null && columnDef.filterWildCard.length > 0) 
+                                                || columnDef.filterValues.length > 0);
                     handleApply(ev, columnDef);
                 });
 
@@ -155,6 +182,7 @@
                 .appendTo($menu)
                 .bind('click', function (ev) {
                     columnDef.filterValues.length = 0;
+                    columnDef.filterWildCard = null;
                     setButtonImage($menuButton, false);
                     handleApply(ev, columnDef);
                 });
@@ -215,7 +243,7 @@
 
         function handleApply(e, columnDef) {
             hideMenu();
-            console.log(columnDef.filterValues);
+            //console.log(columnDef.filterValues);
             if(_.contains(columnDef.filterValues,"null")) {
                 columnDef.filterValues = _.map(columnDef.filterValues,function(d) { return (d == "null") ? null : d; });
             } 
@@ -261,7 +289,7 @@
             */
             var seen = {};
             for (var i = 0, len = dataView.getLength(), limit = 200; _.size(seen) < limit && i < len ; i++) {
-                var value = data[i][column.field];
+                var value =  dataView.getItem(i)[column.field];
                 if(column.type == "date" && value !== null) {
                     seen[value.toString("yyyy-MM-dd hh:mm:ss")] = 1;
                 }

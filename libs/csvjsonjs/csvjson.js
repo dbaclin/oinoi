@@ -59,12 +59,13 @@ var csvjson = {};
 		var csvheaders = splitCSV(csvlines[0], delim);
 		var newcsvheaders = [];
 		for(var i in csvheaders) {
+		  csvheaders[i] = csvheaders[i].trim();	
 		  if(csvheaders[i].length == 0) newcsvheaders[i] = "_MISSING_" + i;
 		  else {
-		      var newColName = cleanString(csvheaders[i].trim());
+		      var newColName = cleanString(csvheaders[i]);
 		      var idx = 0;
 		      while(_.contains(newcsvheaders,newColName)) {
-		      	newColName = cleanString(csvheaders[i].trim()) + "_" + idx;
+		      	newColName = cleanString(csvheaders[i]) + "_" + idx;
 		      	idx++;
 		      } 
 		      newcsvheaders[i] = newColName;
