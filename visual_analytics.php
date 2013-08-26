@@ -29,6 +29,8 @@
           
           <div class="row-fluid">
             <div class="span3">
+
+              <div id="accordion">
                 <div id="suggestionContainer">
                   <div class="menu" id="suggestionsBanner">
                     <span id="suggestionsTitle">Suggestions <span class="selectedVariable"></span></span>
@@ -38,7 +40,16 @@
                      </div>     
                   </div>
                 </div>
-                
+                <div id="stepsContainer">
+                  <div class="menu" id="stepsBanner">
+                    <span id="suggestionsTitle">Steps </span>
+                  </div>
+                  <div id="stepsList">
+                     <div class="step" >
+                     </div>     
+                  </div>
+                </div>
+               </div> 
                   
                 
 
@@ -432,12 +443,12 @@
           function findListElementinQuery(aQuery, aList){
             var res = "undefined";
 
-                for(i = 0; i < aList.length; i++) {
-                  if(aQuery.indexOf(aList[i]) > 0){
-                    res = aList[i];
-                    break;
-                  }
-                }
+            for(i = 0; i < aList.length; i++) {
+              if(aQuery.indexOf(aList[i]) > 0){
+                res = aList[i];
+                break;
+              }
+            }
             return res;
               
 
