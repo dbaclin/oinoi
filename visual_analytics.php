@@ -847,7 +847,7 @@
                   
             var allVariables = { "variables" : []};
             
-            var allColumns = _.map(dataset.getColumns(),function(d) { return d.id; });
+            var allColumns = _.reject(_.map(dataset.getColumns(),function(d) { return d.id; }),function(e) {return e == "id";});
 
             for(var i = 0, len = allColumns.length; i < len; i++) {
                 
