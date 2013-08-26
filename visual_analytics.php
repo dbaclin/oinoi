@@ -1418,8 +1418,6 @@
               $("#contextMenu").click(function (e) {
                 var actionSelected = $(e.target).attr('data-action');
 
-                
-
                 switch(actionSelected){
                   case "change-header": 
                     transformation[actionSelected].action();
@@ -1431,31 +1429,36 @@
                     var selectedVariable = $("#contextMenu").data("selectedVariable");
                     var newType = $(e.target).html();
                     transformation[actionSelected].action(selectedVariable, newType);
-                  break;
-                  
+                    break;
                   default:
                       $("#myModalSuggestion .modal-body").empty().append(transformation[actionSelected].html());
                       $("#myModalSuggestion").modal('toggle');
-                }
-              });
 
-              $("#myModalSuggestion").on("hidden", function() {    // remove the event listeners when the dialog is dismissed            
-                $("#myModalSuggestion button.btn-primary").off('click').unbind('click');
-                $("#myModalSuggestion").unbind('on');
-              });
-               
-              $("#myModalSuggestion button.btn-primary").click( function() {
-                var actionSelected = $("#myModalSuggestion .suggestion").attr("action");     
-                
-                var args = {
-                  selectedVariable: $("#contextMenu").data("selectedVariable")
-                };
+                      $("#myModalSuggestion").on("hidden", function() {    // remove the event listeners when the dialog is dismissed            
+                      $("#myModalSuggestion button.btn-primary").off('click').unbind('click');
+                      $("#myModalSuggestion").unbind('on');
+                      });
+                     
+                      $("#myModalSuggestion button.btn-primary").click( function() {
+                        var actionSelected = $("#myModalSuggestion .suggestion").attr("action");     
+                        
+                        var args = {
+                          selectedVariable: $("#contextMenu").data("selectedVariable")
+                        };
 
-                $("#myModalSuggestion .suggestion input").each(function(){args[$(this).attr("args")] = $(this).val() ;}); //add all the value inside all the input of the action
-                console.log("args are " + args);
-                transformation[actionSelected].action(args);
-                $("#myModalSuggestion").modal('toggle');     // dismiss the dialog
+                        $("#myModalSuggestion .suggestion").find("input, select").each(function(){args[$(this).attr("args")] = $(this).val() ;}); //add all the value inside all the input of the action
+                        console.log("args are " + args);
+                        transformation[actionSelected].action(args);
+                        $("#myModalSuggestion").modal('toggle');     // dismiss the dialog
+                      });
+
+                      $('#myModalSuggestion').draggable({
+                         handle: ".modal-body"
+                       }); 
+                      break;
+                  }
               });
+              
             }
     
 
@@ -1521,7 +1524,7 @@
                   slickGrid.invalidateRows(args.rows);
                   slickGrid.render();
               });
-              /*     
+                  
               slickGrid.onContextMenu.subscribe(function (e) {
                 e.preventDefault();
                 var cell = slickGrid.getCellFromEvent(e);
@@ -1529,7 +1532,9 @@
 
                 if(cell != null) {
                     selectedVariable = slickGrid.getColumns()[cell.cell].id;
-                  }
+                }
+                console.log("selected variable: "+selectedVariable); 
+
 
                 $("#contextMenu")
                     .data("selectedVariable", selectedVariable)
@@ -1542,7 +1547,7 @@
                           $("#contextMenu").hide();
                     });
               });
-              */
+              
             
               dataView.beginUpdate();
               dataView.setItems(dataset.rows);
@@ -1733,7 +1738,7 @@
                 slickGrid.onHeaderClick.subscribe(function(event, col ) {  
                     var selectedColumnId = col.column.id;
                     if(selectedColumnId == "id") return;
-                    
+
                     slickGrid.setSelectedRows([]);
                     var currentSlickGridColumns = _.map(slickGrid.getColumns(),function(e) { return e.id; });
 
@@ -1902,12 +1907,12 @@
               $('#ui-id-2').click(function() {
                 console.log("vizualisation");
                 var newVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
-                if(_.difference(previousVariables,newVariables).length + _.difference(newVariables,previousVariables).length) {
-                  console.log("removing vars");
+                //if(_.difference(previousVariables,newVariables).length + _.difference(newVariables,previousVariables).length) {
+                //  console.log("removing vars");
                   $('.ui-state-default.variable.ui-draggable').remove();
                   addVariableList(dataset);
                   previousVariables = newVariables;
-                }
+                //}
               });
 
 
