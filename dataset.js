@@ -185,14 +185,24 @@
           for (var i = 0, len=this.rows.length; i < len; i++) {
               var currentValue = this.rows[i][columnId];
               if (currentValue != null && typeof currentValue != newType) {
-                  if (newType == "date") this.rows[i][columnId] = currentValue == null ? null : Date.parse(currentValue);
-                  else if (newType == "number") {
-                      var valueToTransform = (currentValue + "").replace(/[\$£€ ,]/g,"");
+                  if (newType == "date") { 
+                    var localDate = new Date(currentValue);
+                    if(localDate == "Invalid Date")
+                      localDate = Date.parse(currentValue);
+                    if(localDate != null && localDate.getMonth() != undefined)
+                        this.rows[i][columnId] = localDate;
+                    else this.rows[i][columnId] = currentValue;
+                  } else if (newType == "number") {
+                      var valueToTransform = currentValue;
+                      if(!(typeof currentValue == "object" && currentValue.getMonth() != undefined))
+                        valueToTransform = (currentValue + "").replace(/[\$£€ ,]/g,"");
                       var localFloat = (valueToTransform - 0); // remove all , in the input numbers
                       this.rows[i][columnId] = !isNaN(localFloat) ? localFloat : 
-                                               valueToTransform.length > 1 ? valueToTransform : null;
+                                               valueToTransform.length > 0 ? currentValue : null;
                   } else if (newType == "string") {
-                      this.rows[i][columnId] = currentValue.toString();
+                      if(typeof currentValue == "object" && currentValue.getMonth() != undefined) {
+                        this.rows[i][columnId] = currentValue.toString("yyyy-MM-dd");  
+                      } else this.rows[i][columnId] = currentValue.toString();
                   }
               }
           }
