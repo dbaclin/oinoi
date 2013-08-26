@@ -26,40 +26,46 @@
   </ul>
   <div id="tabs-1" class="tabs-no-padding">
     <div class="container-fluid main-page">
-          
           <div class="row-fluid">
-            <div class="span3">
 
-              <div id="accordion">
-                <div id="suggestionContainer">
-                  <div class="menu" id="suggestionsBanner">
-                    <span id="suggestionsTitle">Suggestions <span class="selectedVariable"></span></span>
+           
+              
+              <div  class="span3">
+                     
+                <div id="accordion-resizer" class="ui-widget-content">
+                  <div id="accordion">
+                    <div class="menu" id="suggestionsBanner">
+                        <span id="suggestionsTitle">Suggestions <span class="selectedVariable"></span></span>
+                    </div>
+                    <div id="suggestionContainer">
+                      
+                      <div id="suggestionsList">
+                         <div class="suggestion" >
+                         </div>     
+                      </div>
+                    </div>
+                    <div class="menu" id="stepsBanner">
+                        <span id="suggestionsTitle">Steps </span>
+                    </div>
+                    <div id="stepsContainer">
+                      
+                      <div id="stepsList">
+                         
+                      </div>
+                    </div>
+                   </div> 
                   </div>
-                  <div id="suggestionsList">
-                     <div class="suggestion" >
-                     </div>     
-                  </div>
+       
                 </div>
-                <div id="stepsContainer">
-                  <div class="menu" id="stepsBanner">
-                    <span id="suggestionsTitle">Steps </span>
-                  </div>
-                  <div id="stepsList">
-                     <div class="step" >
-                     </div>     
-                  </div>
-                </div>
-               </div> 
-                  
-                
 
-                
-                
 
-                
-                
-            </div>
-            <div class="span9" >
+              
+              
+            
+
+
+          
+            <div  class="span9" >
                  <input id="searchBox" size="400" />
                  <div id="myGrid" style="width:100%;height:600px;"></div>
                  
@@ -206,6 +212,18 @@
             max_width: 6,
             max_height: 6
         };
+            
+
+
+         $( "#accordion" ).accordion({
+              heightStyle: "fill"
+            });
+
+
+
+         
+          
+
             // initialize gridster
             
         layout = $('.layouts_grid ul').gridster({
@@ -435,20 +453,22 @@
                 return a;
             };
 
-            return availableTags = arrayUnique(allVariablesName.concat(allActionName));
+            return availableTags = arrayUnique(allVariablesName.concat(allActionName)).sort();
 
           }
 
 
           function findListElementinQuery(aQuery, aList){
-            var res = "undefined";
+            var res = [];
 
             for(i = 0; i < aList.length; i++) {
-              if(aQuery.indexOf(aList[i]) > 0){
-                res = aList[i];
-                break;
+              if(aQuery.indexOf(aList[i]) > -1){
+                var varID = _.find(dataset.getColumns(), function(c){ return c.name == aList[i]; }).id;//convert column name to id
+                res.push(varID);
+
               }
             }
+
             return res;
               
 
@@ -463,8 +483,31 @@
             var actionArgs = {};
             var selectedVariable = "undefined";
 
+            if(queryKeywords[0] == "keep"){
+              if(queryKeywords.indexOf('where') > -1){
+                queryKeywords[0] = "filter";
+              }
+
+            }
+
+
             switch(queryKeywords[0])
             {
+              
+               case "filter": 
+                action = "keep-only-records-where";
+
+                queryKeywords.shift();
+                
+                
+                if(queryKeywords.indexOf("where") > -1){ 
+                  var pivotKeyword = queryKeywords.indexOf("where");
+                  var filter = convertRawFilterIntoFilter(_.rest(queryKeywords ,pivotKeyword + 1).join(" "));
+                  
+                  actionArgs = {filter: filter};
+                } else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+
               case "rename": 
                 action = "rename-variable";
                 var queryEdited = aQuery.replace(queryKeywords[0],"").trim();
@@ -474,8 +517,8 @@
                   selectedVariable = findListElementinQuery(queryEdited, allVariablesName);
                 }
 
-                if(selectedVariable != "undefined"){
-                  
+                if(selectedVariable.length != 1){ // there is eitehr 0 or more va
+                  selectedVariable = selectedVariable[0];
                   queryEdited = queryEdited.replace(selectedVariable,"").trim();
                   
                   var newColumnName;
@@ -499,6 +542,7 @@
 
                 if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
                   selectedVariable = findListElementinQuery(aQuery, allVariablesName);
+                  selectedVariable = selectedVariable[0];
                 }
                 else {
                   queryKeywords.splice(queryKeywords.indexOf("in"),1); // remove the keyword in that was preceding the variable name
@@ -523,11 +567,25 @@
                 case "remove":
                     action = "remove-selected-lines";
                     queryKeywords.shift();//remove the first keyword which is the action
-                    if( findListElementinQuery(queryKeywords, allVariablesName) != "undefined" ){ //if we found a variable, then we remove it. 
-                      action = "remove-column";
-                      actionArgs = { 
-                         selectedVariable: findListElementinQuery(queryKeywords, allVariablesName)
-                      } 
+                    
+                    if( aQuery.match(/\d+\.?\d*/g) == null) {
+                      action = "remove-selected-columns";
+                      
+                      if(queryKeywords.indexOf("but") > 0){
+                        var variableToKeep = findListElementinQuery(aQuery, allVariablesName);
+                        selectedVariable = _.difference(_.map(dataset.getColumns(), function(num){ return num.id; }), variableToKeep);
+                        
+                        actionArgs = { 
+                           selectedVariable: selectedVariable
+                        } 
+
+                      } else if( findListElementinQuery(aQuery, allVariablesName).length > 0 ){ //if we found at least 1 variable, then we remove it. 
+                        selectedVariable = [];
+                        selectedVariable.push(findListElementinQuery(aQuery, allVariablesName));
+                        actionArgs = { 
+                           selectedVariable: selectedVariable
+                        } 
+                      } else action = "undefined"; 
                     } else{ // if no variables, we assumes the user wants to delete rows
                       
 
@@ -566,7 +624,7 @@
                 default:
                   action = "undefined";
             }
-
+            console.log("execute " + action + " with args " + actionArgs.selectedVariable );
             if(action != "undefined")
               processSuggestion(action, actionArgs);
 
@@ -575,8 +633,9 @@
           function defineTransformation(){
               return  {'replace-from-to': {
                   tag_id: 'replace-from-to' ,
-                  applyTo: ["cellContent","column","columns"],
+                  applyTo: ["cellContent"],
                   keywords: ["with", "by"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Replace <span args="from">' + args.from + '</span> by <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"> <div class="editorButton addButton"></div></div>'},
                   action: function(args){
                     if(typeof args.selectedVariable != "undefined" ){
@@ -600,6 +659,7 @@
                         }
 
                         slickGrid.invalidate();
+                        this.writeALog(args);
                       };   
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
                     
@@ -700,14 +760,17 @@
                 'keep-only-records-where': {
                   tag_id: 'keep-only-records-where' ,
                   applyTo: ["cell", "cellContent","column"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep records if</a><input type="text" class="suggestion where expression"></div>'},
-                  action: function(){
-                    var newVariableName = suggestion.find('.new-variable-name').val();
-                    var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
-                    if(newVariableName.length > 0 && functionString.length > 0) {
-                      dataset.addColumn(newVariableName,functionString);
+                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Filter rows where <span args="filter">' + args.filter + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep records if</a><input type="text" args="filter"></div>'},
+                  action: function(args){
+
+                    var functionString = args.filter;
+                    if(functionString.length > 0) {
+                      dataset.applyFunctionOnRows(functionString);
                       refreshData();
+                      this.writeALog(args);
                     }
+
                   }
                 },
                  'create-new-variable-expression': {
@@ -715,9 +778,10 @@
                   applyTo: ["column"],
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create a new variable</a><input class="suggestion new-variable-name" type="text"><a href="#"> using the expression </a> <input type="text" class="suggestion where expression"></div>'},
                   action: function(){
+                    var newVariableName = suggestion.find('.new-variable-name').val();
                     var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
-                    if(functionString.length > 0) {
-                      dataset.applyFunctionOnRows(functionString);
+                    if(newVariableName.length > 0 && functionString.length > 0) {
+                      dataset.addColumn(newVariableName,functionString);
                       refreshData();
                     }
                   }
@@ -753,6 +817,7 @@
                 'rename-variable': {
                   tag_id: 'rename-variable' ,
                   applyTo: ["column", "cell", "cellContent"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Rename column <span args="selectedVariable">' + args.selectedVariable + '</span>  in <span args="newName">' + args.newName + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Rename column to </a> <input type="text" args="newName"></div> '},                    
                   action: function(args){
                     if(typeof args.selectedVariable != "undefined" ){
@@ -761,33 +826,35 @@
                       }
                       dataset.renameColumn(args.selectedVariable, args.newName.trim());
                       refreshData();
+                      this.writeALog(args);
                     } else console.log('No variable defined. Cannot execute the rename function');
                   }
                 },
-
-
-
                 'remove-selected-lines': {
                   tag_id: 'remove-selected-lines' ,
                   applyTo: ["row", "rows"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Remove rows <span args="from">' + args.selectedLines.join(",") + '</span>  </div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected lines</a> </div> '},                    
                   action: function(args){
                     if(typeof args.selectedLines == "undefined")
                       args.selectedLines = _.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} );
-
-                    console.log("going to remove " + args.selectedLines)
                     dataset.removeLines(args.selectedLines);
+                    this.writeALog(args);
                     refreshData();
                   }
                 },
                 'remove-selected-columns': {
                   tag_id: 'remove-selected-columns' ,
                   applyTo: ["column", "columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Remove column <span args="from">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected columns</a> </div> '},                    
                   action: function(args){
+                      console.log("just removed " + args.selectedVariable);
                     for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      console.log("just removed " + args.selectedVariable[i])
                       dataset.removeColumn(args.selectedVariable[i]);  
                     }
+                    this.writeALog(args);
                     refreshData();
                   }
                 },
@@ -808,6 +875,7 @@
                 'change-header': {
                   tag_id: 'change-header' ,
                   applyTo: ["firstLine"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert 1st row into column names</div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Use first line as column names</a></div>'},                    
                   action: function(){
                     var newHeader = []; 
@@ -819,6 +887,7 @@
                     }
                     dataset.rows = dataset.rows.slice(1); // remove the header row from the grid
                     dataset.changeHeader(columnIdsToReplace,newHeader);
+                    writeALog();
                     refreshData();
                   }
                 }
@@ -1303,6 +1372,73 @@
                 else res = res + str.charAt(i);
               }
               return res;
+            }
+
+
+            function convertRawFilterIntoFilter(aRawFilter){              
+              return 'return '+ _.map( aRawFilter.split("and"), function(c){ return convertAClauseIntoAFilter(c); }).join(" && ") + ';';
+            }
+
+
+            function convertAClauseIntoAFilter(aClause){
+              var operators = [
+                  {
+                keyword: "greater",
+                symbol: ">"
+              },
+              {
+                keyword: "lower",
+                symbol: "<"
+              },
+              {
+                keyword: "equal",
+                symbol: "=="
+              } ,
+                {
+                keyword: "is",
+                symbol: "=="
+              } 
+            ]
+
+            operators.forEach( function(o){ return aClause = converAClause(aClause, o.keyword, o.symbol );});
+            return  aClause;
+
+            
+
+              function converAClause(aClause, keyword, symbol){
+
+
+                var allVariablesName = _.rest(_.map(dataset.getColumns(), function(e){return e.name;}), 1);
+                var leftSide = "";
+                var rightSide = "";
+                var operator = symbol;
+
+                var clauseKeywords = aClause.split(" ");
+                if (clauseKeywords.indexOf(keyword)  > 0)
+                {
+                  
+
+                  leftSide = _.first(clauseKeywords, clauseKeywords.indexOf(keyword) ).join(" ");
+                  leftSide = "row."+ findListElementinQuery(leftSide, allVariablesName)[0];
+                  
+                  rightSide = _.rest(clauseKeywords, clauseKeywords.indexOf(keyword) + 1);
+                  
+
+
+                  if(keyword =="greater" || keyword =="lower" || keyword =="equal" || keyword =="equals"){
+                    rightSide = rightSide.join(" ").match(/\d+\.?\d*/g);  
+
+                    
+
+                  } else{
+                    
+                    rightSide = '"' + rightSide.join(" ") + '"';
+                  }
+                  return leftSide + " " + operator + " " + rightSide;
+                } else
+                    return aClause;
+                
+             }
             }
 
             function processSuggestion(actionID, actionArgs) {
@@ -1924,6 +2060,9 @@
 
               $('#searchBox').bind("enterKey",function(e){
                 processQuery($('#searchBox').val());
+                $('#searchBox').val("")
+
+
               });
 
               $('#searchBox').keyup(function(e){
@@ -1967,6 +2106,9 @@
 
                   }
                 });
+
+
+             
 
             }
             

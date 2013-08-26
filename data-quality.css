@@ -662,3 +662,47 @@ text-decoration: none;
     width: 50%;
 
 }
+
+#accordion-resizer{
+    padding: 5px;
+    height: 600px;
+
+
+}
+
+
+#accordion-resizer ui-accordion {
+    border: none;
+
+
+}
+
+#accordion-resizer ui-accordion-header {
+    border: none;
+
+
+}
+
+#accordion-resizer ui-accordion-content {
+    border: none;
+
+
+}
+
+
+ 
+#separator {
+    background-color: #EEE;
+    border: 1px solid #CCC;
+    display: block;
+    outline: none;
+    width: 1%;
+}
+.use-sidebar #separator {
+    background: url('./images/vertical-separator.gif') repeat-y center top;
+    border-color: #FFF;
+}
+#separator:hover {
+    border-color: #ABC;
+    background: #DEF;
+}

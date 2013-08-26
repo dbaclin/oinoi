@@ -14,7 +14,7 @@
           var myfun = new Function("row", expression);
           var newdataset = _.filter(this.rows, myfun);
           if(newdataset.length > 0) {
-            this.rows = newdataset
+            this.rows = newdataset;
           } else {
             alert("function: " + expression + " would result in an empty dataset");
           }
