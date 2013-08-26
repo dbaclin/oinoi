@@ -113,7 +113,8 @@
                 $icon.css("background-image", "url(" + image + ")");
             }
 
-            $("<span class='slick-header-menucontent'><input type='text' args='wildcard' style='width: 180px; padding: 0px; margin: 0px;'>")
+            //$("<span class='slick-header-menucontent'><input type='text' args='wildcard' style='width: 180px; padding: 0px; margin: 0px;'>")
+            $("<span class='slick-header-menucontent'><input type='text' args='wildcard'>")
              .appendTo($item);
 
             if(columnDef.filterWildCard && columnDef.filterWildCard.length > 0) { 
