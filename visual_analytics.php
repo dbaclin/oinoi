@@ -1532,7 +1532,7 @@
                   slickGrid.invalidateRows(args.rows);
                   slickGrid.render();
               });
-                   
+              /*     
               slickGrid.onContextMenu.subscribe(function (e) {
                 e.preventDefault();
                 var cell = slickGrid.getCellFromEvent(e);
@@ -1553,7 +1553,7 @@
                           $("#contextMenu").hide();
                     });
               });
-              
+              */
             
               dataView.beginUpdate();
               dataView.setItems(dataset.rows);
@@ -1642,11 +1642,23 @@
                         return { "cssClasses":"row-currently-selected" };
                     }
                 };
+
+                function removeHighlightOnColumns() {
+                  
+                  var currentSlickGridColumns = _.map(slickGrid.getColumns(),function(e) {return e.id;});
+                  var selectedColumnsIndexes = _.map(selectedColumns,function(e) {return currentSlickGridColumns.indexOf(e);});
+                  for(var i = 0, len = selectedColumnsIndexes.length; i < len; i++) {
+                    delete(slickGrid.getColumns()[selectedColumnsIndexes[i]].cssClass);  
+                  }
+                  $('#myGrid').find(".slick-header > div > div").removeClass("selected-header");
+                }
               
                 slickGrid.onSelectedRowsChanged.subscribe(function(e, args) { 
                   if(args.rows.length > 0) {
-                      selectedColumns = [];
-                      $('#myGrid').find(".slick-header > div > div").removeClass("selected-header");
+                      if(selectedColumns.length > 0) {
+                        removeHighlightOnColumns();
+                        selectedColumns = [];
+                      }
                       //console.log("selected rows: "+ args.rows);
                       updateSuggestionsList(args.rows);
                       slickGrid.invalidate(); 
@@ -1731,13 +1743,17 @@
 
                 slickGrid.onHeaderClick.subscribe(function(event, col ) {  
                     var selectedColumnId = col.column.id;
+                    if(selectedColumnId == "id") return;
+                    
                     slickGrid.setSelectedRows([]);
-                    slickGrid.invalidate();
+                    var currentSlickGridColumns = _.map(slickGrid.getColumns(),function(e) { return e.id; });
+
+                    if(selectedColumns.length > 0) removeHighlightOnColumns();
+                    
                     if(event.ctrlKey) {
                         // shift or ctrl click
                         selectedColumns = _.union(selectedColumns, selectedColumnId);
                     } else if(event.shiftKey) {
-                        var currentSlickGridColumns = _.map(slickGrid.getColumns(),function(e) { return e.id; });
                         var columnsToAdd = [];
                         var maxIdx = _.max(_.map(selectedColumns,function(e) {return currentSlickGridColumns.indexOf(e);}));
                         var colIdx = currentSlickGridColumns.indexOf(selectedColumnId);
@@ -1756,7 +1772,9 @@
                     } else {
                         selectedColumns = [selectedColumnId];    
                     }
-                    $('#myGrid').find(".slick-header > div > div").removeClass("selected-header");
+
+                    var selectedColumnsIndexes = _.map(selectedColumns,function(e) {return currentSlickGridColumns.indexOf(e);});
+
                     for(var i = 0, len = selectedColumns.length; i < len; i++ ) {
                         var columnElement = $('#myGrid').find('[id$=' + selectedColumns[i] + ']', '.slick-header');
                         if(columnElement.length > 1) {  
@@ -1764,8 +1782,11 @@
                             columnElement = $('#myGrid').find('#'+columnIdInSlickGrid);
                         } 
                         columnElement.addClass('selected-header');
+                        
+                        slickGrid.getColumns()[selectedColumnsIndexes[i]].cssClass = "column-currently-selected";
                     }
-                                
+                         
+                    slickGrid.invalidate();       
                     //console.log("selected columns:" + selectedColumns);  
                     updateSuggestionsList();
                 });

@@ -608,8 +608,16 @@ cursor: hand;
     background-color: inherit;
 }
 
-#myGrid .slick-row.row-currently-selected {
+#myGrid .slick-row.row-currently-selected,
+#myGrid .column-currently-selected {
     background-color: #ddd;
+}
+
+.slick-header-menucontent input[args=wildcard] {
+    width: 180px; 
+    padding: 0px; 
+    margin: 0px;
+    border-radius: 2px;
 }
 
 /*
