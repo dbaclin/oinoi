@@ -22,7 +22,7 @@
               <ul>
     <li><a href="#tabs-1">Wrangle</a></li>
     <li><a href="#tabs-2">Visualize</a></li>
-    
+    <li><a href="#">Share</a></li>
   </ul>
   <div id="tabs-1" class="tabs-no-padding">
     <div class="container-fluid main-page">
@@ -65,7 +65,7 @@
 
 
           
-            <div  class="span9" >
+            <div  class="span9 data-wrangling" >
                  <input id="searchBox" size="400" />
                  <div id="myGrid" style="width:100%;height:600px;"></div>
                  
@@ -117,12 +117,10 @@
           <div class="row-fluid">
             <div class="span2 list-var" style="align:right;">
               <ul id="variables" >
-              <li id="share" style="background: white; border: 1px solid #444; font-weight: 600; font-size: 14px; margin-bottom: 7px;">
-                <i class="icon-share"></i> Share Dashboard
-              </li>
+              
               </ul>
             </div>
-            <div class="span10 layouts_grid" id="layouts_grid">
+            <div class="span10 visualization-dashboard layouts_grid" id="layouts_grid">
           <ul>
           </ul>
         </div>
@@ -174,8 +172,8 @@
           top: '100%', // Top position relative to parent in px
           left: 'auto' // Left position relative to parent in px
         };
-        var target = document.getElementById('spinner');
-        var spinner = new Spinner(opts).spin(target);
+        var targetSpinner = document.getElementById('tabs');
+        var spinner = new Spinner(opts).spin(targetSpinner);
                     
          </script>                           
 
@@ -257,6 +255,8 @@
           });
           
           $( "#tabs" ).tabs();
+          $('#tabs').tabs("disable",2)
+          $('#ui-id-3').click( function() { shareWranglingAndViz(); } );
             
            
           function addElementOnGridBoard(aVariableName,colNumber,rowNumber) {
@@ -1813,7 +1813,9 @@
                   for(var i = 0, len = dataView.getLength(); i < len; i++) {
                     rowsToSelect.push(i);
                   }
+                  
                   slickGrid.setSelectedRows(rowsToSelect);
+
                 },{'target':'myGrid'});
 
                 shortcut.add("Shift+Delete",function() {
@@ -1934,98 +1936,6 @@
 
             } 
 
-
-
-
-              /*
-                  slickGrid = new Slick.Grid("#myGrid", someDataset.rows, someDataset.getColumns(), options);
-                  slickGrid.setSelectionModel(new Slick.CellSelectionModel());
-                  
-                  $('#myGrid').find('div.grid-canvas').mouseup(function() {
-                      ///$('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
-                      $('.selectedValue').text(getSelectionText());
-                  });
-                  
-                  $('#myGrid').find('div.grid-canvas').click(function() {
-                      $('.selectedVariable').text(slickGrid.getColumns()[slickGrid.getActiveCell().cell].field);
-                      //$('.selectedValue').text(someJsonData.rows[slickGrid.getActiveCell().row][slickGrid.getColumns()[slickGrid.getActiveCell().cell].field]);
-                  });
-                  
-                  function getSelectionText() {
-                  var text = "";
-                  if (window.getSelection) {
-                      text = window.getSelection().toString();
-                  } else if (document.selection && document.selection.type != "Control") {
-                      text = document.selection.createRange().text;
-                  }
-                  return text;
-                  }
-                  */
-                  /*
-                  var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});
-                  
-                  
-                  $('.modal.hide.ui-draggable').draggable({
-                      handle: ".modal-body"
-                  });   
-                          
-                  
-                  headerMenuPlugin.onCommand.subscribe(function(e, args) {
-                    if(args.command == "left")
-                      {
-                          $("#myModalLeft").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
-                                  $("#myModalLeft button.btn-primary").off('click').unbind('click');
-                                  $("#myModalLeft").unbind('on');
-                          });
-                          $("#myModalLeft button.btn-primary").click( function() {
-                                  $("#myModalLeft").modal('hide');     // dismiss the dialog
-                                  var inputParameter = parseInt($('#myModalLeft input').val());
-                                  if(!isNaN(inputParameter)) applyFunction(function(d,n) { return d.substring(0,n) },inputParameter,args.column.field);
-                          });
-
-                          $("#myModalLeft").modal('toggle');
-                      } else if (args.command == "leftToString") 
-                      {
-                          $("#myModalLeftToString").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
-                                  $("#myModalLeftToString button.btn-primary").off('click').unbind('click');
-                                  $("#myModalLeftToString").unbind('on');
-                          });
-                          $("#myModalLeftToString button.btn-primary").click( function() {
-                                  $("#myModalLeftToString").modal('hide');     // dismiss the dialog
-                                  var inputParameter = $('#myModalLeftToString input').val();
-                                  if(inputParameter.length > 0)  applyFunction(function(d,n) { 
-                                                                                  var idx = d.indexOf(n);
-                                                                                  idx = (idx == -1 ? d.length : idx);
-                                                                                  return d.substring(0,idx); 
-                                                                              },inputParameter,args.column.field);
-                          });
-
-                          $("#myModalLeftToString").modal('toggle');
-                          
-                      } else if (args.command == "replaceString") 
-                      {
-                          $("#myModalReplaceString").on("hidden", function() {    // remove the event listeners when the dialog is dismissed
-                                  $("#myModalReplaceString button.btn-primary").off('click').unbind('click');
-                                  $("#myModalReplaceString").unbind('on');
-                          });
-                          $("#myModalReplaceString button.btn-primary").click( function() {
-                                  $("#myModalReplaceString").modal('hide');     // dismiss the dialog
-                                  var replaceFrom = $($('#myModalReplaceString input')[0]).val();
-                                  if(replaceFrom === "*") replaceFrom = '\\*';
-                                  var replaceTo = $($('#myModalReplaceString input')[1]).val();
-                                  if(replaceFrom.length > 0) applyFunction(function(d,n) { 
-                                          return d.replace(new RegExp(n[0], 'g'),n[1]) // need to replace g with gi if we want non case sensistive replace
-                                      },[replaceFrom,replaceTo],args.column.field);
-                          });
-
-                          $("#myModalReplaceString").modal('toggle');
-      
-                      }
-                  });
-              
-                  slickGrid.registerPlugin(headerMenuPlugin);
-                  */
-                  //slickGrid.autosizeColumns();
             
             function addJQEvents(){
               $('#myGrid').find('div.slick-header').mousedown(function() {                  
@@ -2141,21 +2051,14 @@
 
             var test;
             
-            function initialization(someData) {
-                json_data = csvjson.csv2json(someData);
-                console.log("done loading initial data");
-                  
+            function initialization() {
+                
                 dataset = new Dataset(json_data);
                 transformation = defineTransformation();
                 addSlickGrid(dataset);
                 availableTags = defineTags();
                 addJQEvents();
                 addContextMenu();
-
-                 
-                
-
-                
 
                 previousVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
 
@@ -2165,41 +2068,50 @@
                 //loadDataset(json_data);
 
                 addVariableList(dataset);
-                
+                spinner.stop();
            
             }
 
+            function shareWranglingAndViz() {
+              console.log("Sharing");
+              spinner.spin(targetSpinner);
+              setTimeout(function() {
+              var allKeys = dimGroup.keys();
+              var jsonToSend = JSON.stringify({   rows: dataset.rows, 
+                                                  columnIds: _.map(slickGrid.getColumns(),function(e) {return e.id;}),
+                                                  columnNames: _.map(slickGrid.getColumns(),function(e) {return e.name;}),
+                                                  variables: allKeys });
 
+              $.post("file_writer.php", { action: 'write_dataset', json_string: jsonToSend }, function(data) { 
+                spinner.stop();
+                bootbox.prompt("Share this dashboard link:", function(result) { console.log("res:"+result); })
+                $('.input-block-level').attr('value',"http://oinoi.com/?j=" + data);
+              } ); },500);
+            }
 
-      
+            var jsonFile = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
             
-           
-
-          
-
-            var json_config_file = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
-            
-            if(json_config_file.length > 0) {
-                $.getJSON( "./json_configs/" + json_config_file, function(data) {
+            if(jsonFile.length > 0) {
+                $.getJSON( "./uploads/" + jsonFile + ".json", function(data) {
                     
-                    file_name = data["file_name"];
-                    var variables_to_display = data["variables"];
-                    
-                    $.ajax("./uploads/" + file_name, {
-                        success: function(csvdata) {
-                            initialization(csvdata);
-                            
-                            for(var i in variables_to_display) {
-                                addElementOnGridBoard(variables_to_display[i]);
-                            }
-                            //buildDashboard(json_data);
-                            spinner.stop();
-    
-                        },
-                        error: function() {
-                            console.log("could not load csv file");
-                        }
-                    });  
+                    file_name = jsonFile + ".json";
+                    var variablesToDisplay = data["variables"];
+                    var columnNames = data["columnNames"];
+                    var columnIds = data["columnIds"];
+
+                    json_data = {};
+                    json_data.rows = data["rows"];
+                    json_data.prettynames = {};
+                    for(var i = 0, len = columnIds.length; i < len; i++) {
+                      json_data.prettynames[columnIds[i]] = columnNames[i];
+                    }
+                    json_data.headers = columnIds;
+
+                    initialization();
+
+                    for(var i = 0, len = variablesToDisplay.length; i < len; i ++) {
+                        addElementOnGridBoard(variablesToDisplay[i]);
+                    }
                           
                 })
                 .fail(function() { console.log( "error" ); });
@@ -2214,15 +2126,15 @@
                 console.log("file name: " + file_name);
                 $.ajax("./uploads/" + file_name, {
                     success: function(data) {
-                      
-                        initialization(data);
-                        
-                        //buildDashboard(json_data);
-                        spinner.stop();
 
+                        json_data = csvjson.csv2json(data);
+                      
+                        initialization();
+                        
                     },
                     error: function() {
                         console.log("could not load csv file");
+                        spinner.stop();    
                     }
                 });
                 } else {
@@ -2231,18 +2143,6 @@
                 }        
             }
             
-            $('#share').click(function() { 
-                var allKeys = dimGroup.keys();
-                var json_to_send = JSON.stringify({ file_name: file_name, variables: allKeys });
-                $.post("file_writer.php", { action: 'write_config', json_string: json_to_send }, function(data) { 
-                
-                bootbox.prompt("Share this dashboard link:", function(result) { console.log("res:"+result); })
-            
-                $('.input-block-level').attr('value',"http://oinoi.com/?j=" + data);
-                
-                } );
-                
-            });
             
         </script>
         
