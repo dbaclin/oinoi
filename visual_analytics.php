@@ -27,11 +27,7 @@
   <div id="tabs-1" class="tabs-no-padding">
     <div class="container-fluid main-page">
           <div class="row-fluid">
-
-           
-              
               <div  class="span3">
-                     
                 <div id="accordion-resizer" class="ui-widget-content">
                   <div id="accordion">
                     <div class="menu" id="suggestionsBanner">
@@ -66,7 +62,7 @@
 
           
             <div  class="span9 data-wrangling" >
-                 <input id="searchBox" size="400" />
+                 <input id="searchBox" size="400" placeholder="Enter any query"/>
                  <div id="myGrid" style="width:100%;height:600px;"></div>
                  
       
@@ -840,7 +836,7 @@
                   tag_id: 'create-new-variable-expression' ,
                   applyTo: ["column"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  where <span args="where">' + args.where + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create a new variable</a><input args="name" type="text"><a href="#"> where </a> <input type="text" args="where"></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> where </a> <input type="text" args="where"></div>'},
                   action: function(args){
                       console.log("yup");
                       console.log(args.name);
@@ -870,7 +866,7 @@
                   tag_id: 'apply-type-on-variable' ,
                   applyTo: ["column","columns"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert column <span args="selectedVariable">' + args.selectedVariable + '</span>  type to <span args="newType">' + args.newType + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option></option><option>string</option><option>number</option><option>date</option></select></div>'},                    
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option></option><option selected="selected">string</option><option>number</option><option>date</option></select></div>'},                    
                   action: function(args){
                    
                    var newType = args.newType;
