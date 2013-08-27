@@ -335,5 +335,6 @@
       for (var i = 0; i < obj.headers.length; i++) {
           this.linkColumn(obj.headers[i], obj.prettynames[obj.headers[i]]);
       }
-
+      this.addIdColumn();
+      
   }
