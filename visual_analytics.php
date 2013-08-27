@@ -476,6 +476,7 @@
 
    
           function processQuery(aQuery){
+            console.log("query is " + aQuery);
             
             var queryKeywords = aQuery.split(" ");//split aSearchInput into a set of strings
             var allVariablesName = _.rest(_.map(slickGrid.getColumns(), function(e) { return e.name; }),1);
@@ -493,6 +494,25 @@
 
             switch(queryKeywords[0])
             {
+               case "unflatten": 
+                action = "unflatten-selected-columns";
+                queryKeywords.shift();
+                if( findListElementinQuery(aQuery, allVariablesName).length > 0 ){ //if we found at least 1 variable, then we remove it. 
+                  selectedVariable = findListElementinQuery(aQuery, allVariablesName);
+
+                  var name = queryKeywords.indexOf("to") > -1?  _.rest(queryKeywords, queryKeywords.indexOf("to") + 1).join(" ") : "NewColumn";
+
+                  actionArgs = { 
+                     selectedColumns: selectedVariable,
+                     name: name
+                  } 
+
+                } else action = "undefined"; 
+
+                //} else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+               
+
                 case "create": 
                 action = "create-new-variable-expression";
                 queryKeywords.shift();
@@ -558,25 +578,20 @@
 
               case "rename": 
                 action = "rename-variable";
-                var queryEdited = aQuery.replace(queryKeywords[0],"").trim();
+                queryKeywords.shift();
                 
-                selectedVariable = queryEdited.substring(0, queryEdited.indexOf('to')).trim(); //default case the  keywords after the action name and up to the keyword "to" is the variable name
-                if(!_.contains(allVariablesName, selectedVariable)){ // if this extraction technique didnt work, we try to find a variable name in the query
-                  selectedVariable = findListElementinQuery(queryEdited, allVariablesName);
-                }
+                selectedVariable = findListElementinQuery(_.first(queryKeywords, queryKeywords.indexOf("to")).join(" "), allVariablesName);
+                
 
-                if(selectedVariable.length != 1){ // there is eitehr 0 or more va
-                  selectedVariable = selectedVariable[0];
-                  queryEdited = queryEdited.replace(selectedVariable,"").trim();
+                if(selectedVariable.length == 1){ // there should be only one variable
                   
-                  var newColumnName;
-                  var from = queryEdited.indexOf('to') > -1 ? queryEdited.indexOf('to') + 2 : 0; //either we find the keyword 'to' or we take the remaining string in the query
-                  var to = queryEdited.length;
-                  
-                  newColumnName = queryEdited.substring(from, to).trim().replace(/'/g,"").replace(/"/g,"");
 
-                  selectedVariable = _.find(dataset.getColumns(), function(c){ return c.name == selectedVariable; }).id;//convert column name to id
-                  actionArgs = {selectedVariable: selectedVariable, newName: newColumnName };
+                  var newColumnName = queryKeywords.indexOf('to') > -1 ? _.rest(queryKeywords, queryKeywords.indexOf('to') + 1).join(" ")  : 0; //either we find the keyword 'to' or we take the remaining string in the query
+                  
+                  newColumnName = newColumnName.trim().replace(/'/g,"").replace(/"/g,"");
+
+                  actionArgs = {selectedVariable: selectedVariable[0], 
+                              newName: newColumnName };
                 }
                 else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
                 break; 
@@ -672,7 +687,7 @@
                 default:
                   action = "undefined";
             }
-            console.log("execute " + action + " with args " + actionArgs.name);
+            
             if(action != "undefined")
               processSuggestion(action, actionArgs);
 
@@ -916,13 +931,15 @@
                 'unflatten-selected-columns': {
                   tag_id: 'unflatten-selected-columns' ,
                   applyTo: ["columns"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Unflatten selected columns creating a new category variable </a> <input type="text" class="suggestion name" args="newName"></div> '},                    
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Unflatten columns <span args="from">' + args.selectedColumns + '</span> into <span args="name">' + args.name + '</span> </div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Unflatten columns into a new variable </a> <input type="text" class="suggestion name" args="name"></div> '},                    
                   action: function(args){
                     
-                    var newName =  args.newName.trim();
+                    var newName =  args.name.trim();
                     if(newName.length > 0) {
                       dataset.unFlatten(selectedColumns,newName,newName + " Value", 1);
                       refreshData();
+                      this.writeALog(args);
                     }
                     
                   }
@@ -1676,7 +1693,7 @@
                         };
 
                         $("#myModalSuggestion .suggestion").find("input, select").each(function(){args[$(this).attr("args")] = $(this).val() ;}); //add all the value inside all the input of the action
-                        console.log("args are " + args);
+                        //console.log("args are " + args);
                         transformation[actionSelected].action(args);
                         $("#myModalSuggestion").modal('toggle');     // dismiss the dialog
                       });
@@ -1762,7 +1779,7 @@
                 if(cell != null) {
                     selectedVariable = slickGrid.getColumns()[cell.cell].id;
                 }
-                console.log("selected variable: "+selectedVariable); 
+                //console.log("selected variable: "+selectedVariable); 
 
 
                 $("#contextMenu")
