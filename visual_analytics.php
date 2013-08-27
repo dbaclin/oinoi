@@ -1536,11 +1536,18 @@
              }
             }
 
+            function clearSuggestionList(){
+
+               $('#suggestionsList').empty();
+
+            }
+
             function processSuggestion(actionID, actionArgs) {
               if(transformation[actionID] !== null){
 
-                //console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
+                console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
                 transformation[actionID].action(actionArgs);
+                clearSuggestionList();
 
               } else {
                 console.log("unknown suggestion id: "+ actionID);
@@ -1633,10 +1640,23 @@
                 var actionArgs = {
                   selectedVariable: getSelectedVariable()
                 };
-                test = $(this).find("input");
+                
                 $(this).parent().find("input, select").each(function(){actionArgs[$(this).attr("args")] = $(this).val() ;});
                 
                 processSuggestion(actionID, actionArgs); 
+                
+
+              });
+
+              $('#suggestionsList').find('.suggestion').click( function(args) { 
+                var actionID = $(this).attr('action');
+                var actionArgs = {
+                  selectedVariable: getSelectedVariable()
+                };
+                $(this).parent().find("input, select").each(function(){actionArgs[$(this).attr("args")] = $(this).val() ;});
+                
+                processSuggestion(actionID, actionArgs); 
+                
 
               });
               
