@@ -478,7 +478,7 @@
           function processQuery(aQuery){
             
             var queryKeywords = aQuery.split(" ");//split aSearchInput into a set of strings
-            var allVariablesName = _.map(slickGrid.getColumns(), function(e) { return e.name; });
+            var allVariablesName = _.rest(_.map(slickGrid.getColumns(), function(e) { return e.name; }),1);
             var action = "undefined";
             var actionArgs = {};
             var selectedVariable = "undefined";
@@ -493,7 +493,55 @@
 
             switch(queryKeywords[0])
             {
-              
+                case "create": 
+                action = "create-new-variable-expression";
+                queryKeywords.shift();
+                var newVariable = _.first(queryKeywords,queryKeywords.indexOf("as")).join(" ");
+                var rawExpression  = _.rest(queryKeywords,queryKeywords.indexOf("as") + 1).join(" ");
+
+                
+                actionArgs = {
+                  name: newVariable,
+                  where: convertRawFilterIntoFilter(rawExpression)
+                };
+
+                //} else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+               
+                case "update": 
+                action = "apply-expression-on-variable";
+                queryKeywords.shift();
+                selectedVariable = findListElementinQuery(aQuery.substring(0, aQuery.indexOf("as")), allVariablesName);
+                
+                if(selectedVariable.length > 0){ // there is eitehr 0 or more var
+                  selectedVariable = selectedVariable[0];
+                  var rawExpression  = _.rest(queryKeywords,queryKeywords.indexOf("as") + 1).join(" ");
+
+                  actionArgs = {
+                    selectedVariable: selectedVariable,
+                    where: convertRawFilterIntoFilter(rawExpression)
+                  };
+
+                } else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+
+               case "convert": 
+                action = "apply-type-on-variable";
+                queryKeywords.shift();
+                selectedVariable = findListElementinQuery(aQuery, allVariablesName);
+                
+                if(selectedVariable.length > 0){ // there is eitehr 0 or more var
+                  var newType = "undefined";
+                  ["number", "date", "string"].forEach(function(e){ if(aQuery.indexOf(e) > -1) newType = e ; } );
+
+                  actionArgs = {
+                    selectedVariable: selectedVariable,
+                    newType: newType
+                  };
+
+                } else action = "undefined";// as we couldnt define to which variable the action applies, we cancel
+                break; 
+
                case "filter": 
                 action = "keep-only-records-where";
 
@@ -624,7 +672,7 @@
                 default:
                   action = "undefined";
             }
-            console.log("execute " + action + " with args " + actionArgs.selectedVariable );
+            console.log("execute " + action + " with args " + actionArgs.name);
             if(action != "undefined")
               processSuggestion(action, actionArgs);
 
@@ -776,31 +824,37 @@
                  'create-new-variable-expression': {
                   tag_id: 'create-new-variable-expression' ,
                   applyTo: ["column"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create a new variable</a><input class="suggestion new-variable-name" type="text"><a href="#"> using the expression </a> <input type="text" class="suggestion where expression"></div>'},
-                  action: function(){
-                    var newVariableName = suggestion.find('.new-variable-name').val();
-                    var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
-                    if(newVariableName.length > 0 && functionString.length > 0) {
-                      dataset.addColumn(newVariableName,functionString);
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  where <span args="where">' + args.where + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create a new variable</a><input args="name" type="text"><a href="#"> where </a> <input type="text" args="where"></div>'},
+                  action: function(args){
+                      console.log("yup");
+                      console.log(args.name);
+                    if(args.name.length > 0 && args.where.length > 0) {
+                      console.log(args.name + args.where);
+                      dataset.addColumn(args.name,args.where);
                       refreshData();
+                      this.writeALog(args);
                     }
                   }
                 },
                  'apply-expression-on-variable': {
                   tag_id: 'apply-expression-on-variable' ,
                   applyTo: ["column"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Apply the expression</a><input type="text" class="suggestion where expression"></div>'},
-                  action: function(aVariable){
-                    var functionString = suggestion.find('.where').val().replace(/\"/g,'\\"');
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Update column <span args="selectedVariable">' + args.selectedVariable + '</span>  where <span args="where">' + args.where + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Apply the expression</a><input type="text" args="where"></div>'},
+                  action: function(args){
+                    var functionString = args.where;
                     if(functionString.length > 0) {
-                      dataset.applyFunction(aVariable,functionString);
+                      dataset.applyFunction(args.selectedVariable,functionString);
                       slickGrid.invalidate();
-                    }
+                      this.writeALog(args);
                   }
+                }
                 },
                 'apply-type-on-variable': {
                   tag_id: 'apply-type-on-variable' ,
                   applyTo: ["column","columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert column <span args="selectedVariable">' + args.selectedVariable + '</span>  type to <span args="newType">' + args.newType + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option></option><option>string</option><option>number</option><option>date</option></select></div>'},                    
                   action: function(args){
                    
@@ -810,6 +864,7 @@
                     dataset.applyType(args.selectedVariable[i],newType);
                     } 
                     refreshData();
+                    this.writeALog(args);
                    }
 
                   }
@@ -887,7 +942,7 @@
                     }
                     dataset.rows = dataset.rows.slice(1); // remove the header row from the grid
                     dataset.changeHeader(columnIdsToReplace,newHeader);
-                    writeALog();
+                    this.writeALog();
                     refreshData();
                   }
                 }
@@ -1382,8 +1437,30 @@
 
             function convertAClauseIntoAFilter(aClause){
               var operators = [
+                {
+                keyword: "/",
+                symbol: "/"
+                },
+                {
+                keyword: "divided by",
+                symbol: "/"
+                },
+                {
+                keyword: "*",
+                symbol: "*"
+                },
+                ,
+                {
+                keyword: "times",
+                symbol: "*"
+                },
                   {
                 keyword: "greater",
+                symbol: ">"
+              },
+              ,
+                  {
+                keyword: ">",
                 symbol: ">"
               },
               {
@@ -1391,9 +1468,17 @@
                 symbol: "<"
               },
               {
+                keyword: "<",
+                symbol: "<"
+              },
+              {
+                keyword: "=",
+                symbol: "=="
+              },
+              {
                 keyword: "equal",
                 symbol: "=="
-              } ,
+              },
                 {
                 keyword: "is",
                 symbol: "=="
@@ -1425,12 +1510,9 @@
                   
 
 
-                  if(keyword =="greater" || keyword =="lower" || keyword =="equal" || keyword =="equals"){
+                  if(rightSide.join(" ").match(/\d+\.?\d*/g) != null){//if there is number ,we assume its a number
                     rightSide = rightSide.join(" ").match(/\d+\.?\d*/g);  
-
-                    
-
-                  } else{
+                  } else{//otherwise we convert into a string
                     
                     rightSide = '"' + rightSide.join(" ") + '"';
                   }
