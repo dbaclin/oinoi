@@ -80,7 +80,7 @@
                   <li>-</li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Group by</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Unflatten</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
                   
                   <li class="slick-header-menuitem" class="slick-header-menucontent">
                     <a href="#" >Keep text</a>
