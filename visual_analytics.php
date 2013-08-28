@@ -923,6 +923,19 @@
                     refreshData();
                   }
                 },
+                 'duplicate-selected-columns': {
+                  tag_id: 'duplicate-selected-columns' ,
+                  applyTo: ["column", "columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Duplicate column <span args="from">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Duplicate selected columns</a> </div> '},                    
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.copyColumn(args.selectedVariable[i]);  
+                    }
+                    this.writeALog(args);
+                    refreshData();
+                  }
+                },
                 'unflatten-selected-columns': {
                   tag_id: 'unflatten-selected-columns' ,
                   applyTo: ["columns"],
@@ -1856,12 +1869,11 @@
                           // dataView.sort(comparer, false);
                           break;
                       case "duplicate-column":
-                          dataset.copyColumn(args.column.id);
+                          processSuggestion('duplicate-selected-columns',{selectedVariable:[args.column.id]});
                           refreshData();
                           break;
                       case "delete-column":
-                          dataset.removeColumn(args.column.field);
-                          refreshData();
+                          processSuggestion('remove-selected-columns',{selectedVariable:[args.column.id]});
                           break;
                   }
               });

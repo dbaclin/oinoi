@@ -562,12 +562,12 @@ cursor: hand;
     padding: 0px;
     font-size: 12px;
     margin: 5px 0px 5px 0px;
-    
+    border-radius: 2px;
 }
 
 #suggestionContainer .suggestion:hover{
 
-    background-color: #D6F6F6;
+    background-color: #E6F2FF;
     text-decoration: bold !important;
      color:#0073ea;
     cursor: hand;
