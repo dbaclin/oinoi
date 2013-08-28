@@ -538,10 +538,6 @@ font-size: inherit!important;
 
 }
 
-#suggestionContainer .addButton {
-background-image: url("./images/add-icon16.png");
-}
-
 #suggestionContainer .selected.editorButton {
 visibility: visible;
 }
@@ -620,7 +616,9 @@ cursor: hand;
   
   display: block;
   width: 50%;
-  margin: 0px 0px 10px 0px;
+  margin: 0px;
+  margin-top: 2px;
+  margin-bottom: 10px;
   padding: 2px;
   background-color: #fff;
   font-size: 12px;
@@ -791,3 +789,25 @@ li[aria-labelledby="ui-id-3"] {
     cursor: pointer!important;
 }
 
+div.suggestion div.addButton {
+    display: inline;
+    float: right;
+    padding: 0px;
+    opacity: 0.3;
+}
+
+div.suggestion div.addButton:hover {
+    opacity: 1!important;
+}
+
+div.suggestion {
+    min-height: 20px!important;
+    padding-bottom: 5px!important;
+    padding-top: 5px!important;
+    padding-right: 5px!important;
+}
+
+div.suggestion div.addButton i {
+    vertical-align: middle!important;
+    font-size: 1.8em!important;
+}

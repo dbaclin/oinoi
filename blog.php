@@ -36,7 +36,7 @@
  
         <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
         
-        <link rel="stylesheet" type="text/css" href="./blog/wp-content/themes/chunk/simplified-style.css"/>
+        <link rel="stylesheet" type="text/css" href="./blog/wp-content/themes/chunk/style-scoped.css"/>
 <!--        <link rel="stylesheet" type="text/css" href="./blog/wp-content/themes/chunk/rtl.css"/>-->
 
         
@@ -51,7 +51,7 @@
 <?php
     include_once("./header_menu.php");
 ?>        
-        <div class="container">
+        <div class="container" id="blog-page">
         <div id="contents">
 		<?php if ( have_posts() ) : ?>
 			<?php while ( have_posts() ) : the_post(); ?>
@@ -81,6 +81,8 @@
         
 <!--        <iframe src="http://blog.oinoi.com" frameborder="0" style="overflow:hidden;height:650;width:100%" height="650" width="100%"></iframe>      -->
 </div>
+
+<?php wp_footer(); ?>
 
     </body>
 

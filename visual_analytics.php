@@ -915,9 +915,7 @@
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Remove column <span args="from">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected columns</a> </div> '},                    
                   action: function(args){
-                      console.log("just removed " + args.selectedVariable);
                     for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
-                      console.log("just removed " + args.selectedVariable[i])
                       dataset.removeColumn(args.selectedVariable[i]);  
                     }
                     this.writeALog(args);
@@ -934,6 +932,7 @@
                     var newName =  args.name.trim();
                     if(newName.length > 0) {
                       dataset.unFlatten(selectedColumns,newName,newName + " Value", 1);
+                      selectedColumns = [];
                       refreshData();
                       this.writeALog(args);
                     }
@@ -1538,7 +1537,6 @@
 
             function clearSuggestionList(){
 
-            //   $('#suggestionsList').empty();
 
             }
 
@@ -1636,10 +1634,6 @@
               updateSuggestionVariableName();
               updateSuggestionSelectedValue(selectedValue);
               
-
-              
-
-              
               $('#suggestionsList').find('a').click( function(args) { 
                 var actionID = $(this).parent().attr('action');
                 var actionArgs = {
@@ -1652,7 +1646,7 @@
                 
 
               });
-
+              /*
               $('#suggestionsList').find('.suggestion').click( function(args) { 
                 var actionID = $(this).attr('action');
                 var actionArgs = {
@@ -1664,7 +1658,7 @@
                 
 
               });
-              
+                */
               
             }
 
