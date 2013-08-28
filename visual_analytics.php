@@ -695,7 +695,7 @@
                   applyTo: ["cellContent"],
                   keywords: ["with", "by"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Replace <span args="from">' + args.from + '</span> by <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"> <div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"></div>'},
                   action: function(args){
                     if(typeof args.selectedVariable != "undefined" ){
 
@@ -727,7 +727,7 @@
                 'keep-upto': {
                   tag_id: 'keep-upto' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue"><div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue"></div>'},
                   action: function(aVariable){
                     if(typeof aVariable != "undefined"){
                       var suggestion = $('#' + this.tag_id);
@@ -745,7 +745,7 @@
                  'keep-startingfrom': {
                   tag_id: 'keep-startingfrom' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class="startingfrom selectedValue"><div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class="startingfrom selectedValue"></div>'},
                   action: function(aVariable){
                     if(typeof aVariable != "undefined"){
                       var suggestion = $('#' + this.tag_id);
@@ -835,8 +835,8 @@
                  'create-new-variable-expression': {
                   tag_id: 'create-new-variable-expression' ,
                   applyTo: ["column"],
-                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  where <span args="where">' + args.where + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> where </a> <input type="text" args="where"></div>'},
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  as <span args="where">' + args.where + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> as </a> <input type="text" args="where"></div>'},
                   action: function(args){
                       console.log("yup");
                       console.log(args.name);
@@ -851,7 +851,7 @@
                  'apply-expression-on-variable': {
                   tag_id: 'apply-expression-on-variable' ,
                   applyTo: ["column"],
-                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Update column <span args="selectedVariable">' + args.selectedVariable + '</span>  where <span args="where">' + args.where + '</span></div>');},
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Update column <span args="selectedVariable">' + args.selectedVariable + '</span>  as <span args="where">' + args.where + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Apply the expression</a><input type="text" args="where"></div>'},
                   action: function(args){
                     var functionString = args.where;
@@ -918,6 +918,7 @@
                     for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
                       dataset.removeColumn(args.selectedVariable[i]);  
                     }
+                    selectedColumns = [];
                     this.writeALog(args);
                     refreshData();
                   }
@@ -1630,7 +1631,7 @@
               updateSuggestionVariableName();
               updateSuggestionSelectedValue(selectedValue);
               
-              $('#suggestionsList').find('a').click( function(args) { 
+              function executeActionOnSuggestionClick(args) {
                 var actionID = $(this).parent().attr('action');
                 var actionArgs = {
                   selectedVariable: getSelectedVariable()
@@ -1640,8 +1641,15 @@
                 
                 processSuggestion(actionID, actionArgs); 
                 
+              }
 
-              });
+              $('#suggestionsList').find('a').click(executeActionOnSuggestionClick);
+
+              $('<span class="addButtonIcon"><i class="icon-plus-sign"></i></span>').appendTo($('.suggestion'));
+              $('.suggestion').hover(function() { $(this).find('.addButtonIcon').show(); }, function() { $(this).find('.addButtonIcon').hide(); });
+              $('.suggestion').find('.addButtonIcon').click(executeActionOnSuggestionClick);
+
+  
               /*
               $('#suggestionsList').find('.suggestion').click( function(args) { 
                 var actionID = $(this).attr('action');
