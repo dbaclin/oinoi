@@ -1538,16 +1538,21 @@
 
             function clearSuggestionList(){
 
-               $('#suggestionsList').empty();
+            //   $('#suggestionsList').empty();
 
             }
 
             function processSuggestion(actionID, actionArgs) {
               if(transformation[actionID] !== null){
+                if(typeof actions == "undefined"){
+                  console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
+                  transformation[actionID].action(actionArgs);
+                  clearSuggestionList();  
+                }
+                else {
+                console.log("args undefined for action: "+ actionID);
 
-                console.log("execute " + transformation[actionID] + " on var " + actionArgs.selectedVariable);
-                transformation[actionID].action(actionArgs);
-                clearSuggestionList();
+              }
 
               } else {
                 console.log("unknown suggestion id: "+ actionID);
@@ -2063,7 +2068,7 @@
               });
 
               $('#myGrid').find('div.slick-viewport').mouseup(function() { 
-                updateSuggestionsList();
+                //updateSuggestionsList();
                 //updateSuggestionSelectedValue();
               });
 
