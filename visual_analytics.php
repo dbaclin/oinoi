@@ -1788,7 +1788,15 @@
                 explicitInitialization: true,
                 editable: true
               };
-            
+              
+              var browserHeight = window.innerHeight ||
+                 document.documentElement.clientHeight ||
+                 document.body.clientHeight;  
+              browserHeight = browserHeight - 165;
+
+
+              $('#myGrid').attr('style',"width: 100%; height: "+browserHeight+"px; overflow: hidden; outline: 0px; position: relative;")
+
               dataView = new Slick.Data.DataView();
               slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
               slickGrid.setSelectionModel(new Slick.CellSelectionModel());
