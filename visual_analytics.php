@@ -1538,7 +1538,7 @@
 
             function clearSuggestionList(){
 
-               $('#suggestionsList').empty();
+              // $('#suggestionsList').empty();
 
             }
 
