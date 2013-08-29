@@ -763,10 +763,10 @@ text-decoration: none;
     margin-top: 5px !important;
 }
 
-.span9.data-wrangling, .span10.visualization-dashboard {
+.span3.suggestions-menu, .span8.data-wrangling, .span2.list-var, .span9.visualization-dashboard {
     margin: 0px !important;
     padding: 0px !important;
-    margin-left: 7px !important;
+    margin-left: 10px !important;
 }
 
 #accordion-resizer {
@@ -825,4 +825,18 @@ div.suggestion span.addButtonIcon i {
 }
 div.suggestion span.addButtonIcon i:hover {
     opacity: 1!important;
+}
+
+.ui-state-hover {
+    background: #0073ea !important;
+    color: white!important;
+}
+
+#app-left-menu li a {
+    padding-left: 2px!important;
+    padding-right: 2px!important;
+}
+
+#tabs.menu ul[role=tablist] {
+    display: none;
 }

@@ -18,16 +18,18 @@
 
          
 
- <div id="tabs">
-              <ul>
-    <li><a href="#tabs-1">Wrangle</a></li>
-    <li><a href="#tabs-2">Visualize</a></li>
-    <li><a href="#">Share</a></li>
-  </ul>
-  <div id="tabs-1" class="tabs-no-padding">
     <div class="container-fluid main-page">
-          <div class="row-fluid">
-              <div  class="span3">
+            <div class="row-fluid">
+              <div class="span1 left-menu" id="app-left-menu">
+                <ul class="nav nav-pills nav-stacked">
+                  <li class="active"><a href="#"><i class="icon-table"></i> Data</a></li>
+                  <li><a href="#"><i class="icon-bar-chart"></i> Dashboard</a></li>
+                  <li><a href="#"><i class="icon-share"></i> Share</a></li>
+                  <li><a href="#"><i class="icon-reorder"></i> Website</a></li>
+                </ul>
+              </div>
+              
+              <div  class="span3 suggestions-menu">
                 <div id="accordion-resizer" class="ui-widget-content">
                   <div id="accordion">
                     <div class="menu" id="suggestionsBanner">
@@ -55,13 +57,7 @@
                 </div>
 
 
-              
-              
-            
-
-
-          
-            <div  class="span9 data-wrangling" >
+            <div  class="span8 data-wrangling" >
                  <input id="searchBox" size="400" placeholder="Enter any query"/>
                  <div id="myGrid" style="width:100%;height:600px;"></div>
                  
@@ -101,29 +97,16 @@
                  
             </div>
             
-            
-         </div>
-     
-     </div>
-  </div>
-  <div id="tabs-2" class="tabs-no-padding">
-    <div class="container-fluid main-page" >
-          <div id="spinner"> </div>
-          
-          <div class="row-fluid">
-            <div class="span2 list-var" style="align:right;">
+            <div class="span2 list-var" style="align:right; display:none">
               <ul id="variables" >
               
               </ul>
             </div>
-            <div class="span10 visualization-dashboard layouts_grid" id="layouts_grid">
+            <div class="span9 visualization-dashboard layouts_grid" id="layouts_grid" style="display:none">
           <ul>
           </ul>
         </div>
       </div>
-    </div>
-    </div>
-</div>
 
 
 
@@ -145,10 +128,12 @@
          
         <script type="text/javascript" src="./dataset.js"></script> 
          
-         <script type="text/javascript">       
+         <script type="text/javascript">      
+
+         $('#header').hide(); 
          
-         $('ul.nav li').removeClass('active');
-         $('ul.nav li:contains(Analyze)').addClass('active');
+         $('#header ul.nav li').removeClass('active');
+         $('#header ul.nav li:contains(Analyze)').addClass('active');
          
         var opts = {
           lines: 15, // The number of lines to draw
@@ -1814,7 +1799,7 @@
               var browserHeight = window.innerHeight ||
                  document.documentElement.clientHeight ||
                  document.body.clientHeight;  
-              browserHeight = browserHeight - 165;
+              browserHeight = browserHeight - 55;
 
 
               $('#myGrid').attr('style',"width: 100%; height: "+browserHeight+"px; overflow: hidden; outline: 0px; position: relative;")
@@ -2121,6 +2106,7 @@
                 //updateSuggestionSelectedValue();
               });
 
+              /*
               $('#ui-id-1').click(function() {
                 console.log("wrangling");
               });
@@ -2135,7 +2121,34 @@
                   previousVariables = newVariables;
                 //}
               });
+              */
+              $('#app-left-menu li:contains("Data")').click(function(e) {
+                $('#app-left-menu li:contains("Dashboard")').removeClass('active');
+                $('#app-left-menu li:contains("Data")').addClass('active');
 
+                $('.span2.list-var').hide();
+                $('.span9.visualization-dashboard').hide();
+                $('.span3.suggestions-menu').show();
+                $('.span8.data-wrangling').show();
+
+              });
+              $('#app-left-menu li:contains("Dashboard")').click(function(e) {
+                $('#app-left-menu li:contains("Data")').removeClass('active');
+                $('#app-left-menu li:contains("Dashboard")').addClass('active');
+
+                $('.span2.list-var').show();
+                $('.span9.visualization-dashboard').show();
+                $('.span3.suggestions-menu').hide();
+                $('.span8.data-wrangling').hide();
+
+              });
+              $('#app-left-menu li:contains("Share")').click(function(e) {
+                shareWranglingAndViz();
+              });
+              $('#app-left-menu li:contains("Website")').click(function(e) {
+                if(!$('#header').is(':visible')) $('#header').show();
+                else $('#header').hide();
+              });
 
               $('#searchBox').bind("enterKey",function(e){
                 processQuery($('#searchBox').val());
@@ -2217,6 +2230,8 @@
             
             function initialization() {
                 
+                
+
                 dataset = new Dataset(json_data);
                 transformation = defineTransformation();
                 addSlickGrid(dataset);
