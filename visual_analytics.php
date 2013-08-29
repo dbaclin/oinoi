@@ -695,7 +695,7 @@
                   applyTo: ["cellContent"],
                   keywords: ["with", "by"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Replace <span args="from">' + args.from + '</span> by <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"> <div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"></div>'},
                   action: function(args){
                     if(typeof args.selectedVariable != "undefined" ){
 
@@ -727,7 +727,7 @@
                 'keep-upto': {
                   tag_id: 'keep-upto' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue"><div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue"></div>'},
                   action: function(aVariable){
                     if(typeof aVariable != "undefined"){
                       var suggestion = $('#' + this.tag_id);
@@ -745,7 +745,7 @@
                  'keep-startingfrom': {
                   tag_id: 'keep-startingfrom' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class="startingfrom selectedValue"><div class="editorButton addButton"></div></div>'},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class="startingfrom selectedValue"></div>'},
                   action: function(aVariable){
                     if(typeof aVariable != "undefined"){
                       var suggestion = $('#' + this.tag_id);
@@ -835,8 +835,8 @@
                  'create-new-variable-expression': {
                   tag_id: 'create-new-variable-expression' ,
                   applyTo: ["column"],
-                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  where <span args="where">' + args.where + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> where </a> <input type="text" args="where"></div>'},
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  as <span args="where">' + args.where + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> as </a> <input type="text" args="where"></div>'},
                   action: function(args){
                       console.log("yup");
                       console.log(args.name);
@@ -851,7 +851,7 @@
                  'apply-expression-on-variable': {
                   tag_id: 'apply-expression-on-variable' ,
                   applyTo: ["column"],
-                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Update column <span args="selectedVariable">' + args.selectedVariable + '</span>  where <span args="where">' + args.where + '</span></div>');},
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Update column <span args="selectedVariable">' + args.selectedVariable + '</span>  as <span args="where">' + args.where + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Apply the expression</a><input type="text" args="where"></div>'},
                   action: function(args){
                     var functionString = args.where;
@@ -917,6 +917,42 @@
                   action: function(args){
                     for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
                       dataset.removeColumn(args.selectedVariable[i]);  
+                    }
+                    selectedColumns = [];
+                    this.writeALog(args);
+                    refreshData();
+                  }
+                },
+                 'duplicate-selected-columns': {
+                  tag_id: 'duplicate-selected-columns' ,
+                  applyTo: ["column", "columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Duplicate column <span args="from">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Duplicate selected columns</a> </div> '},                    
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.copyColumn(args.selectedVariable[i]);  
+                    }
+                    this.writeALog(args);
+                    refreshData();
+                  }
+                },
+                'fill-down-columns': {
+                  tag_id: 'fill-down-columns' ,
+                  applyTo: ["column", "columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Fill down column <span args="from">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Fill down selected columns with non-empty values</a> </div> '},                    
+                  action: function(args){
+                    var nonEmptyColumnValues = {};
+                    var currentItem = null;
+                    for(var i = 0, len = dataView.getLength(); i < len; i++) {
+                      currentItem = dataView.getItem(i);
+                      for(var c = 0, lenCols = selectedColumns.length; c < lenCols; c++) {
+                        if(currentItem[selectedColumns[c]] == null || currentItem[selectedColumns[c]].length == 0) {
+                          currentItem[selectedColumns[c]] = nonEmptyColumnValues[selectedColumns[c]] != undefined ? nonEmptyColumnValues[selectedColumns[c]] : null;
+                        } else {
+                          nonEmptyColumnValues[selectedColumns[c]] = currentItem[selectedColumns[c]]; 
+                        }
+                      }
                     }
                     this.writeALog(args);
                     refreshData();
@@ -1634,7 +1670,7 @@
               updateSuggestionVariableName();
               updateSuggestionSelectedValue(selectedValue);
               
-              $('#suggestionsList').find('a').click( function(args) { 
+              function executeActionOnSuggestionClick(args) {
                 var actionID = $(this).parent().attr('action');
                 var actionArgs = {
                   selectedVariable: getSelectedVariable()
@@ -1644,8 +1680,15 @@
                 
                 processSuggestion(actionID, actionArgs); 
                 
+              }
 
-              });
+              $('#suggestionsList').find('a').click(executeActionOnSuggestionClick);
+
+              $('<span class="addButtonIcon"><i class="icon-plus-sign"></i></span>').appendTo($('.suggestion'));
+              $('.suggestion').hover(function() { $(this).find('.addButtonIcon').show(); }, function() { $(this).find('.addButtonIcon').hide(); });
+              $('.suggestion').find('.addButtonIcon').click(executeActionOnSuggestionClick);
+
+  
               /*
               $('#suggestionsList').find('.suggestion').click( function(args) { 
                 var actionID = $(this).attr('action');
@@ -1771,7 +1814,15 @@
                 explicitInitialization: true,
                 editable: true
               };
-            
+              
+              var browserHeight = window.innerHeight ||
+                 document.documentElement.clientHeight ||
+                 document.body.clientHeight;  
+              browserHeight = browserHeight - 165;
+
+
+              $('#myGrid').attr('style',"width: 100%; height: "+browserHeight+"px; overflow: hidden; outline: 0px; position: relative;")
+
               dataView = new Slick.Data.DataView();
               slickGrid = new Slick.Grid("#myGrid", dataView, dataset.getColumns(), options);
               slickGrid.setSelectionModel(new Slick.CellSelectionModel());
@@ -1852,13 +1903,16 @@
                           // dataView.sort(comparer, false);
                           break;
                       case "duplicate-column":
-                          dataset.copyColumn(args.column.id);
+                          processSuggestion('duplicate-selected-columns',{selectedVariable:[args.column.id]});
                           refreshData();
                           break;
                       case "delete-column":
-                          dataset.removeColumn(args.column.field);
-                          refreshData();
+                          processSuggestion('remove-selected-columns',{selectedVariable:[args.column.id]});
                           break;
+                      case "fill-down-columns":
+                          processSuggestion('fill-down-columns',{selectedVariable:[args.column.id]});
+                          break;
+
                   }
               });
 
