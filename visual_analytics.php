@@ -685,7 +685,7 @@
                     if(typeof args.selectedVariable != "undefined" ){
 
                       var from = typeof args.from != "undefined" ? protectStringForRegExp(args.from): "";
-                      var to = typeof args.from != "undefined" ? protectStringForRegExp(args.to) : "";
+                      var to = typeof args.to != "undefined" ? protectStringForRegExp(args.to) : "";
                       
                       var myregex = new RegExp(from, 'g');
                   
@@ -712,16 +712,15 @@
                 'keep-upto': {
                   tag_id: 'keep-upto' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue"></div>'},
-                  action: function(aVariable){
-                    if(typeof aVariable != "undefined"){
-                      var suggestion = $('#' + this.tag_id);
-                      var upto = protectStringForRegExp(suggestion.find('.upto').val());
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters up to <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue" args="to"></div>'},
+                  action: function(args){
+                    if(typeof args.selectedVariable != "undefined"){
+                      var upto = protectStringForRegExp(args.to);
                       if(upto.length){
-                        var functionString = "var str = (row." + aVariable + " + ''); var idx = str.indexOf('"+upto+"');"+
-                                             "return idx == -1 ? row." + aVariable +" : str.substr(0,idx) ;";
-                        console.log(functionString);
-                        dataset.applyFunction(aVariable,functionString);  
+                        var functionString = "var str = (row." + args.selectedVariable + " + ''); var idx = str.indexOf('"+upto+"');"+
+                                             "return idx == -1 ? row." + args.selectedVariable +" : str.substr(0,idx) ;";
+                        dataset.applyFunction(args.selectedVariable,functionString);  
                         slickGrid.invalidate();
                       }; 
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
