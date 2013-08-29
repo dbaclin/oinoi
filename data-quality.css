@@ -530,7 +530,7 @@ font-size: inherit!important;
 
 
 #suggestionContainer{
-
+    border: 0px;
     padding: 10px;
     font-size: 14px !important;
     color:#0073ea !important;
@@ -712,14 +712,12 @@ text-decoration: none;
 }
 
 
-
+/*
 #accordion-resizer{
     padding: 5px;
-    height: 600px;
-
-
+    height: 700px;
 }
-
+*/
 
 #accordion-resizer ui-accordion {
     border: none;
@@ -769,6 +767,10 @@ text-decoration: none;
     margin-left: 10px !important;
 }
 
+.span8.data-wrangling {
+    margin-top: 1px!important;
+}
+
 #accordion-resizer {
     margin: 0px;
     padding: 0px;
@@ -785,10 +787,6 @@ text-decoration: none;
 
 li[aria-labelledby="ui-id-3"] {
     opacity: 1!important;
-}
-#ui-id-3:hover {
-    color: #ff0084!important;
-    cursor: pointer!important;
 }
 
 div.suggestion div.addButton {
@@ -826,17 +824,51 @@ div.suggestion span.addButtonIcon i {
 div.suggestion span.addButtonIcon i:hover {
     opacity: 1!important;
 }
-
+/*
 .ui-state-hover {
     background: #0073ea !important;
     color: white!important;
 }
-
+*/
 #app-left-menu li a {
     padding-left: 2px!important;
     padding-right: 2px!important;
+    border-radius: 2px;
 }
 
 #stepsBanner {
     display: none;
+}
+
+div.suggestion select[args=newType] {
+    width: 80px!important;
+}
+
+#contextMenu {
+    font-size: 12px;
+}
+
+#contextMenu a.ui-corner-all.ui-state-active[role=menuitem] {
+    color: #0088cc;
+}
+
+div.modal-body a, div.modal-body input {
+    font-size: 12px!important;
+    vertical-align: super;
+}
+div.modal-body input {
+    width: 120px!important;
+}
+
+#suggestionsBanner, #suggestionsBanner.ui-state-hover {
+    background: #0088cc;
+    border: 0px;
+    color: white;
+    font-weight: 400;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 2px;
+}
+#suggestionsBanner #suggestionsTitle {
+    font-size: 13px;
 }
