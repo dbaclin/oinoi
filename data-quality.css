@@ -837,6 +837,6 @@ div.suggestion span.addButtonIcon i:hover {
     padding-right: 2px!important;
 }
 
-#tabs.menu ul[role=tablist] {
+#stepsBanner {
     display: none;
 }

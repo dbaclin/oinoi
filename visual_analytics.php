@@ -2140,6 +2140,12 @@
                 $('#app-left-menu li:contains("Data")').removeClass('active');
                 $('#app-left-menu li:contains("Dashboard")').addClass('active');
 
+                var newVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
+                
+                $('.ui-state-default.variable.ui-draggable').remove();
+                addVariableList(dataset);
+                previousVariables = newVariables;
+
                 $('.span2.list-var').show();
                 $('.span9.visualization-dashboard').show();
                 $('.span3.suggestions-menu').hide();
