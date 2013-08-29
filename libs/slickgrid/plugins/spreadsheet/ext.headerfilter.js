@@ -25,7 +25,8 @@
             sortAscImage: "./images/sort-asc.png",
             sortDescImage: "./images/sort-desc.png",
             deleteImage: "./images/icon-trash.png",
-            copyImage: "./images/icon-copy.png"
+            copyImage: "./images/icon-copy.png",
+            pasteImage: "./images/icon-paste.png"
         };
         var $menu;
 
@@ -153,6 +154,7 @@
             addMenuItem($menu, columnDef, 'Sort Descending', 'sort-desc', options.sortDescImage);
             addMenuItem($menu, columnDef, 'Duplicte Column', 'duplicate-column', options.copyImage);
             addMenuItem($menu, columnDef, 'Delete Column', 'delete-column', options.deleteImage);
+            addMenuItem($menu, columnDef, 'Fill Down Column', 'fill-down-columns', options.pasteImage);
             addMenuInputItem($menu, columnDef, 'Filter Column', 'filter-column-wildcard', options.filterImage);
 
             var filterOptions = "<label><input type='checkbox' value='-1' />(Select All)</label>";

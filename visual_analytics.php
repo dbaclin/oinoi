@@ -936,6 +936,28 @@
                     refreshData();
                   }
                 },
+                'fill-down-columns': {
+                  tag_id: 'fill-down-columns' ,
+                  applyTo: ["column", "columns"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Fill down column <span args="from">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Fill down selected columns with non-empty values</a> </div> '},                    
+                  action: function(args){
+                    var nonEmptyColumnValues = {};
+                    var currentItem = null;
+                    for(var i = 0, len = dataView.getLength(); i < len; i++) {
+                      currentItem = dataView.getItem(i);
+                      for(var c = 0, lenCols = selectedColumns.length; c < lenCols; c++) {
+                        if(currentItem[selectedColumns[c]] == null || currentItem[selectedColumns[c]].length == 0) {
+                          currentItem[selectedColumns[c]] = nonEmptyColumnValues[selectedColumns[c]] != undefined ? nonEmptyColumnValues[selectedColumns[c]] : null;
+                        } else {
+                          nonEmptyColumnValues[selectedColumns[c]] = currentItem[selectedColumns[c]]; 
+                        }
+                      }
+                    }
+                    this.writeALog(args);
+                    refreshData();
+                  }
+                },
                 'unflatten-selected-columns': {
                   tag_id: 'unflatten-selected-columns' ,
                   applyTo: ["columns"],
@@ -1883,6 +1905,10 @@
                       case "delete-column":
                           processSuggestion('remove-selected-columns',{selectedVariable:[args.column.id]});
                           break;
+                      case "fill-down-columns":
+                          processSuggestion('fill-down-columns',{selectedVariable:[args.column.id]});
+                          break;
+
                   }
               });
 
