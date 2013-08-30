@@ -124,7 +124,7 @@
     };
 
     this.serializeValue = function () {
-      return !isNaN($input.val() - 0) ? $input.val() - 0 : null;
+      return !isNaN($input.val() - 0) && $input.val().length > 0 ? $input.val() - 0 : null;
       // return ($input.val() - 0) || null; // check that it's indeed a number
     };
 
@@ -133,7 +133,7 @@
     };
 
     this.isValueChanged = function () {
-      return ($input.val() != defaultValue);
+      return true; //($input.val() != defaultValue);
       // return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
     };
 

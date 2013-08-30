@@ -63,10 +63,6 @@
                  
       
                 <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
-                  <li>-</li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-columns">Remove selected columns</a></li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="duplicate-selected-columns">Duplicate selected columns</a></li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="rename-variable">Rename Column</a></li>
@@ -80,6 +76,12 @@
                     </ul>
                   </li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
+                  
+                  <li>-</li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+                  
                   <li>-</li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
                   <!-- <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Group by</a></li>
@@ -1752,8 +1754,17 @@
                       var col = columns[i];
                       var filterValues = col.filterValues;
                       var filterWildCard = col.filterWildCard;
+                      var filterProblems = col.filterProblems;
 
-                      if (filterWildCard && filterWildCard.length > 0) {
+                      if(filterProblems && filterProblems == 1) {
+                          if(col.type == "date") {
+                            value = value & !(value != null && typeof value == "object" && value.getMonth != "undefined");
+                          } else if(col.type == "number") {
+                            value = value & (item[col.field] == null || isNaN(item[col.field] - 0));
+                          } else {
+                            value = value & (item[col.field] == null || item[col.field].length == 0);
+                          }
+                      } else if (filterWildCard && filterWildCard.length > 0) {
                           if(col.type == "date") {
                             value = value & (item[col.field] != null ? item[col.field].toString("yyyy-MM-dd").indexOf(filterWildCard) >= 0 : false);
                           } else {
@@ -1889,7 +1900,9 @@
                       case "fill-down-columns":
                           processSuggestion('fill-down-columns',{selectedVariable:[args.column.id]});
                           break;
-
+                      case "filter-issues-in-columns":
+                          refreshData();
+                          break;
                   }
               });
 
