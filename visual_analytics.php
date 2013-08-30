@@ -20,16 +20,40 @@
 
     <div class="container-fluid main-page">
             <div class="row-fluid">
-              <div class="span1 left-menu" id="app-left-menu">
+              <div class="span1 left-menu" id="app-left-menu" 
+              data-step="1" 
+              data-intro="This is the app navigation menu. You can either Modify, Visualize or Share you data. Click the Oinoi icon to go back to the main website."
+              data-position="right">
                 <ul class="nav nav-pills nav-stacked">
-                  <li class="active"><a href="#"><i class="icon-table"></i> Data</a></li>
-                  <li><a href="#"><i class="icon-bar-chart"></i> Dashboard</a></li>
-                  <li><a href="#"><i class="icon-share"></i> Share</a></li>
-                  <li><a href="#"><i class="icon-reorder"></i> Website</a></li>
+                  <li class="active"
+              data-step="7" 
+              data-intro="Go back to the Data view to manage your data"
+              data-position="right"
+                  ><a href="#"><i class="icon-table"></i> Data</a></li>
+                  <li
+              data-step="4" 
+              data-intro="Click on the dashboard icon to visualize your data."
+              data-position="right"
+                  ><a href="#"><i class="icon-dashboard"></i> Dashboard</a></li>
+                  <li
+              data-step="8" 
+              data-intro="Once you have finished your data analysis, just share it with other people by clicking this button, it will give you a link that you will be able to give to your friends or colleagues."
+              data-position="right"
+                  ><a href="#"><i class="icon-share"></i> Share</a></li>
+                  <li
+              data-step="9" 
+              data-intro="Click on the oinoi icon to get back to the rest of the website"
+              data-position="right"
+                  ><a href="#"><i class="icon-bar-chart"></i> Oinoi</a></li>
                 </ul>
               </div>
               
-              <div  class="span3 suggestions-menu">
+              <div  class="span3 suggestions-menu"
+              data-step="3" 
+              data-intro="After you have clicked on a colum, row or cell on the data grid, the suggestions about data transformation to perform will appear here. 
+              Click on the icon next to each suggestion to apply it over the whole column or row selected."
+              data-position="right"
+              >
                 <div id="accordion-resizer" class="ui-widget-content">
                   <div id="accordion">
                     <div class="menu" id="suggestionsBanner">
@@ -59,7 +83,12 @@
 
             <div  class="span8 data-wrangling" >
                  <input id="searchBox" size="400" placeholder="Enter any query"/>
-                 <div id="myGrid" style="width:100%;height:600px;"></div>
+                 <div id="myGrid" style="width:100%;height:600px;"
+              data-step="2" 
+              data-intro="This is the data grid where you can interact whith your data. 
+              Click on a colum, a row or a cell to get suggestions about transformations you could perform on your data."
+              data-position="left"
+                 ></div>
                  
       
                 <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
@@ -102,12 +131,21 @@
                  
             </div>
             
-            <div class="span2 list-var" style="align:right; display:none">
+            <div class="span2 list-var" style="align:right; display:none"
+              data-step="5" 
+              data-intro="Click on any of the variables to see its distribution and start interacting with your data in a visual way."
+              data-position="right"
+            >
               <ul id="variables" >
               
               </ul>
             </div>
-            <div class="span9 visualization-dashboard layouts_grid" id="layouts_grid" style="display:none">
+            <div class="span9 visualization-dashboard layouts_grid" id="layouts_grid" style="display:none"
+              data-step="6" 
+              data-intro="You can add multiple variables on this dashboard panel at the same time to see the interactions between them. 
+              You can also move the charts around with a simple drag and drop."
+              data-position="left"
+            >
           <ul>
           </ul>
         </div>
@@ -678,7 +716,7 @@
           function defineTransformation(){
               return  {'replace-from-to': {
                   tag_id: 'replace-from-to' ,
-                  applyTo: ["cellContent","column"],
+                  applyTo: ["cellContent","column","cell"],
                   keywords: ["with", "by"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Replace <span args="from">' + args.from + '</span> by <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"></div>'},
@@ -712,7 +750,7 @@
                 },
                 'keep-upto': {
                   tag_id: 'keep-upto' ,
-                  applyTo: ["cellContent","column"],
+                  applyTo: ["cellContent","column","cell"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters up to <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue" args="to"></div>'},
                   action: function(args){
@@ -729,7 +767,7 @@
                 },
                  'keep-startingfrom': {
                   tag_id: 'keep-startingfrom' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","column", "cell"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters starting from <span args="from">' + args.from + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from </a><input type="text" class="startingfrom selectedValue" args="from"></div>'},
                   action: function(args){
@@ -746,7 +784,7 @@
                 },  
                  'keep-between-left-right': {
                   tag_id: 'keep-between-left-right' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","cell"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters between <span args="from">' + args.from + '</span> and <span args="to">' + args.to + '</span>  in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between </a><input type="text" class="left selectedValue" args="from"><a href="#"> and </a><input type="text" class="right" args="to"></div>'},
                   action: function(args){
@@ -766,7 +804,7 @@
                 },
                 'keep-fixed-left': {
                   tag_id: 'keep-fixed-left' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","cell"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep the first <span args="from">' + args.from + '</span> characters in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep the first</a> <input type="number" class=" left" args="from"><a href="#"> characters </a></div>'},
                   action: function(args){
@@ -783,7 +821,7 @@
                 },
                  'keep-between-fixed-left-right': {
                   tag_id: 'keep-between-fixed-left-right' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","cell"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep text between positions<span args="from">' + args.from + '</span> and <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between positions</a> <input type="number" class=" left" args="from"><a href="#"> and </a><input type="number" class=" right" args="to"></div>'},
                   action: function(args){
@@ -1806,6 +1844,9 @@
               var browserHeight = window.innerHeight ||
                  document.documentElement.clientHeight ||
                  document.body.clientHeight;  
+
+              $('#app-left-menu').height(browserHeight - 10);    
+
               browserHeight = browserHeight - 55;
 
 
@@ -2152,7 +2193,7 @@
                 previousVariables = newVariables;
 
                 refreshData();
-                
+
 
                 $('.span2.list-var').show();
                 $('.span9.visualization-dashboard').show();
@@ -2163,7 +2204,7 @@
               $('#app-left-menu li:contains("Share")').click(function(e) {
                 shareWranglingAndViz();
               });
-              $('#app-left-menu li:contains("Website")').click(function(e) {
+              $('#app-left-menu li:contains("Oinoi")').click(function(e) {
                 if(!$('#header').is(':visible')) $('#header').show();
                 else $('#header').hide();
               });
@@ -2267,6 +2308,20 @@
                 addVariableList(dataset);
                 spinner.stop();
            
+
+                var oinoiCookie = $.cookie('oinoi-analysis');
+                var currentDate = new Date().toString("yyyy-MM-dd hh:mm:ss");
+                if(oinoiCookie == undefined) {
+                  $.cookie('oinoi-analysis',
+                    JSON.stringify({firstVisit: currentDate, lastVisit: currentDate, nofVisits: 1}),
+                    { expires: 365, path: '/' });
+                  introJs().start();
+                } else {
+                  oinoiCookie = JSON.parse(oinoiCookie);
+                  $.cookie('oinoi-analysis',
+                    JSON.stringify({firstVisit: oinoiCookie.firstVisit , lastVisit: currentDate, nofVisits: (oinoiCookie.nofVisits - 0) + 1}),
+                    { expires: 365, path: '/' });  
+                }
             }
 
             function shareWranglingAndViz() {

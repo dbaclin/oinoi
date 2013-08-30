@@ -15,6 +15,7 @@
 <script src="./libs/slickgrid/lib/jquery.event.drag-2.2.js"></script>
 <script src="./libs/gridster/dist/jquery.gridster.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" src="./libs/bootboxjs/bootbox.min.js"></script>
+<script type="text/javascript" src="./libs/jquery/plugins/jquery.cookie.js"></script>
 
 <script src="./libs/slickgrid/slick.core.js"></script>
 <script src="./libs/slickgrid/plugins/slick.headermenu.js"></script>
@@ -32,6 +33,8 @@
 <script src="./libs/slickgrid/plugins/spreadsheet/ext.overlays.js"></script>
 
 <script src="./libs/shortcut/shortcut.js"></script>
+
+<script src="./libs/introjs/intro.js"></script>
 
 <!-- UserVoice JavaScript SDK (only needed once on a page) -->
 <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/OknRXKVV9uqp0WC5Rc6ug.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>

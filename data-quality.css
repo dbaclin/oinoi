@@ -830,6 +830,9 @@ div.suggestion span.addButtonIcon i:hover {
     color: white!important;
 }
 */
+#app-left-menu {
+    background-color: rgb(246,246,246);
+}
 #app-left-menu li a {
     padding-left: 2px!important;
     padding-right: 2px!important;
@@ -858,6 +861,9 @@ div.modal-body a, div.modal-body input {
 }
 div.modal-body input {
     width: 120px!important;
+}
+div.modal-body input.input-block-level {
+    width: 300px!important;
 }
 
 #suggestionsBanner, #suggestionsBanner.ui-state-hover {
