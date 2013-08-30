@@ -179,7 +179,7 @@
             addMenuItem($menu, columnDef, 'Duplicate Column', 'duplicate-column', options.copyImage);
             addMenuItem($menu, columnDef, 'Delete Column', 'delete-column', options.deleteImage);
             addMenuItem($menu, columnDef, 'Fill Down Column', 'fill-down-columns', options.pasteImage);
-            addMenuItemCustom($menu, columnDef, 'Filter '+problemNumbersForDisplay+' issues', 'filter-issues-in-columns', options.warningImage, $menuButton, problemNumbers);
+            addMenuItemCustom($menu, columnDef, 'Filter '+problemNumbersForDisplay+' issue'+ (problemNumbers != 1 ? 's' : ''), 'filter-issues-in-columns', options.warningImage, $menuButton, problemNumbers);
             addMenuInputItem($menu, columnDef, 'Filter text', 'filter-column-wildcard', options.filterImage);
 
             var filterOptions = "<label><input type='checkbox' value='-1' />(Select All)</label>";
