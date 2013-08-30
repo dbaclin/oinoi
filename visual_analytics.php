@@ -63,26 +63,10 @@
                  
       
                 <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-columns">Remove selected columns</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="duplicate-selected-columns">Duplicate selected columns</a></li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="rename-variable">Rename Column</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove rows</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
                   <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="create-new-variable-expression">Create calculated field</a></li>
-                  
-                  <li>-</li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Group by</a></li>
-                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
-                  
-                  <li class="slick-header-menuitem" class="slick-header-menucontent">
-                    <a href="#" >Keep text</a>
-                    <ul class="slick-header-menu">
-                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
-                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-starting-from">from</a></li>
-                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-between-left-right">between</a></li>
-                    </ul>
-                  </li>
-
                   <li class="slick-header-menuitem" class="slick-header-menucontent">
                     <a href="#" >Change type</a>
                     <ul class="slick-header-menu">
@@ -91,6 +75,27 @@
                       <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">date</a></li>
                     </ul>
                   </li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
+                  
+                  <li>-</li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+                  
+                  <li>-</li>
+                  <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
+                  <!-- <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent">Group by</a></li>
+                   -->
+                  <li class="slick-header-menuitem" class="slick-header-menucontent">
+                    <a href="#" >Keep text</a>
+                    <ul class="slick-header-menu">
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-startingfrom">from</a></li>
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-between-left-right">between</a></li>
+                      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-fixed-left">first characters</a></li>
+                    </ul>
+                  </li>
+                  
                 </ul> 
                  
                  
@@ -195,14 +200,10 @@
 
 
          $( "#accordion" ).accordion({
-              heightStyle: "fill"
+              heightStyle: "content" 
             });
 
-
-
          
-          
-
             // initialize gridster
             
         layout = $('.layouts_grid ul').gridster({
@@ -677,7 +678,7 @@
           function defineTransformation(){
               return  {'replace-from-to': {
                   tag_id: 'replace-from-to' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","column"],
                   keywords: ["with", "by"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Replace <span args="from">' + args.from + '</span> by <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Replace </a><input class="from selectedValue" args="from" type="text"><a href="#">  to</a> <input class="to" type="text" args="to"></div>'},
@@ -711,7 +712,7 @@
                 },
                 'keep-upto': {
                   tag_id: 'keep-upto' ,
-                  applyTo: ["cellContent"],
+                  applyTo: ["cellContent","column"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters up to <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text up to</a> <input type="text" class="upto selectedValue" args="to"></div>'},
                   action: function(args){
@@ -729,16 +730,15 @@
                  'keep-startingfrom': {
                   tag_id: 'keep-startingfrom' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from</a><input type="text" class="startingfrom selectedValue"></div>'},
-                  action: function(aVariable){
-                    if(typeof aVariable != "undefined"){
-                      var suggestion = $('#' + this.tag_id);
-                      var startingfrom = protectStringForRegExp(suggestion.find('.startingfrom').val());
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters starting from <span args="from">' + args.from + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text from </a><input type="text" class="startingfrom selectedValue" args="from"></div>'},
+                  action: function(args){
+                    if(typeof args.selectedVariable != "undefined"){
+                      var startingfrom = protectStringForRegExp(args.from);
                       if(startingfrom.length){
-                        var functionString = "var str = (row." + aVariable + " + ''); var idx = str.indexOf('"+startingfrom+"');"+
-                                             "return idx == -1 ? row." + aVariable +" : str.substr(idx+1) ;";
-                        console.log(functionString);
-                        dataset.applyFunction(aVariable,functionString);  
+                        var functionString = "var str = (row." + args.selectedVariable + " + ''); var idx = str.indexOf('"+startingfrom+"');"+
+                                             "return idx == -1 ? row." + args.selectedVariable +" : str.substr(idx+1) ;";
+                        dataset.applyFunction(args.selectedVariable,functionString);  
                         slickGrid.invalidate();
                       }
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
@@ -747,19 +747,18 @@
                  'keep-between-left-right': {
                   tag_id: 'keep-between-left-right' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between</a><input type="text" class="left selectedValue"><a href="#"> and </a><input type="text" class=" right"></div>'},
-                  action: function(aVariable){
-                    if(typeof aVariable != "undefined"){
-                      var suggestion = $('#' + this.tag_id);
-                      var left = protectStringForRegExp(suggestion.find('.left').val());
-                      var right = protectStringForRegExp(suggestion.find('.right').val());
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep all characters between <span args="from">' + args.from + '</span> and <span args="to">' + args.to + '</span>  in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between </a><input type="text" class="left selectedValue" args="from"><a href="#"> and </a><input type="text" class="right" args="to"></div>'},
+                  action: function(args){
+                    if(typeof args.selectedVariable != "undefined"){
+                      var left = protectStringForRegExp(args.from);
+                      var right = protectStringForRegExp(args.to);
                       if(left.length * right.length){
-                        var functionString = "var str = (row." + aVariable + " + '');" +
+                        var functionString = "var str = (row." + args.selectedVariable + " + '');" +
                                              "var idx_left = str.indexOf('"+left+"');"+
                                              "var idx_right = str.indexOf('"+right+"',idx_left+1);"+
-                                             "return idx_left == -1 || idx_right == -1 ? row." + aVariable +" : str.substring(idx_left+1,idx_right) ;";
-                        console.log(functionString);
-                        dataset.applyFunction(aVariable,functionString);  
+                                             "return idx_left == -1 || idx_right == -1 ? row." + args.selectedVariable +" : str.substring(idx_left+1,idx_right) ;";
+                        dataset.applyFunction(args.selectedVariable,functionString);  
                         slickGrid.invalidate();
                       }
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
@@ -768,17 +767,15 @@
                 'keep-fixed-left': {
                   tag_id: 'keep-fixed-left' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep the first</a> <input type="number" class=" left"><a href="#"> characters </a></div>'},
-                  action: function(aVariable){
-                    if(typeof aVariable != "undefined"){
-                      var suggestion = $('#' + this.tag_id);
-
-                      var left = suggestion.find('.left').val() - 0;
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep the first <span args="from">' + args.from + '</span> characters in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep the first</a> <input type="number" class=" left" args="from"><a href="#"> characters </a></div>'},
+                  action: function(args){
+                    if(typeof args.selectedVariable != "undefined"){
+                      var left = args.from - 0;
                       if(!isNaN(left) && left > 0){
-                        var functionString = "var str = (row." + aVariable + " + '');" +
+                        var functionString = "var str = (row." + args.selectedVariable + " + '');" +
                                              "return str.substr(0,"+left+") ;";
-                        console.log(functionString);
-                        dataset.applyFunction(aVariable,functionString);  
+                        dataset.applyFunction(args.selectedVariable,functionString);  
                         slickGrid.invalidate();
                       }
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
@@ -787,15 +784,15 @@
                  'keep-between-fixed-left-right': {
                   tag_id: 'keep-between-fixed-left-right' ,
                   applyTo: ["cellContent"],
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between positions</a> <input type="number" class=" left"><a href="#"> and </a><input type="number" class=" right"></div>'},
-                  action: function(aVariable){
-                    var left = suggestion.find('.left').val() - 0 - 1;
-                    var right = suggestion.find('.right').val() - 0 ;
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Keep text between positions<span args="from">' + args.from + '</span> and <span args="to">' + args.to + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep text between positions</a> <input type="number" class=" left" args="from"><a href="#"> and </a><input type="number" class=" right" args="to"></div>'},
+                  action: function(args){
+                    var left = args.from - 0 - 1;
+                    var right = args.to - 0 ;
                     if(!isNaN(left) && left >= 0 && !isNaN(right) && right >= left) {
-                      var functionString = "var str = (row." + aVariable + " + '');" +
+                      var functionString = "var str = (row." + args.selectedVariable + " + '');" +
                                            "return str.substring("+left+","+right+") ;";
-                      console.log(functionString);
-                      dataset.applyFunction(aVariable,functionString);  
+                      dataset.applyFunction(args.selectedVariable,functionString);  
                       slickGrid.invalidate();
                     }
                   }
@@ -803,17 +800,15 @@
                 'keep-only-records-where': {
                   tag_id: 'keep-only-records-where' ,
                   applyTo: ["cell", "cellContent","column"],
-                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Filter rows where <span args="filter">' + args.filter + '</span></div>');},
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Filter rows where <span args="filter">' + args.filter + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep records if</a><input type="text" args="filter"></div>'},
                   action: function(args){
-
                     var functionString = args.filter;
                     if(functionString.length > 0) {
                       dataset.applyFunctionOnRows(functionString);
                       refreshData();
                       this.writeALog(args);
                     }
-
                   }
                 },
                  'create-new-variable-expression': {
@@ -822,10 +817,7 @@
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Create new column <span args="name">' + args.name + '</span>  as <span args="where">' + args.where + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Create </a><input args="name" type="text" value="new variable"><a href="#"> as </a> <input type="text" args="where"></div>'},
                   action: function(args){
-                      console.log("yup");
-                      console.log(args.name);
                     if(args.name.length > 0 && args.where.length > 0) {
-                      console.log(args.name + args.where);
                       dataset.addColumn(args.name,args.where);
                       refreshData();
                       this.writeALog(args);
@@ -886,7 +878,7 @@
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Remove rows <span args="from">' + args.selectedLines.join(",") + '</span>  </div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Remove selected lines</a> </div> '},                    
                   action: function(args){
-                    if(typeof args.selectedLines == "undefined")
+                    if(typeof args.selectedLines == 'undefined')
                       args.selectedLines = _.map(slickGrid.getSelectedRows(), function(row) {return dataView.getItem(row).id;} );
                     dataset.removeLines(args.selectedLines);
                     this.writeALog(args);
@@ -967,8 +959,9 @@
                   action: function(){
                     var newHeader = []; 
                     var columnIdsToReplace = _.map(slickGrid.getColumns(),function(d) { return d.id; }).slice(1); // remove id column
+                    var firstLineItem = dataView.getItem(0);
                     for(var i = 0, len = columnIdsToReplace.length; i < len; i++) {
-                      var headerValue = dataset.rows[0][columnIdsToReplace[i]];
+                      var headerValue = firstLineItem[columnIdsToReplace[i]];
                       headerValue = headerValue == null ? "" : headerValue;
                       newHeader.push(headerValue);
                     }
@@ -1240,7 +1233,7 @@
                   }
               }
           }
-  
+  /*
           function loadDataset(json_data){
         
               data_summary = getSummaryStats(json_data.headers, json_data.rows.slice(0,200));
@@ -1264,7 +1257,7 @@
               ndx = crossfilter(json_data.rows);
               all = ndx.groupAll();                
           }
-                        
+        */         
           function addDCBarChart(name,dimension,group,w,h){
               var chart; 
               
@@ -1447,7 +1440,7 @@
                 }
                 slickGrid.invalidate();
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
-                ndx = crossfilter(dataset.rows);
+                ndx = crossfilter(dataView.getRows());
                 all = ndx.groupAll();     
             }
 
@@ -1710,13 +1703,19 @@
                   case "change-header": 
                     transformation[actionSelected].action();
                     break;
+                  case "remove-selected-columns": 
+                      transformation[actionSelected].action({selectedVariable:selectedColumns});
+                      break;
+                  case "duplicate-selected-columns": 
+                      transformation[actionSelected].action({selectedVariable:selectedColumns});
+                      break;
                   case "remove-selected-lines": 
-                    transformation[actionSelected].action();
+                    transformation[actionSelected].action({});
                     break;
                   case "apply-type-on-variable": 
-                    var selectedVariable = $("#contextMenu").data("selectedVariable");
+                    //var selectedVariable = $("#contextMenu").data("selectedVariable");
                     var newType = $(e.target).html();
-                    transformation[actionSelected].action(selectedVariable, newType);
+                    transformation[actionSelected].action({selectedVariable:selectedColumns, newType:newType});
                     break;
                   default:
                       $("#myModalSuggestion .modal-body").empty().append(transformation[actionSelected].html());
@@ -1759,8 +1758,17 @@
                       var col = columns[i];
                       var filterValues = col.filterValues;
                       var filterWildCard = col.filterWildCard;
+                      var filterProblems = col.filterProblems;
 
-                      if (filterWildCard && filterWildCard.length > 0) {
+                      if(filterProblems && filterProblems == 1) {
+                          if(col.type == "date") {
+                            value = value & !(value != null && typeof value == "object" && value.getMonth != "undefined");
+                          } else if(col.type == "number") {
+                            value = value & (item[col.field] == null || isNaN(item[col.field] - 0));
+                          } else {
+                            value = value & (item[col.field] == null || item[col.field].length == 0);
+                          }
+                      } else if (filterWildCard && filterWildCard.length > 0) {
                           if(col.type == "date") {
                             value = value & (item[col.field] != null ? item[col.field].toString("yyyy-MM-dd").indexOf(filterWildCard) >= 0 : false);
                           } else {
@@ -1896,7 +1904,9 @@
                       case "fill-down-columns":
                           processSuggestion('fill-down-columns',{selectedVariable:[args.column.id]});
                           break;
-
+                      case "filter-issues-in-columns":
+                          refreshData();
+                          break;
                   }
               });
 
@@ -2145,6 +2155,9 @@
                 addVariableList(dataset);
                 previousVariables = newVariables;
 
+                refreshData();
+                
+
                 $('.span2.list-var').show();
                 $('.span9.visualization-dashboard').show();
                 $('.span3.suggestions-menu').hide();
@@ -2250,7 +2263,7 @@
 
                 previousVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
 
-                ndx = crossfilter(dataset.rows);
+                ndx = crossfilter(dataView.getRows());
                 all = ndx.groupAll();     
                                                 
                 //loadDataset(json_data);

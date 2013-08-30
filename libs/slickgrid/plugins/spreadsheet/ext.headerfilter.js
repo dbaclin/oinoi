@@ -26,7 +26,8 @@
             sortDescImage: "./images/sort-desc.png",
             deleteImage: "./images/icon-trash.png",
             copyImage: "./images/icon-copy.png",
-            pasteImage: "./images/icon-paste.png"
+            pasteImage: "./images/icon-paste.png",
+            warningImage: "./images/icon-warning.png",
         };
         var $menu;
 
@@ -101,6 +102,26 @@
              .appendTo($item);
         }
 
+        function addMenuItemCustom(menu, columnDef, title, command, image, menuButton, problemNumbers) {
+            var $item = $("<div class='slick-header-menuitem' "+ (problemNumbers > 0 ? "style='color:red;'" : "") + ">")
+                         .data("command", command)
+                         .data("column", columnDef)
+                         .bind("click", handleMenuItemClickCustom)
+                         .bind("click", function() { setButtonImage(menuButton,true);} )
+                         .appendTo(menu);
+
+            var $icon = $("<div class='slick-header-menuicon'>")
+                         .appendTo($item);
+
+            if (image) {
+                $icon.css("background-image", "url(" + image + ")");
+            }
+
+            $("<span class='slick-header-menucontent'>")
+             .text(title)
+             .appendTo($item);
+        }
+
         function addMenuInputItem(menu, columnDef, title, command, image) {
             var $item = $("<div class='slick-header-menuitem'>")
                          .data("command", command)
@@ -150,12 +171,16 @@
 
             $menu.empty();
 
+            var problemNumbers = getProblemNumbers(grid.getData(), columnDef);
+            problemNumbersForDisplay = problemNumbers > 100 ? '100+' : ''+problemNumbers;
+
             addMenuItem($menu, columnDef, 'Sort Ascending', 'sort-asc', options.sortAscImage);
             addMenuItem($menu, columnDef, 'Sort Descending', 'sort-desc', options.sortDescImage);
-            addMenuItem($menu, columnDef, 'Duplicte Column', 'duplicate-column', options.copyImage);
+            addMenuItem($menu, columnDef, 'Duplicate Column', 'duplicate-column', options.copyImage);
             addMenuItem($menu, columnDef, 'Delete Column', 'delete-column', options.deleteImage);
             addMenuItem($menu, columnDef, 'Fill Down Column', 'fill-down-columns', options.pasteImage);
-            addMenuInputItem($menu, columnDef, 'Filter Column', 'filter-column-wildcard', options.filterImage);
+            addMenuItemCustom($menu, columnDef, 'Filter '+problemNumbersForDisplay+' issue'+ (problemNumbers != 1 ? 's' : ''), 'filter-issues-in-columns', options.warningImage, $menuButton, problemNumbers);
+            addMenuInputItem($menu, columnDef, 'Filter text', 'filter-column-wildcard', options.filterImage);
 
             var filterOptions = "<label><input type='checkbox' value='-1' />(Select All)</label>";
 
@@ -176,7 +201,8 @@
                 .bind('click', function (ev) {
                     columnDef.filterValues = workingFilters.splice(0);
                     columnDef.filterWildCard = ($menu.find('input').val().length == 0 ? null : $menu.find('input').val());
-                    setButtonImage($menuButton, (columnDef.filterWildCard != null && columnDef.filterWildCard.length > 0) 
+                    setButtonImage($menuButton, (columnDef.filterWildCard != null && columnDef.filterWildCard.length > 0) ||
+                                                (columnDef.filterProblems != null && columnDef.filterProblems == 1) 
                                                 || columnDef.filterValues.length > 0);
                     handleApply(ev, columnDef);
                 });
@@ -186,6 +212,7 @@
                 .bind('click', function (ev) {
                     columnDef.filterValues.length = 0;
                     columnDef.filterWildCard = null;
+                    columnDef.filterProblems = null;
                     setButtonImage($menuButton, false);
                     handleApply(ev, columnDef);
                 });
@@ -257,6 +284,31 @@
             e.stopPropagation();
         }
 
+        function getProblemNumbers(dataView, column) {
+            var errors = 0;
+            switch(column.type) {
+                case 'string':
+                    for (var i = 0, len = dataView.getLength(), limit = 101; i < len && errors <= limit; i++) {
+                         var value = dataView.getItem(i)[column.field];
+                         errors += value == null || value.length == 0 ? 1 : 0;
+                    }
+                break;
+                case 'date':
+                    for (var i = 0, len = dataView.getLength(), limit = 101; i < len && errors <= limit; i++) {
+                         var value = dataView.getItem(i)[column.field];
+                         errors += value != null && typeof value == "object" && value.getMonth != "undefined" ? 0 : 1;
+                    }
+                break;
+                case 'number':
+                    for (var i = 0, len = dataView.getLength(), limit = 101; i < len && errors <= limit; i++) {
+                         var value = dataView.getItem(i)[column.field];
+                         errors += value == null || isNaN(value - 0) ? 1 : 0;
+                    }
+                break;
+            }
+            return errors;
+        }
+
         function getFilterValues(dataView, column) {
             var seen = {};
             for (var i = 0, len = dataView.getLength(), limit = 200; _.size(seen) < limit && i < len ; i++) {
@@ -312,6 +364,23 @@
         function handleMenuItemClick(e) {
             var command = $(this).data("command");
             var columnDef = $(this).data("column");
+
+            hideMenu();
+
+            self.onCommand.notify({
+                "grid": grid,
+                "column": columnDef,
+                "command": command
+            }, e, self);
+
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleMenuItemClickCustom(e) {
+            var command = $(this).data("command");
+            var columnDef = $(this).data("column");
+            columnDef.filterProblems = 1;
 
             hideMenu();
 
