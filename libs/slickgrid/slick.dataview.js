@@ -366,6 +366,10 @@
       return rows[i];
     }
 
+    function getRows() {
+      return rows;
+    }
+
     function getItemMetadata(i) {
       var item = rows[i];
       if (item === undefined) {
@@ -951,6 +955,7 @@
       "getLength": getLength,
       "getItem": getItem,
       "getItemMetadata": getItemMetadata,
+      "getRows":getRows,
 
       // events
       "onRowCountChanged": onRowCountChanged,

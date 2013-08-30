@@ -1233,7 +1233,7 @@
                   }
               }
           }
-  
+  /*
           function loadDataset(json_data){
         
               data_summary = getSummaryStats(json_data.headers, json_data.rows.slice(0,200));
@@ -1257,7 +1257,7 @@
               ndx = crossfilter(json_data.rows);
               all = ndx.groupAll();                
           }
-                        
+        */         
           function addDCBarChart(name,dimension,group,w,h){
               var chart; 
               
@@ -1440,7 +1440,7 @@
                 }
                 slickGrid.invalidate();
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
-                ndx = crossfilter(dataset.rows);
+                ndx = crossfilter(dataView.getRows());
                 all = ndx.groupAll();     
             }
 
@@ -2151,6 +2151,9 @@
                 addVariableList(dataset);
                 previousVariables = newVariables;
 
+                refreshData();
+                
+
                 $('.span2.list-var').show();
                 $('.span9.visualization-dashboard').show();
                 $('.span3.suggestions-menu').hide();
@@ -2256,7 +2259,7 @@
 
                 previousVariables = _.map(dataset.getColumns(),function(d) { return d.id; });
 
-                ndx = crossfilter(dataset.rows);
+                ndx = crossfilter(dataView.getRows());
                 all = ndx.groupAll();     
                                                 
                 //loadDataset(json_data);
