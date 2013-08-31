@@ -45,6 +45,7 @@
               data-intro="Click on the oinoi icon to get back to the rest of the website"
               data-position="right"
                   ><a href="#"><i class="icon-bar-chart"></i> Oinoi</a></li>
+                  <li><a href="#"><i class="icon-user"></i> Help</a></li>
                 </ul>
               </div>
               
@@ -2208,6 +2209,10 @@
                 if(!$('#header').is(':visible')) $('#header').show();
                 else $('#header').hide();
               });
+              $('#app-left-menu li:contains("Help")').click(function(e) {
+                introJs().start();
+              });
+
 
               $('#searchBox').bind("enterKey",function(e){
                 processQuery($('#searchBox').val());
