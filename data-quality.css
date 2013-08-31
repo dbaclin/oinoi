@@ -507,6 +507,7 @@ box-shadow: none!important;
 input[type="checkbox"]
 {
     vertical-align: sub;
+    margin-right: 4px;
 }
 
 .slick-header-menu .filter {
@@ -561,7 +562,7 @@ cursor: hand;
     vertical-align: center;
     padding: 0px;
     font-size: 12px;
-    margin: 5px 0px 5px 0px;
+    margin: 2px 0px 2px 0px;
     border-radius: 2px;
 }
 
