@@ -757,8 +757,7 @@ text-decoration: none;
 .container-fluid.main-page {
     margin: 0px !important;
     padding: 0px !important;
-    margin-left: 5px !important;
-    margin-top: 5px !important;
+
 }
 
 .span3.suggestions-menu, .span8.data-wrangling, .span2.list-var, .span9.visualization-dashboard {
@@ -831,10 +830,10 @@ div.suggestion span.addButtonIcon i:hover {
 }
 */
 #app-left-menu {
-    background-color: rgb(246,246,246);
+    background-color: #E6F2FF;
 }
 #app-left-menu li a {
-    padding-left: 2px!important;
+    padding-left: 6px!important;
     padding-right: 2px!important;
     border-radius: 2px;
 }
@@ -867,13 +866,15 @@ div.modal-body input.input-block-level {
 }
 
 #suggestionsBanner, #suggestionsBanner.ui-state-hover {
-    background: #0088cc;
+    margin-top: 30px;
+    background: white;
     border: 0px;
-    color: white;
-    font-weight: 400;
+    color: #0073ea;
     padding-top: 7px;
     padding-bottom: 7px;
     border-radius: 2px;
+    font-weight: bold;
+
 }
 #suggestionsBanner #suggestionsTitle {
     font-size: 13px;
