@@ -37,6 +37,8 @@
       <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-common.css" type="text/css" />
       <link rel="stylesheet" href="./libs/slickgrid/plugins/spreadsheet/plugins-gdoc-style.css" type="text/css" />
 
+      <link rel="stylesheet" href="./libs/introjs/introjs.css" type="text/css" />        
+
         <link rel="stylesheet" type="text/css" href="./data-quality.css"/>
         
 
