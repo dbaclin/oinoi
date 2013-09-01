@@ -881,7 +881,7 @@
                   tag_id: 'apply-type-on-variable' ,
                   applyTo: ["column","columns"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert column <span args="selectedVariable">' + args.selectedVariable + '</span>  type to <span args="newType">' + args.newType + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option selected="selected">number</option><option></option><option>string</option><option>date</option></select></div>'},                    
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option selected="selected">number</option><option>string</option><option>date</option></select></div>'},                    
                   action: function(args){
                    
                    var newType = args.newType;
@@ -1368,6 +1368,14 @@
                 
           function addDCLineChart(name,dimension,group,w,h){
               
+              var leftBound = dimension.bottom(1)[0][name] - 0;
+              var rightBound = dimension.top(1)[0][name] - 0;
+              var diff = (rightBound - leftBound) * 0.05;
+              leftBound = leftBound - diff;
+              rightBound = rightBound + diff;
+              leftBound = new Date(leftBound);
+              rightBound = new Date(rightBound);
+              /*
               var chart = dc.barChart("#" + name + "-chart");
              chart.width(w)
                   .height(h)
@@ -1379,11 +1387,27 @@
                   .dimension(dimension)
                   .group(group)
                   .elasticY(true)
-                  .x(d3.time.scale().domain([dimension.bottom(1)[0][name], dimension.top(1)[0][name]]))
+                  .x(d3.time.scale().domain([leftBound, rightBound]))
                   .renderHorizontalGridLines(true)
-                  .xAxis();
-                       
-                 return chart;    
+                  .xAxis();*/
+              var chart = dc.lineChart("#" + name + "-chart");
+              chart.width(w)
+                .height(h)
+                .margins({
+                      top: 5,
+                      right: 10,
+                      bottom: 25,
+                      left: 35})
+                .dimension(dimension)
+                .group(group)
+                .x(d3.time.scale().domain([leftBound, rightBound]))
+                .renderHorizontalGridLines(true)
+                .elasticY(true)
+                .brushOn(true)
+                .xAxis();
+
+                 return chart;   
+
           }
 
             /*
@@ -1666,7 +1690,9 @@
                 }
                } else if(selectedColumns.length > 0) {
                   keepSuggestionApplyingTo = selectedColumns.length == 1 ? "column" : "columns"; 
-               }  
+               } else if(selectedRows.length >= 1) {
+                   keepSuggestionApplyingTo = selectedRows.length == 1 ? "row" : "rows";
+               }
                //console.log("Suggestions for : "+keepSuggestionApplyingTo);
               
                
@@ -1835,6 +1861,15 @@
                return text;
             }
 
+            function selectAllRows() {
+              var rowsToSelect = [];
+              for(var i = 0, len = dataView.getLength(); i < len; i++) {
+                rowsToSelect.push(i);
+              }
+              
+              slickGrid.setSelectedRows(rowsToSelect);
+            }
+
             function addSlickGrid(someDataset) {
      
               var options = {
@@ -1948,6 +1983,7 @@
                           break;
                       case "filter-issues-in-columns":
                           refreshData();
+                          //selectAllRows();
                           break;
                   }
               });
@@ -2013,13 +2049,7 @@
                 previousColumns = _.map(slickGrid.getColumns(), function(element) { var x = {}; x[element.id] = {type:element.type, name:element.name}; return x; } );
 
                 shortcut.add("Ctrl+A",function() {
-                  var rowsToSelect = [];
-                  for(var i = 0, len = dataView.getLength(); i < len; i++) {
-                    rowsToSelect.push(i);
-                  }
-                  
-                  slickGrid.setSelectedRows(rowsToSelect);
-
+                  selectAllRows();
                 },{'target':'myGrid'});
 
                 shortcut.add("Shift+Delete",function() {

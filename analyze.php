@@ -18,7 +18,7 @@ if(  (isset($_POST['file_name']) && strlen($_POST['file_name']) > 1)  ||
     include_once("./visual_analytics.php");
 } else {
     include_once("./upload_data.php");
-    include_once("./footer.php");
+    
 }
 
 ?>
