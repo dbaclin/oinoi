@@ -132,7 +132,7 @@
               if(currentValue[columnId] === null) columnStatistics.nbNull++;
 
               if (typeof currentValue[columnId] == "number" 
-                  || (currentValue[columnId] != null && currentValue[columnId].length > 0 && !isNaN(currentValue[columnId].replace(/[\$£€ ,]/g,"")-0)))
+                  || (currentValue[columnId] != null && currentValue[columnId].length > 0 && !isNaN(currentValue[columnId].replace(/[\$£€ ,%]/g,"")-0)))
                   previousValue.nbNumber++;
               else if (currentValue[columnId] != null && new Date(currentValue[columnId]).toString() != "Invalid Date")
                   previousValue.nbDate++;
@@ -172,8 +172,8 @@
 
           var columnStatistics = this.columns[columnId].statistics;
 
-          if ((columnStatistics.nbNumber / columnStatistics.nbNonNull) > 0.95) this.columns[columnId].type = "number";
-          else if ((columnStatistics.nbDate / columnStatistics.nbNonNull) > 0.95) this.columns[columnId].type = "date";
+          if ((columnStatistics.nbNumber / columnStatistics.nbNonNull) > 0.90) this.columns[columnId].type = "number";
+          else if ((columnStatistics.nbDate / columnStatistics.nbNonNull) > 0.90) this.columns[columnId].type = "date";
           else this.columns[columnId].type = "string";
 
           this.applyType(columnId,this.columns[columnId].type);
@@ -195,9 +195,10 @@
                   } else if (newType == "number") {
                       var valueToTransform = currentValue;
                       if(!(typeof currentValue == "object" && currentValue.getMonth() != undefined))
-                        valueToTransform = (currentValue + "").replace(/[\$£€ ,]/g,"");
+                        valueToTransform = (currentValue + "").replace(/[\$£€ ,%]/g,"");
                       var localFloat = (valueToTransform - 0); // remove all , in the input numbers
-                      this.rows[i][columnId] = !isNaN(localFloat) ? localFloat : 
+                      this.rows[i][columnId] = !isNaN(localFloat) ? 
+                                                ( (currentValue + "").indexOf("%") >= 0 ? localFloat / 100 : localFloat  ) : 
                                                valueToTransform.length > 0 ? currentValue : null;
                   } else if (newType == "string") {
                       if(typeof currentValue == "object" && currentValue.getMonth() != undefined) {

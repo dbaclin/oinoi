@@ -881,7 +881,7 @@
                   tag_id: 'apply-type-on-variable' ,
                   applyTo: ["column","columns"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert column <span args="selectedVariable">' + args.selectedVariable + '</span>  type to <span args="newType">' + args.newType + '</span></div>');},
-                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option></option><option selected="selected">string</option><option>number</option><option>date</option></select></div>'},                    
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option selected="selected">number</option><option></option><option>string</option><option>date</option></select></div>'},                    
                   action: function(args){
                    
                    var newType = args.newType;

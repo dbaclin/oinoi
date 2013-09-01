@@ -837,6 +837,10 @@ div.suggestion span.addButtonIcon i:hover {
     padding-left: 6px!important;
     padding-right: 2px!important;
     border-radius: 2px;
+    color: #191919;
+}
+#app-left-menu li.active a {
+    color: white!important;
 }
 
 #stepsBanner {
@@ -874,9 +878,8 @@ div.modal-body input.input-block-level {
     padding-top: 7px;
     padding-bottom: 7px;
     border-radius: 2px;
-    font-weight: bold;
-
 }
 #suggestionsBanner #suggestionsTitle {
     font-size: 13px;
+    font-weight: 600;
 }
