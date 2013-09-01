@@ -372,7 +372,7 @@ a[data-toggle="dropdown"] {
     color: #444;
 }
 .container.upload {
-    margin-top: 7px;
+    margin-top: 20px;
 }
 .row.call-to-action {
     padding:0px;
@@ -880,3 +880,4 @@ div.modal-body input.input-block-level {
 #suggestionsBanner #suggestionsTitle {
     font-size: 13px;
 }
+

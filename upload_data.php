@@ -1,3 +1,35 @@
+
+
+<style type="text/css">
+.upload {
+
+  margin-top: 10px;
+
+}
+h3  {
+text-align: left;
+
+}
+
+ul {
+  list-style-type:circle;
+
+}
+li {
+    margin-top:5px;
+    font-size: 18px;
+    text-align: left;
+}
+
+#demo-dataset{
+
+   width: 75%;
+    margin: 0 auto;
+
+}
+
+
+</style>
 <script src="./libs/dropzone/dropzone.min.js"></script>
 <script type="text/javascript">
 function sumbitForm()
@@ -22,7 +54,7 @@ document.getElementById("main_form").submit();
   
   <div class="span6" align="center"><form action="upload.php" class="dropzone" id="my-dropzone" ></form> </div>
   <div class="span6" align="center">
-    <textarea rows="17" cols="10" id="pasted_data_temp" name="pasted_data_temp" placeholder="Paste some data from excel etc (needs to be tab delimited)"></textarea>  
+    <textarea rows="17" cols="10" id="pasted_data_temp" name="pasted_data_temp" placeholder="Paste data (needs to be tabs delimited)"></textarea>  
   </div>
   </div>
   <div class="row-fluid">
@@ -31,8 +63,19 @@ document.getElementById("main_form").submit();
       <input type="hidden" id="file_name" name="file_name" value="" />
       <input type="hidden" id="pasted_data" name="pasted_data" value="" />
       <a class="btn btn-large btn-primary" href="#" onclick="javascript:sumbitForm();" style="font-size: 30px;">
-  <i class="icon-bar-chart"></i> Create dashboard</a>
+  <i class="icon-bar-chart"></i> Load data</a>
       </form>
+    <div id="demo-dataset">
+      <h3>No data at hand? Start with one of our demo dataset:</h3>
+      <p >
+      <ul>
+        <li><a href="">Market share for mobile carriers in South Africa </a> (figure out who's winning)</li>
+        <li><a href="">US census data </a> (find out what's driving people income)</li>
+        <li><a href="">30 years of NBA MVP awards </a> (compare players)</li>
+      </ul>
+
+      </p>
+    </div>
   </div>
   
 </div>
