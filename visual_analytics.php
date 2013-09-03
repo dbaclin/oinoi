@@ -2257,6 +2257,7 @@
                     var jsonData = {};
                     jsonData.rows = dataset.rows;
                     jsonData.headers = _.map(_.omit(dataset.columns,"id"), function(c) {return c.id;});
+                    jsonData.types = _.map(_.omit(dataset.columns,"id"), function(c) {return c.type;});
                     jsonData.prettynames = _.map(_.omit(dataset.columns,"id"), function(c) {return c.name;});
                     var dataToWrite = csvjson.json2csv(jsonData);
 

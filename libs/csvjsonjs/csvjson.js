@@ -164,6 +164,8 @@ var csvjson = {};
 						var data = row[heading];
 						if(data == null) {
 							ret += delim;
+						} else if(jsondata.types[h] == "date") {
+							ret += data.toString("yyyy-MM-dd hh:mm:ss") + delim;
 						} else if(typeof(data) == "string") {
 							ret += textdelim + data + textdelim +  delim;
 						} else {
