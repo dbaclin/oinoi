@@ -40,7 +40,7 @@ var file_name;
 if(myDropzone.files.length > 0) file_name = myDropzone.files[0].name; 
 else file_name = "";
 var pasted_data = "" + document.getElementById("pasted_data_temp").value;
-pasted_data = pasted_data.replace(/\r\n/g, "Ø").replace(/\n/g, "Ø").replace(/\r/g, "Ø");
+pasted_data = pasted_data.replace(/\r\n/g, "Ø").replace(/\n/g, "Ø").replace(/\r/g, "Ø").replace(/,/g," ");
 
 document.getElementById("pasted_data").value = pasted_data;
 
@@ -69,9 +69,10 @@ document.getElementById("main_form").submit();
       <h3>No data at hand? Start with one of our demo dataset:</h3>
       <p >
       <ul>
-        <li><a href="">Market share for mobile carriers in South Africa </a> (figure out who's winning)</li>
-        <li><a href="">US census data </a> (find out what's driving people income)</li>
-        <li><a href="">30 years of NBA MVP awards </a> (compare players)</li>
+        <li><a href="?j=5224f3758bd8f">Venture capital data </a> (compare the hottest startup locations)</li>
+        <li><a href="?j=5224fe22a5d5a">US Census income data </a> (understand what drives people's income)</li>
+        <li><a href="?j=5224f84456b9f">60 years of NBA MVP awards </a> (compare players)</li>
+        <li><a href="?j=5224f86b9298b">Market share for mobile carriers in South Africa </a> (figure out who's winning)</li>
       </ul>
 
       </p>

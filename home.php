@@ -13,12 +13,13 @@
 
 		<!-- Carousel -->	
 		<div id="macbook_carousel">
-			<div id="carousel" class="carousel slide" rel="carousel">
-				<!-- Carousel items -->				
+			
+		<div id="carousel" class="carousel slide" rel="carousel">
 				<div class="carousel-inner">
 					<div class="active item">
-						<a href="http://oinoi.com/?j=51e9de617055c"> <img src="./images/dash1.png" alt="" /></a>
-					</div>
+						 <iframe width="600" height="360" src="http://www.youtube.com/embed/nPyi2wkdLGg?vq=large&rel=0" frameborder="0" allowfullscreen></iframe> 
+						<!-- <iframe src="//player.vimeo.com/video/73643736?color=ffffff" width="600" height="337" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/73643736">Oinoi, analytics for all</a></p> -->
+					</div><!-- 
 					<div class="item">
 						<a href="http://oinoi.com/?j=51e9deaa65569"> <img src="./images/dash2.png" alt="" /></a>
 					</div>
@@ -27,13 +28,13 @@
 					</div>
 					<div class="item">
 						<a href="./analyze.php"> <img src="./images/dash4.png" alt="" /></a>
-					</div>
+					</div> -->
 				</div>
-				<!-- Carousel navigation -->
 				<a class="carousel-control left" href="#carousel" data-slide="prev">&lsaquo;</a>
-				<a class="carousel-control right" href="#carousel" data-slide="next">&rsaquo;</a>
+				<a class="carousel-control right" href="#carousel" data-slide="next">&rsaquo;</a> 
 			</div>
-		</div>
+		</div> 
+
 	</div>
 
 	<div class="row">

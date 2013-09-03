@@ -18,7 +18,7 @@
 
          
 
-    <div class="container-fluid main-page">
+    <div class="container-fluid main-page" id="overall-main-page">
             <div class="row-fluid">
               <div class="span1 left-menu" id="app-left-menu" 
               data-step="1" 
@@ -40,6 +40,7 @@
               data-intro="Once you have finished your data analysis, just share it with other people by clicking this button, it will give you a link that you will be able to give to your friends or colleagues."
               data-position="right"
                   ><a href="#"><i class="icon-share"></i> Share</a></li>
+                <li><a href="#"><i class="icon-download"></i> Download</a></li>
                   <li
               data-step="9" 
               data-intro="Click on the oinoi icon to get back to the rest of the website"
@@ -194,10 +195,10 @@
           hwaccel: false, // Whether to use hardware acceleration
           className: 'spinner', // The CSS class to assign to the spinner
           zIndex: 2e9, // The z-index (defaults to 2000000000)
-          top: '100%', // Top position relative to parent in px
+          top: '250', // Top position relative to parent in px
           left: 'auto' // Left position relative to parent in px
         };
-        var targetSpinner = document.getElementById('tabs');
+        var targetSpinner = document.getElementById('overall-main-page');
         var spinner = new Spinner(opts).spin(targetSpinner);
                     
          </script>                           
@@ -1120,6 +1121,7 @@
                       dimension = ndx.dimension(function(d) {
                                     return d[varName] == null ? "EMPTY" : d[varName]; // return d[varName];
                               });
+                      
                       var allKeysValues = dimension.group().top(Infinity);
                       var allKeysValuesStore = {};
                       for(var i in allKeysValues) {
@@ -1130,6 +1132,7 @@
                           var v = d[varName] == null ? "EMPTY" : d[varName];
                           return (9999999999 - allKeysValuesStore[v]) + "" + v;
                       });
+
                       group = dimension.group();
 
                       var nbBins = dimension.group().top(Infinity).length;        
@@ -2246,6 +2249,28 @@
               $('#app-left-menu li:contains("Help")').click(function(e) {
                 introJs().start();
               });
+              $('#app-left-menu li:contains("Download")').click(function(e) {
+
+                    spinner.spin(targetSpinner);
+              setTimeout(function() {
+
+                    var jsonData = {};
+                    jsonData.rows = dataset.rows;
+                    jsonData.headers = _.map(_.omit(dataset.columns,"id"), function(c) {return c.id;});
+                    jsonData.prettynames = _.map(_.omit(dataset.columns,"id"), function(c) {return c.name;});
+                    var dataToWrite = csvjson.json2csv(jsonData);
+
+                    $.post("file_writer.php", { action: 'write_csv_dataset', json_string: dataToWrite }, function(data) { 
+                      spinner.stop();
+                      bootbox.confirm("Your file is ready for download, click the link below to proceed", function(result) {
+                          
+                      }); 
+                      $('<p><a href="./uploads/'+ data + '.csv" target="_blank" class="btn btn-primary" style="font-size:14px!important; margin-top:10px!important;">Download data file</a><p>').appendTo($('.modal-body'));
+                      
+                    } ); },500);
+
+              });
+
 
 
               $('#searchBox').bind("enterKey",function(e){
@@ -2318,6 +2343,7 @@
             var all;            
             var transformation;
             var availableTags;
+
             var colorCategory10 = [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf" ];
             for(var i = 0; i < 10; i++) {
                 colorCategory10 = colorCategory10.concat(colorCategory10);

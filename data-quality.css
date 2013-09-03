@@ -883,3 +883,11 @@ div.modal-body input.input-block-level {
     font-size: 13px;
     font-weight: 600;
 }
+
+#top-bar-menu li a {
+    font-size: 14px;
+}
+
+a.carousel-control {
+    display: none;
+}

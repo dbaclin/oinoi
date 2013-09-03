@@ -141,9 +141,9 @@ var csvjson = {};
 		var ret = "";
 
 		// Add the headers
-		for(var h in jsondata.headers) {
-			if (jsondata.headers.hasOwnProperty(h)) {
-				var heading = jsondata.headers[h];
+		for(var h in jsondata.prettynames) {
+			if (jsondata.prettynames.hasOwnProperty(h)) {
+				var heading = jsondata.prettynames[h];
 				ret += textdelim + heading + textdelim +  delim;
 			}
 		}
@@ -162,11 +162,12 @@ var csvjson = {};
 					if (jsondata.headers.hasOwnProperty(h)) {
 						var heading = jsondata.headers[h];
 						var data = row[heading];
-
-						if(typeof(data) == "string") {
-							ret += textdelim + row[heading] + textdelim +  delim;
+						if(data == null) {
+							ret += delim;
+						} else if(typeof(data) == "string") {
+							ret += textdelim + data + textdelim +  delim;
 						} else {
-							ret += row[heading] + delim;
+							ret += data + delim;
 						}
 					}
 				}
