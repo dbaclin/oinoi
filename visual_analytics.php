@@ -41,6 +41,7 @@
               data-position="right"
                   ><a href="#"><i class="icon-share"></i> Share</a></li>
                 <li><a href="#"><i class="icon-download"></i> Download</a></li>
+                <li><a href="#"><i class="icon-upload"></i> Upload</a></li>
                   <li
               data-step="9" 
               data-intro="Click on the oinoi icon to get back to the rest of the website"
@@ -2264,11 +2265,19 @@
                     $.post("file_writer.php", { action: 'write_csv_dataset', json_string: dataToWrite }, function(data) { 
                       spinner.stop();
                       bootbox.confirm("Your file is ready for download, click the link below to proceed", function(result) {
-                          
+                          console.log("result: "+result);
                       }); 
                       $('<p><a href="./uploads/'+ data + '.csv" target="_blank" class="btn btn-primary" style="font-size:14px!important; margin-top:10px!important;">Download data file</a><p>').appendTo($('.modal-body'));
                       
                     } ); },500);
+
+              });
+
+              $('#app-left-menu li:contains("Upload")').click(function(e) {
+                      
+                      bootbox.confirm("Do you want to leave this page and upload a new dataset?", function(result) {
+                          if(result) window.location.href = "./analyze.php";
+                      }); 
 
               });
 

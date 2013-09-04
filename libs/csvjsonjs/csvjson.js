@@ -42,7 +42,7 @@ var csvjson = {};
 	csvjson.csv2json = function(csvdata, args) {
 		function cleanString(str) {
               var res = "";
-              var specialChars = ['"',"'","$","^","*","-","[","]","?",".","{","}","|","+","(",")","\\","/"," ","%","&","=",","];
+              var specialChars = ['"',"'","$","^","*","-","[","]","?",".","{","}","|","+","(",")","\\","/"," ","%","&","=",",",":"];
               for(var i = 0, len = str.length; i < len; i++ ){
                 if(_.contains(specialChars, str.charAt(i))) res = res + "_" ;
                 else res = res + str.charAt(i);
