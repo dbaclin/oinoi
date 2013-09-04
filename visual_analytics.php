@@ -1730,7 +1730,7 @@
 
               $('#suggestionsList').find('a').click(executeActionOnSuggestionClick);
 
-              $('<span class="addButtonIcon"><i class="icon-plus-sign"></i></span>').appendTo($('.suggestion'));
+              $('<span class="addButtonIcon"><i class="icon-check"></i></span>').appendTo($('.suggestion'));
               $('.suggestion').hover(function() { $(this).find('.addButtonIcon').show(); }, function() { $(this).find('.addButtonIcon').hide(); });
               $('.suggestion').find('.addButtonIcon').click(executeActionOnSuggestionClick);
 
