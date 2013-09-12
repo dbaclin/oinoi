@@ -52,8 +52,11 @@ document.getElementById("main_form").submit();
 <div class="container upload">        
 <div class="row-fluid">
   
-  <div class="span6" align="center"><form action="upload.php" class="dropzone" id="my-dropzone" ></form> </div>
   <div class="span6" align="center">
+  <p class="upload-explain">Upload a .csv file where all the fields are comma delimited<p>
+  <form action="upload.php" class="dropzone" id="my-dropzone" ></form> </div>
+  <div class="span6" align="center">
+  <p class="upload-explain">Paste some data where all the fields are tab delimited<p>
     <textarea rows="17" cols="10" id="pasted_data_temp" name="pasted_data_temp" placeholder="Paste data (needs to be tabs delimited)"></textarea>  
   </div>
   </div>

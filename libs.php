@@ -36,9 +36,9 @@
 
 <script src="./libs/introjs/intro.js"></script>
 
-<!-- UserVoice JavaScript SDK (only needed once on a page) -->
+<!-- UserVoice JavaScript SDK (only needed once on a page) 
 <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/OknRXKVV9uqp0WC5Rc6ug.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
-<!-- A tab to launch the Classic Widget -->
+ A tab to launch the Classic Widget 
 <script>
 UserVoice = window.UserVoice || [];
 UserVoice.push(['showTab', 'classic_widget', {
@@ -52,4 +52,16 @@ UserVoice.push(['showTab', 'classic_widget', {
   tab_position: 'middle-right',
   tab_inverted: true
 }]);
+</script>
+-->
+
+<script type="text/javascript">
+var __lc = {};
+__lc.license = 3234532;
+
+(function() {
+	var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true;
+	lc.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.livechatinc.com/tracking.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(lc, s);
+})();
 </script>
