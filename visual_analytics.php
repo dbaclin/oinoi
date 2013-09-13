@@ -2417,6 +2417,7 @@
             }
 
             var jsonFile = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
+            var pouetdata;
             
             if(jsonFile.length > 0) {
                 $.getJSON( "./uploads/" + jsonFile + ".json", function(data) {
@@ -2453,6 +2454,8 @@
                 console.log("file name: " + file_name);
                 $.ajax("./uploads/" + file_name, {
                     success: function(data) {
+
+                        pouetdata = data;
 
                         json_data = csvjson.csv2json(data);
                       

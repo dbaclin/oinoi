@@ -54,13 +54,14 @@ var csvjson = {};
 		// Unused
 		//var textdelim = isdef(args.textdelim) ? args.textdelim : "";
 
-		var csvlines = csvdata.split("\n");
+		var csvlines = csvdata.split("\r");
 		var initialcsvheaders = splitCSV(csvlines[0], delim);
 		var csvheaders = splitCSV(csvlines[0], delim);
 		var newcsvheaders = [];
 		for(var i in csvheaders) {
 		  csvheaders[i] = csvheaders[i].trim();	
 		  if(csvheaders[i].length == 0) newcsvheaders[i] = "_MISSING_" + i;
+		  else if(csvheaders[i].toLowerCase() == "id") newcsvheaders[i] = "id_"; 
 		  else {
 		      var newColName = cleanString(csvheaders[i]);
 		      var idx = 0;
@@ -72,7 +73,7 @@ var csvjson = {};
 		      if(!isNaN(+newcsvheaders[i][0])) newcsvheaders[i] = "_" + newcsvheaders[i];
           }
 		}
-		//console.log(csvheaders);
+		//console.log("headers: "+csvheaders);
 		var prettynames = {};
 		csvheaders = newcsvheaders;
 
