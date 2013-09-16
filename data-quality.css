@@ -124,7 +124,7 @@
 
 .layouts_grid ul {
     list-style-type: none;
-    min-height: 300px;
+    /*min-height: 700px;*/
 }
 .layout_block.gs_w.ui-resizable{
     position: absolute;
@@ -905,3 +905,4 @@ p.upload-explain {
     border-radius: 4px;
     border: 1px solid rgb(242,242,242);
 }
+

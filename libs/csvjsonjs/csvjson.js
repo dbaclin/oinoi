@@ -54,7 +54,10 @@ var csvjson = {};
 		// Unused
 		//var textdelim = isdef(args.textdelim) ? args.textdelim : "";
 
-		var csvlines = csvdata.split("\r");
+		var lineDelimiter = "\n";
+		if(csvdata.slice(0,2000).split(lineDelimiter).length == 1) lineDelimiter = "\r";
+
+		var csvlines = csvdata.split(lineDelimiter);
 		var initialcsvheaders = splitCSV(csvlines[0], delim);
 		var csvheaders = splitCSV(csvlines[0], delim);
 		var newcsvheaders = [];

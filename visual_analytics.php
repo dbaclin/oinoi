@@ -272,6 +272,7 @@
                  document.body.clientHeight;  
 
               $('#layouts_grid').height(browserHeight - 10);    
+              $('#layouts_grid ul').first().css("min-height",browserHeight - 10);    
 
 
          //layout = $('#layouts_grid ul').gridster({grid_margin:grid_margin, grid_size:grid_size}).data('gridster')
@@ -1909,7 +1910,7 @@
 
               $('#app-left-menu').height(browserHeight - 10);    
 
-              browserHeight = browserHeight - 55;
+              browserHeight = browserHeight - 60;
 
 
               $('#myGrid').attr('style',"width: 100%; height: "+browserHeight+"px; overflow: hidden; outline: 0px; position: relative;")
