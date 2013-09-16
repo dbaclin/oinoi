@@ -105,12 +105,12 @@
 
 .layouts_grid {
     position:relative !important;
-    width: 700px;
+    /*width: 700px;*/
     min-height: 300px;
     float: left;
     background: rgb(255,255,255);
     overflow: auto;
-    height: 700px;
+    /*height: 700px;*/
 }
 
 .layouts_grid > * {
@@ -124,7 +124,7 @@
 
 .layouts_grid ul {
     list-style-type: none;
-    min-height: 700px;
+    min-height: 300px;
 }
 .layout_block.gs_w.ui-resizable{
     position: absolute;

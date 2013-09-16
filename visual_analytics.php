@@ -229,6 +229,7 @@
         
         <script type="text/javascript">
         
+        gridsterWidth = $('#layouts_grid').width();
              
         var layout;
         var grid_size = 100;
@@ -261,9 +262,19 @@
                     name: $($w).find('.block_name').html(),
                 };
             },
-            min_rows: block_params.max_height
+            min_rows: block_params.max_height,
+            min_cols: Math.floor(gridsterWidth / (grid_size + 2 * grid_margin)) ,
+            max_cols: Math.floor(gridsterWidth / (grid_size + 2 * grid_margin)) 
         }).data('gridster');
-            
+
+          var browserHeight = window.innerHeight ||
+                 document.documentElement.clientHeight ||
+                 document.body.clientHeight;  
+
+              $('#layouts_grid').height(browserHeight - 10);    
+
+
+         //layout = $('#layouts_grid ul').gridster({grid_margin:grid_margin, grid_size:grid_size}).data('gridster')
             
           $("#layouts_grid" ).droppable({
             drop: function( event, ui ) {
@@ -1079,6 +1090,13 @@
                 var variable_to_add = $(this).attr('data-var');
                 addElementOnGridBoard(variable_to_add);
             });      
+
+            var browserHeight = window.innerHeight ||
+                 document.documentElement.clientHeight ||
+                 document.body.clientHeight;  
+
+              $('.list-var').height(browserHeight - 10);    
+
           }
           
           function addCard(varName, colNumber, rowNumber){
@@ -1090,7 +1108,7 @@
                   
                   var widget_html = Mustache.render($('#tpl-card').html(),{"varName":varName,"displayVarName":dataset.columns[varName].name});
                   
-                  var grid_squares = Math.floor($('.span10.layouts_grid.ready.ui-droppable ul').width() / (grid_size + 2*grid_margin));
+                  var grid_squares = Math.floor($('#layouts_grid').width() / (grid_size + 2*grid_margin));
                   
                   var best_position = [];
                   
@@ -2418,7 +2436,7 @@
 
             var jsonFile = "<?php if(isset($_GET['j'])) echo $_GET['j']; else echo ''; ?>";
             var pouetdata;
-            
+
             if(jsonFile.length > 0) {
                 $.getJSON( "./uploads/" + jsonFile + ".json", function(data) {
                     
