@@ -18,6 +18,7 @@
 					<div class="nav-collapse">
 						<ul class="nav" id="top-bar-menu">
 							<li><a href="index.php">Home</a></li>	
+							<li><a href="demo.php">See in action</a></li>
 							<li><a href="analyze.php">Analyze</a></li>
 							<!-- <li><a href="javascript:void(0)" data-uv-lightbox="classic_widget" data-uv-mode="full" data-uv-primary-color="#cc6d00" data-uv-link-color="#007dbf" data-uv-default-mode="feedback" data-uv-forum-id="216045">Feedback</a></li> -->
 							<li><a href="analyze.php" id="free-trial-header-menu">Try it now!</a></li>

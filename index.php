@@ -6,7 +6,7 @@
     <body>
         <?php include_once('./google_tracking.php'); ?>
        
-        <?php include_once('./header_menu.php'); ?>
+        <?php //include_once('./header_menu.php'); ?>
         
 <?php
 
@@ -17,8 +17,8 @@ if(  (isset($_POST['file_name']) && strlen($_POST['file_name']) > 1)  ||
 {
     include_once("./analyze.php");
 } else {
-    include_once("./home.php");
-    include_once("./footer.php");
+    include_once("./onepage.php");
+    //include_once("./footer.php");
 }
 
 ?>

@@ -906,3 +906,71 @@ p.upload-explain {
     border: 1px solid rgb(242,242,242);
 }
 
+.topmenu-onepage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-align: center;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.25);
+      font-weight: bold;
+      font-size: 13px;
+      color: #000;
+      -webkit-transition: all 500ms ease-in-out;
+      -moz-transition: all 500ms ease-in-out;
+      -o-transition: all 500ms ease-in-out;
+      transition: all 500ms ease-in-out;
+}
+
+.main section .page_container {
+  position: relative;
+  top: 15%;
+  margin: 0 auto 0;
+  max-width: 950px;
+  z-index: 3;
+}
+.main section  { 
+  overflow: hidden;
+}
+
+div.row.feature p {
+    font-size: 14px;
+}
+div.row.feature {
+    margin-bottom: 8px;
+}
+div.row.feature h3 {
+    line-height: 18px;
+    margin-bottom: 8px;
+}
+div.row.feature .span2 {
+    text-align: right;
+}
+h2.headline-comparison {
+    margin-bottom: 20px;
+}
+
+div.row.feature.largegap p {
+    font-size: 16px;
+}
+div.row.feature.largegap p{
+    font-size: 16px;
+}
+img.user {
+    border-radius: 100px;
+}
+
+div.hero-unit {
+    padding: 0px;
+    text-align: center;
+}
+#top-bar-menu li a {
+    font-weight: 400;
+}
+#top-bar-menu li.active a {
+    font-weight: 600;
+}
