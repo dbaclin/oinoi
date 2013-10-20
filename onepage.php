@@ -26,6 +26,8 @@
  <section class="page2">
  <div class="page_container">
 
+    <h2 class="headline-comparison">What our customers are saying:</h2>
+
     <div class="row feature">
       <div class="span2">
         <p>
