@@ -1,0 +1,18 @@
+
+
+<form method="POST" action="" enctype="multipart/form-data">
+{% csrf_token %}
+<p>
+    {{ form.text }}
+    {{ form.text.errors }}
+    {{ form.uploadedFiles }} {{ form.uploadedFiles.errors }}
+</p>
+<p>
+    {% multiuploader_noscript form.uploadedFiles.html_name %}
+
+    <input id="send" type="submit" value="Send" class="button">
+    <a id="showUpload" type="button" class="button"><i class="attachment"></i>Attach files</a>
+</p>
+</form>
+
+{% multiuploader_form form_type="default" template="multiuploader/form.html" target_form_fieldname=forms.edit.uploadedFiles.html_name js_prefix="jQuery" send_button_selector="input[name=_edit]" wrapper_element_id="fileUploads" lock_while_uploading=True number_files_attached=forms.attached_count %}

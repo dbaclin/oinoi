@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"i>
+     <title>Simple Spreadsheet</title>
+
+
+    {% load static %}
+    
+    <link rel="stylesheet" href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'css/style.min.css' %}">
+    <link rel="stylesheet" href="{% static 'libs/jquery/ui/css/flick/jquery-ui-1.10.3.custom.css' %}">                
+    <link rel="stylesheet" href="{% static 'libs/jquery/ui/css/flick/jquery-simplified.css' %}">                
+    <link rel="stylesheet" href="{% static 'libs/jquery/themes/base/jquery.ui.datepicker.css' %}">    
+    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">                
+    <!--[if IE 7]>
+        <link rel="stylesheet" href="{% static 'css/font-awesome-ie7.css' %}">                
+    <![endif]-->
+    <link rel="stylesheet" href="{% static 'css/google-fonts.css' %}">                
+    
+    
+    <link rel="stylesheet" href="{% static 'css/slick.grid.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/slick.headermenu.css' %}">         
+    <link rel="stylesheet" href="{% static 'css/plugins-common.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/plugins-gdoc-style.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/dc.css' %}">        
+
+    <link rel="stylesheet" href="{% static 'css/introjs.css' %}">        
+          
+    <link rel="stylesheet" href="{% static 'css/data-quality.css' %}">  
+    <link rel="stylesheet" href="{% static 'css/oinoi-override.css' %}">
+
+    {% block css %}
+    {% endblock %}
+      <script type="text/javascript" src="{% static 'libs/jquery/jquery-1.9.1.js' %}"></script>
+      <script type="text/javascript" src="{% static 'libs/jquery/ui/jquery-ui.js' %}"></script>
+      
+      <script type="text/javascript" src="{% static 'libs/underscore/underscore-min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'libs/bootstrap/js/bootstrap.js' %}"></script>
+      <script type="text/javascript" src="{% static 'libs/mustache/0.5.0-dev/mustache.js' %}"></script>
+
+      <script src="{% static 'libs/slickgrid/lib/jquery.event.drag-2.2.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/slick.core.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/slick.headermenu.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/slick.cellrangedecorator.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/slick.cellrangeselector.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/slick.cellselectionmodel.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/slick.rowselectionmodel.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/slick.formatters.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/slick.editors.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/slick.grid.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/slick.dataview.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/spreadsheet/ext.headerfilter.js' %}"></script>
+      <script src="{% static 'libs/slickgrid/plugins/spreadsheet/ext.overlays.js' %}"></script>
+      
+      <script src="{% static 'libs/gridster/dist/jquery.gridster.js' %}" type="text/javascript" charset="utf-8"></script>
+
+      <script type="text/javascript" src="{% static 'libs/d3/d3.v3.js' %}"></script>
+      <script type="text/javascript" src="{% static 'libs/crossfilter/crossfilter.js' %}"></script>
+      <script type="text/javascript" src="{% static 'libs/dc/dc.js' %}"></script>
+
+      <script type="text/javascript" src="{% static 'libs/spin/spin.min.js' %}"></script>
+
+
+
+      <script type="text/javascript" src="{% static 'libs/shortcut/shortcut.js' %}"></script>
+      <script src="{% static 'js/dataset.js' %}"></script>
+      <script src="{% static 'js/utils_functions.js' %}"></script>
+      <script src="{% static 'js/oinoi_spreadhseet.js' %}"></script>
+
+  
+
+  </head>
+  <body>
+    <div class="container-fluid main-page" id="overall-main-page">
+        <div class="row-fluid">
+
+
+        {% block nav_menu %}
+        <div class="span1 left-menu" id="app-left-menu">
+                <ul class="nav nav-pills nav-stacked">
+                  <li class="active"><a href="#"><i class="icon-table"></i> Data</a></li>
+                  <li><a href="#"><i class="icon-dashboard"></i> Dashboard</a></li>
+                  <li><a href="#"><i class="icon-share"></i> Share</a></li>
+                <li><a href="#"><i class="icon-download"></i> Download</a></li>
+                <li><a href="#"><i class="icon-upload"></i> Upload</a></li>
+                  <li><a href="#"><i class="icon-bar-chart"></i> Oinoi</a></li>
+                  <li><a href="#"><i class="icon-user"></i> Help</a></li>
+                </ul>
+              </div>
+
+
+
+        {% endblock %}
+        {% block suggestions_menu %}
+         <div  class="span3 suggestions-menu">
+            <div id="accordion-resizer" class="ui-widget-content">
+              <div id="accordion">
+                <div class="menu" id="suggestionsBanner">
+                    <span id="suggestionsTitle">Suggestions <span class="selectedVariable"></span></span>
+                </div>
+                <div id="suggestionContainer">
+                  <div id="suggestionsList">
+                     <div class="suggestion" >
+                     </div>     
+                  </div>
+                </div>
+                <div class="menu" id="stepsBanner">
+                    <span id="suggestionsTitle">Steps </span>
+                </div>
+                <div id="stepsContainer">
+                  <div id="stepsList">
+                  </div>
+                </div>
+              </div> 
+            </div>      
+        </div>
+        {% endblock %}
+      
+      {% block slickgrid %}
+      <div  class="span8 data-wrangling" >
+        <div id="myGrid" style="width:100%;height:600px;" data-position="left"></div>
+
+        <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-columns">Remove selected columns</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="duplicate-selected-columns">Duplicate selected columns</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="rename-variable">Rename Column</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="create-new-variable-expression">Create calculated field</a></li>
+          <li class="slick-header-menuitem" class="slick-header-menucontent">
+            <a href="#" >Change type</a>
+            <ul class="slick-header-menu">
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">string</a></li>
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">number</a></li>
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">date</a></li>
+            </ul>
+          </li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
+          
+          <li>-</li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+          
+          <li>-</li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
+          <li class="slick-header-menuitem" class="slick-header-menucontent">
+            <a href="#" >Keep text</a>
+            <ul class="slick-header-menu">
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-startingfrom">from</a></li>
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-between-left-right">between</a></li>
+              <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-fixed-left">first characters</a></li>
+            </ul>
+          </li>
+        </ul>
+    </div>
+  {% endblock %}
+
+     {% block variables_menu %}
+      <div class="span2 list-var" style="align:right; display:none">
+        <ul id="variables"></ul>
+      </div>
+      {% endblock %}
+      {% block dashboard %}
+      <div class="span9 visualization-dashboard layouts_grid" id="layouts_grid" style="display:none">
+        <ul>
+        </ul>
+      </div>
+     </div>
+    </div>
+    {% endblock %} 
+
+
+      
+      {% block js_end %}
+
+      {% endblock %}
+  
+
+  </body>
+</html>
+

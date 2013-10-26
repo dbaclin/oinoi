@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"i>
+     <title>Simple Spreadsheet</title>
+
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/slick.grid.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/slick.headermenu.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/plugins-gdoc-style.css' %}">        
+    <link rel="stylesheet" href="{% static 'css/jquery-ui-1.10.3.custom.css' %}">       
+    <link rel="stylesheet" href="{% static 'css/jquery-simplified.css' %}">                
+    <link rel="stylesheet" href="{% static 'css/google-fonts.css' %}">                
+    
+    
+    
+    <script type="text/javascript" src="{% static 'libs/jquery/jquery-1.9.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'libs/jquery/ui/jquery-ui.js' %}"></script>
+    
+    <script type="text/javascript" src="{% static 'libs/underscore/underscore-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'libs/bootstrap/js/bootstrap.js' %}"></script>
+
+    <script src="{% static 'libs/slickgrid/lib/jquery.event.drag-2.2.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/slick.core.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/slick.headermenu.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/slick.cellrangedecorator.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/slick.cellrangeselector.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/slick.cellselectionmodel.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/slick.rowselectionmodel.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/slick.formatters.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/slick.editors.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/slick.grid.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/slick.dataview.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/spreadsheet/ext.headerfilter.js' %}"></script>
+    <script src="{% static 'libs/slickgrid/plugins/spreadsheet/ext.overlays.js' %}"></script>
+    
+    <script type="text/javascript" src="{% static 'libs/d3/d3.v3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'libs/crossfilter/crossfilter.js' %}"></script>
+    <script type="text/javascript" src="{% static 'libs/dc/dc.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'libs/shortcut/shortcut.js' %}"></script>
+
+    <script src="{% static 'js/oinoi_spreadhseet.js' %}"></script>
+    <script src="{% static 'js/dataset.js' %}"></script>
+
+  </head>
+  <body>
+      <div id="#myGrid" style="width:100%;height:600px;" data-position="left"></div>
+  
+    <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-columns">Remove selected columns</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="duplicate-selected-columns">Duplicate selected columns</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="rename-variable">Rename Column</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="create-new-variable-expression">Create calculated field</a></li>
+      <li class="slick-header-menuitem" class="slick-header-menucontent">
+        <a href="#" >Change type</a>
+        <ul class="slick-header-menu">
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">string</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">number</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">date</a></li>
+        </ul>
+      </li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
+      
+      <li>-</li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+      
+      <li>-</li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
+      <li class="slick-header-menuitem" class="slick-header-menucontent">
+        <a href="#" >Keep text</a>
+        <ul class="slick-header-menu">
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-startingfrom">from</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-between-left-right">between</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-fixed-left">first characters</a></li>
+        </ul>
+      </li>
+      
+    </ul>
+      
+  
+
+
+  </body>
+</html>

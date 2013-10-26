@@ -1,0 +1,50 @@
+
+{% extends "spreadsheet_base.html" %}
+  {% load static %}
+
+  {% block slickgrid %}
+    <div id="myGrid" style="width:100%;height:600px;" data-position="left"></div>
+  {% endblock %}
+
+  {% block context_menu %}
+    <ul id="contextMenu" class="slick-header-menu" style="display:none;position:absolute">
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-columns">Remove selected columns</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="duplicate-selected-columns">Duplicate selected columns</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="rename-variable">Rename Column</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="create-new-variable-expression">Create calculated field</a></li>
+      <li class="slick-header-menuitem" class="slick-header-menucontent">
+        <a href="#" >Change type</a>
+        <ul class="slick-header-menu">
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">string</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">number</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="apply-type-on-variable">date</a></li>
+        </ul>
+      </li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="unflatten-selected-columns">Unflatten</a></li>
+      
+      <li>-</li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="remove-selected-lines">Remove selected rows</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent"  data-action="keep-only-records-where">Filter rows</a></li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="change-header" >Use 1st line as headers</a></li>
+      
+      <li>-</li>
+      <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="replace-from-to">Replace</a></li>
+      <li class="slick-header-menuitem" class="slick-header-menucontent">
+        <a href="#" >Keep text</a>
+        <ul class="slick-header-menu">
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-upto">up to</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-startingfrom">from</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-between-left-right">between</a></li>
+          <li class="slick-header-menuitem"><a href="#" class="slick-header-menucontent" data-action="keep-fixed-left">first characters</a></li>
+        </ul>
+      </li>
+    </ul>
+  {% endblock %}
+
+
+  {% block js_end %}
+
+  {% endblock %}
+      
+
+      
