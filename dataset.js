@@ -37,7 +37,7 @@
       }
 
       this.getNewColumnName = function (columnDisplayName) {
-          var tentativeColumnId = columnDisplayName.trim().replace(/%/g, "_Prct").replace(/\//g, "_").replace(/ /g, "_").replace(/"/g, "").replace(/'/g, "").replace(/\./g, "_");
+          var tentativeColumnId = columnDisplayName.trim().replace(/%/g, "_Prct").replace(/\//g, "_").replace(/ /g, "_").replace(/"/g, "").replace(/'/g, "").replace(/\./g, "_").replace(/=/g, "").replace(/>/g, "").replace(/</g, "").replace(/'/g, "");
           var i = 0;
           var columnId = tentativeColumnId;
           while (this.columns.hasOwnProperty(columnId)) {
@@ -83,7 +83,7 @@
 
       this.getColumnIdName = function (displayColumnName) {
           for (var i in this.columns) {
-              if (this.columns[i].name == displayColumnName) return i;
+              if (this.columns[i].name.toLowerCase() == displayColumnName.toLowerCase()) return i;
           }
           return null;
       }

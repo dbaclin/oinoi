@@ -36,9 +36,18 @@ function sumbitForm()
 {
 
 var myDropzone = Dropzone.forElement("#my-dropzone");
-var file_name;
-if(myDropzone.files.length > 0) file_name = myDropzone.files[0].name; 
-else file_name = "";
+var file_name = "";
+if(myDropzone.files.length > 0) {
+  // file_name = myDropzone.files[0].name; 
+  if(myDropzone.files.length == 1) {
+    file_name = myDropzone.files[0].name; 
+  } else {
+    for(var i in myDropzone.files) {
+      if(i == 0) file_name = myDropzone.files[0].name; 
+      else file_name += ":" + myDropzone.files[i].name;
+    }  
+  }
+}
 var pasted_data = "" + document.getElementById("pasted_data_temp").value;
 pasted_data = pasted_data.replace(/\r\n/g, "Ø").replace(/\n/g, "Ø").replace(/\r/g, "Ø").replace(/,/g," ");
 

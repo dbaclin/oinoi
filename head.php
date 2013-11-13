@@ -15,9 +15,8 @@
         <link href="./libs/jquery/ui/css/flick/jquery-simplified.css" rel="stylesheet">
         
         <link href="./home/css/font-awesome/font-awesome.css" rel="stylesheet">
-        <!--[if IE 7]>
-            <link href="./home/css/font-awesome/font-awesome-ie7.css" rel="stylesheet">
-        <![endif]-->
+        <link rel="stylesheet" href="./libs/fontawesome/css/font-awesome.min.css">
+
         <link href="./libs/dropzone/css/dropzone.css" type="text/css" rel="stylesheet" />
          
         <!-- Load Open sans from Google Font Directory   -->

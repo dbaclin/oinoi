@@ -134,6 +134,15 @@
                  
             </div>
             
+            
+            <div class="span2 placeholder">
+            
+            </div>
+            <div class="span9 explain-query">
+            <input id="explainBox" size="400" placeholder="Enter any question about your data" autocomplete="off">
+            </div>
+            
+
             <div class="span2 list-var" style="align:right; display:none"
               data-step="5" 
               data-intro="Click on any of the variables to see its distribution and start interacting with your data in a visual way."
@@ -206,7 +215,7 @@
 
         <script id="tpl-card" type="text/html"><li class="layout_block" id="{{varName}}-card" varName="{{varName}}">
         <div class="card-content">
-        <div id="{{varName}}-chart"><div class="card-title"><span class="placeholder"></span><b> by </b>{{displayVarName}}<a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter filter-header"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
+        <div id="{{varName}}-chart"><div class="card-title"><span class="placeholder"></span><b> by </b>{{displayVarName}}<span class="sort-placeholder"></span></i><a class="reset" href="javascript:dimGroup.get('{{varName}}').chart.filterAll();dc.redrawAll();" style="display: none;"><i class="icon-filter filter-header"></i></a><div class="remove_element"><i class="icon-remove"></i></div></div></div></li>
         </script>    
                                 
       
@@ -294,13 +303,14 @@
           $('#ui-id-3').click( function() { shareWranglingAndViz(); } );
             
            
-          function addElementOnGridBoard(aVariableName,colNumber,rowNumber) {
+          function addElementOnGridBoard(aVariableName,colNumber,rowNumber, hideOption) {
               if(dimGroup.get(aVariableName) === undefined) {
                   
                   colNumber = (typeof colNumber !== 'undefined' ? colNumber : 1 );
                   rowNumber = (typeof rowNumber !== 'undefined' ? rowNumber : 1 );
+                  hideOption = (typeof hideOption !== 'undefined' ? hideOption : 0 );
                   
-                  var gridster_widget_element = addCard(aVariableName,colNumber,rowNumber);
+                  var gridster_widget_element = addCard(aVariableName,colNumber,rowNumber,hideOption);
 
                   addResize(gridster_widget_element,aVariableName);
                   addResizeHandle(gridster_widget_element);
@@ -333,6 +343,10 @@
                       .append(Mustache.render($('#tpl-measure-choice').html(),
                           {currentVariable:aVariableName, measures:measuresForChart}
                    )); 
+
+                 if(dataset.columns[aVariableName].type == "string") {
+                  $('#'+aVariableName+'-chart').find('span.sort-placeholder').append("<a href='javascript:reorderDisplayedMetric(\""+aVariableName+"\")'><i class='fa sort card-title fa-sort-amount-desc'></a>");
+                 }                      
               }
           }
           
@@ -411,6 +425,105 @@
               
               return [grid_w,grid_h];
           }
+
+          function reorderDisplayedMetric(aVariableName) {
+
+            // orderOption = (typeof orderOption !== 'undefined' ? orderOption : "desc" );
+            var orderOption;
+
+            $('#'+aVariableName+'-chart').find('.fa.sort.card-title').removeClass('inactive');
+            currentSortedOption = dimGroup.get(aVariableName).sorted;
+            if(currentSortedOption == "NA") {
+              orderOption = "desc";
+            } else if(currentSortedOption == "desc") {
+              orderOption = "asc";
+            } else {
+              orderOption = "desc";
+            }
+
+            if(orderOption == "asc") {
+              $('#'+aVariableName+'-chart').find('.fa.sort.card-title').removeClass('fa-sort-amount-desc');
+              $('#'+aVariableName+'-chart').find('.fa.sort.card-title').addClass('fa-sort-amount-asc');
+            } else {
+              $('#'+aVariableName+'-chart').find('.fa.sort.card-title').removeClass('fa-sort-amount-asc');
+              $('#'+aVariableName+'-chart').find('.fa.sort.card-title').addClass('fa-sort-amount-desc');
+            }
+
+            dimGroup.get(aVariableName).sorted = orderOption;
+
+            aMesureName = dimGroup.get(aVariableName).measure;
+            aStatistic = dimGroup.get(aVariableName).stat;
+
+            var allKeysValues = dimGroup.get(aVariableName).grp.top(Infinity);
+            var allKeysValuesStore = {};
+            for(var i in allKeysValues) {
+                allKeysValuesStore[allKeysValues[i].key.substr(21)] = dimGroup.get(aVariableName).chart.valueAccessor()(allKeysValues[i]);
+            }
+            dimGroup.get(aVariableName).dim.remove();
+
+            var fun;
+            if(orderOption == "asc") {
+              fun = "return ((1000000000.0000000000 + allKeysValuesStore[v]).toFixed(10)) + '' + v;";
+            } else {
+              fun = "return ((9999999999.0000000000 - allKeysValuesStore[v]).toFixed(10)) + '' + v;";
+            }
+            fun = new Function('allKeysValuesStore, v',fun);
+
+            dimGroup.get(aVariableName).dim = ndx.dimension(function(d) {
+                var v = d[aVariableName] == null ? "EMPTY" : d[aVariableName];
+                return fun(allKeysValuesStore,v);
+                // return ((9999999999.0000000000 - allKeysValuesStore[v]).toFixed(10)) + "" + v;
+                // return ((1000000000.0000000000 + allKeysValuesStore[v]).toFixed(10)) + "" + v;
+            });
+            
+             
+            if(aMesureName == "NA") {
+                  
+                  dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group();
+                  
+                  dimGroup.get(aVariableName).chart.valueAccessor(function(d) {return d.value;});      
+                  dimGroup.get(aVariableName).chart.title(function(d) {return d.value;});    
+
+            } else {
+
+                  
+                  dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group().reduce(
+                                      function (p, v) {
+                                          p.Count = p.Count + 1;
+                                          p.CountNonNulls = p.CountNonNulls + ( v[aMesureName] !== null ? 1 : 0);
+                                          p.CountNulls = p.Count - p.CountNonNulls;
+                                          p.Min = ( v[aMesureName] < p.Min ? v[aMesureName] : p.Min );
+                                          p.Max = ( v[aMesureName] > p.Max ? v[aMesureName] : p.Max );
+                                          p.Sum = p.Sum + v[aMesureName];
+                                          p.Avg = p.Sum / p.CountNonNulls;
+                                          p.StdDev = (p.Count != 0 ? Math.sqrt(Math.pow(v[aMesureName] - p.Avg,2)/p.Count) : null);
+                                          return p;
+                                      },
+                                      null
+                                       ,
+                                      function () {
+                                          return {Count: 0, CountNonNulls:0, CountNulls:0, Min: Infinity, Max: -Infinity, Sum: 0, Avg: 0, StdDev: 0};
+                                      }
+                              );
+                              
+                  function getValue() {
+                    var hardcodedStat = aStatistic;
+                    return function(d) { return d.value[hardcodedStat]; };
+                  }
+                  function getTitle() {
+                    var hardcodedStat = aStatistic;
+                    return function(d) { return hardcodedStat + ": "+ Math.round(d.value[hardcodedStat] * 1000)/1000; };
+                  }
+                  dimGroup.get(aVariableName).chart.valueAccessor(getValue());      
+                  dimGroup.get(aVariableName).chart.title(getTitle());    
+
+             }
+
+            dimGroup.get(aVariableName).chart.dimension(dimGroup.get(aVariableName).dim);
+            dimGroup.get(aVariableName).chart.group(dimGroup.get(aVariableName).grp);
+            dimGroup.get(aVariableName).chart.render();
+
+          }
              
           function changeDisplayedMetric(aVariableName,aMesureName,aStatistic) {
             
@@ -452,15 +565,30 @@
                 
             } else {
                 $('#'+aVariableName+'-measure-selection').find('a[data-toggle=dropdown]').text("Count(#Records)");
+                
                 dimGroup.get(aVariableName).grp = dimGroup.get(aVariableName).dim.group();
+                
                 dimGroup.get(aVariableName).chart.group(dimGroup.get(aVariableName).grp);
                         
                 dimGroup.get(aVariableName).chart.valueAccessor(function(d) { return d.value; });			
+
                 dimGroup.get(aVariableName).chart.title(function(d) {
                     return "Count(#Records): "+ d.value;
                 });
             }
+
+            if(
+              dataset.columns[aVariableName].type == "string" &&
+              (dimGroup.get(aVariableName).stat != aStatistic || dimGroup.get(aVariableName).measure != aMesureName)) {
+              // need to re-order dimensions
+              // console.log("re-order needed!");
+              $('#'+aVariableName+'-chart').find('.fa.sort.card-title').addClass('inactive');
+              dimGroup.get(aVariableName).sorted = "NA";
+            } 
+            
             dimGroup.get(aVariableName).chart.render();
+            dimGroup.get(aVariableName).stat = aStatistic;
+            dimGroup.get(aVariableName).measure = aMesureName;
           }
 
           function split( val ) {
@@ -834,6 +962,26 @@
                     } else alert("action " + this.tag_id + " cannot work when no variable is defined");
                   }
                 },
+                'split-variable-on-position': {
+                  tag_id: 'split-variable-on-position' ,
+                  applyTo: ["column"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Split on position <span args="from">' + args.from + '</span> in column <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Split on the </a> <input type="number" class=" left" args="from"><a href="#"> character position</a></div>'},
+                  action: function(args){
+                    if(typeof args.selectedVariable != "undefined"){
+                      var left = args.from - 0;
+                      if(!isNaN(left) && left > 0){
+                        var functionString = "var str = (row." + args.selectedVariable + " + '');" +
+                                             "return row."+args.selectedVariable+" == null ? null : str.substr(0,"+left+") ;";
+                        dataset.addColumn(dataset.columns[args.selectedVariable].name + " left",functionString);  
+                        var functionString = "var str = (row." + args.selectedVariable + " + '');" +
+                                             "return row."+args.selectedVariable+" == null ? null : str.substr("+left+") ;";
+                        dataset.addColumn(dataset.columns[args.selectedVariable].name + " right",functionString);  
+                        refreshData();
+                      }
+                    } else alert("action " + this.tag_id + " cannot work when no variable is defined");
+                  }
+                },
                  'keep-between-fixed-left-right': {
                   tag_id: 'keep-between-fixed-left-right' ,
                   applyTo: ["cellContent","cell"],
@@ -907,6 +1055,52 @@
                     this.writeALog(args);
                    }
 
+                  }
+                },
+
+                'extract-year-of-date': {
+                  tag_id: 'extract-year-of-date' ,
+                  applyTo: ["date"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Extracted year from <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Extract year from date</a></div>'},                    
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.addColumn(dataset.columns[args.selectedVariable[i]].name + " Year", "return row."+args.selectedVariable[i]+" == null ? null : row."+args.selectedVariable[i]+".getFullYear();");
+                     // dataset.addColumn(dataset.columns.[args.selectedVariable[i]].name + " month", "return 'Q1';");
+
+                    } 
+                    refreshData();
+                    this.writeALog(args);
+                  }
+                },
+                'extract-quarter-of-date': {
+                  tag_id: 'extract-quarter-of-date' ,
+                  applyTo: ["date"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Extracted quarter from <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Extract quarter from date</a></div>'},                    
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.addColumn(dataset.columns[args.selectedVariable[i]].name + " Quarter", "return row."+args.selectedVariable[i]+" == null ? null : 'Q'+Math.ceil((1 + row."+args.selectedVariable[i]+".getMonth()) / 3);");
+                     // dataset.addColumn(dataset.columns.[args.selectedVariable[i]].name + " month", "return 'Q1';");
+
+                    } 
+                    refreshData();
+                    this.writeALog(args);
+                  }
+                },
+                 'extract-month-of-date': {
+                  tag_id: 'extract-month-of-date' ,
+                  applyTo: ["date"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Extracted month from <span args="selectedVariable">' + args.selectedVariable + '</span></div>');},
+                  html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Extract month from date</a></div>'},                    
+                  action: function(args){
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                      dataset.addColumn(dataset.columns[args.selectedVariable[i]].name + " Month", "return row."+args.selectedVariable[i]+" == null ? null : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][row."+args.selectedVariable[i]+".getMonth()];");
+                     // dataset.addColumn(dataset.columns.[args.selectedVariable[i]].name + " month", "return 'Q1';");
+
+                    } 
+                    refreshData();
+                    this.writeALog(args);
                   }
                 },
                 'rename-variable': {
@@ -1100,7 +1294,7 @@
 
           }
           
-          function addCard(varName, colNumber, rowNumber){
+          function addCard(varName, colNumber, rowNumber, hideOption){
                   
                   //console.log("where we would like to put it: "+[colNumber,rowNumber]);
                   var dimension, group;
@@ -1115,7 +1309,7 @@
                   
                   thesoundbarrier:
                   for(var j = rowNumber; j < grid_squares*2; j++) {
-                      for(var i = colNumber; i < grid_squares; i++) {
+                      for(var i = colNumber; i < grid_squares - 2; i++) {
                           if(!gridster.is_occupied(i,j)) 
                           {
                               best_position = [i,j];
@@ -1126,6 +1320,7 @@
                   
                   //console.log("where it's going to go: "+best_position);
                   var gridster_widget_element = gridster.add_widget(widget_html,1,1,best_position[0],best_position[1]);
+                  if(hideOption == 1) $('#'+varName+'-card').hide();
                
                   switch(dataset.columns[varName].type)
                   {
@@ -1150,7 +1345,7 @@
                       dimension.remove();
                       dimension = ndx.dimension(function(d) {
                           var v = d[varName] == null ? "EMPTY" : d[varName];
-                          return (9999999999 - allKeysValuesStore[v]) + "" + v;
+                          return ((9999999999.0000000000 - allKeysValuesStore[v]).toFixed(10)) + "" + v;
                       });
 
                       group = dimension.group();
@@ -1179,10 +1374,15 @@
                   dimGroup.put(varName, {
                               dim: dimension,
                               grp: group,
-                              chart: chart
+                              chart: chart,
+                              measure: "NA",
+                              stat: "reset",
+                              sorted: "desc"
                           });
                   
-                  var sizex = Math.ceil(chart.width() / gridster.min_widget_width);
+
+                  var sizex = Math.ceil(chart.width() / gridster.min_widget_width) + 1 ;
+
                   var sizey = Math.ceil(chart.height() / gridster.min_widget_height);
                   gridster.resize_widget($('#'+ varName +'-card' ), sizex, sizey);
                   
@@ -1190,7 +1390,8 @@
                   var new_height = (2*grid_margin)*(sizey-1)+(sizey*grid_size);
                   // dimGroup.get(varName).chart.width((sizex * (grid_size + grid_margin))-5).height((sizey * (grid_size + grid_margin)-30).render();
                   
-                  dimGroup.get(varName).chart.width(new_width-5).height(new_height-30).render();
+                  dimGroup.get(varName).chart.width(new_width-5).height(new_height-30);
+                  dimGroup.get(varName).chart.render();
                   
                   return gridster_widget_element;
           }
@@ -1375,7 +1576,7 @@
                   .dimension(dimension)
                   .colors(colorCategory10)
                   .label(function(d) {
-                  return d.key.substr(10);
+                  return d.key.substr(21);
                   })
                   .title(function(d) {
                   return d.value;
@@ -1712,7 +1913,9 @@
                   }
                 }
                } else if(selectedColumns.length > 0) {
-                  keepSuggestionApplyingTo = selectedColumns.length == 1 ? "column" : "columns"; 
+                  keepSuggestionApplyingTo = selectedColumns.length == 1 ? 
+                  (dataset.columns[selectedColumns[0]].type == "date" ? "date" : "column") 
+                  : "columns"; 
                } else if(selectedRows.length >= 1) {
                    keepSuggestionApplyingTo = selectedRows.length == 1 ? "row" : "rows";
                }
@@ -2236,6 +2439,9 @@
 
                 $('.span2.list-var').hide();
                 $('.span9.visualization-dashboard').hide();
+                $('.span2.placeholder').hide();
+                $('.span9.explain-query').hide();
+
                 $('.span3.suggestions-menu').show();
                 $('.span8.data-wrangling').show();
 
@@ -2255,6 +2461,9 @@
 
                 $('.span2.list-var').show();
                 $('.span9.visualization-dashboard').show();
+                $('.span2.placeholder').show();
+                $('.span9.explain-query').show();
+
                 $('.span3.suggestions-menu').hide();
                 $('.span8.data-wrangling').hide();
 
@@ -2351,7 +2560,51 @@
                   }
                 });
 
+              $("#explainBox").keyup(function (e) {
+                  if (e.keyCode == 13) {
+                      // Do something
+                      console.log("Do something now with : "+$('#explainBox').val());
+                      var inputString = $('#explainBox').val();
+                      var inputParams = inputString.split(' ');
+                      if(inputParams.length >= 2 && inputParams[0].toLowerCase() == "explain") {
+                        var expressionToCreate = "return ";
+                        var i = 1;
+                        var varName = "";
+                        var colName = "";
+                        while(i < inputParams.length && !_.contains(["<","=",">"," ","<=",">=","!="],inputParams[i])) {
+                          varName += (i == 1 ? "" : " ") + inputParams[i];
+                          i++;
+                        }
+                        colName = varName;
+                        expressionToCreate += " row."+dataset.getColumnIdName(varName);
+                        for(; i < inputParams.length; i++) {
+                          expressionToCreate += " " + (inputParams[i] == "=" && inputParams[i-1] != "<" && inputParams[i-1] != ">" ? "==" : inputParams[i]);  
+                          colName += " " + inputParams[i];
+                        }
+                        
+                        expressionToCreate += " ? 1 : 0;";
+                        console.log("colName: "+colName+" expression: "+expressionToCreate);
+                        var variableToExplain = dataset.addColumn(colName,expressionToCreate);
+                        // refreshData();
 
+                        function YCDemo(explanatoryVariable) {
+                          // 
+                          var varList = ['batch left', 'batch right', 'status','funding_rounds', 'category_code_short'];
+                          for(var i in varList) {
+                            var idName = dataset.getColumnIdName(varList[i]);
+                            addElementOnGridBoard(idName,undefined,undefined,1);  
+                            changeDisplayedMetric(idName,explanatoryVariable,'Avg');
+                            if(dataset.columns[idName].type == "string") reorderDisplayedMetric(idName);
+                            $('#'+idName+'-card').show();
+                          }
+                        }
+
+                        YCDemo(variableToExplain);
+
+                      }
+
+                  }
+              });
              
 
             }
@@ -2468,28 +2721,66 @@
                 if(file_name.length == 0) {
                     file_name = "<?php if(isset($_POST['file_name'])) echo $_POST['file_name']; else echo 'vc-reduced.csv'; ?>";
                 }
-                
-                if (file_name.length > 0) {
-                console.log("file name: " + file_name);
-                $.ajax("./uploads/" + file_name, {
-                    success: function(data) {
 
-                        pouetdata = data;
+                file_name = file_name.split(":");
+                if(file_name.length == 1) {
+                    file_name = file_name[0];
+                    if (file_name.length > 0) {
+                    console.log("file name: " + file_name);
+                    $.ajax("./uploads/" + file_name, {
+                        success: function(data) {
 
-                        json_data = csvjson.csv2json(data);
-                      
-                        initialization();
-                        
-                    },
-                    error: function() {
-                        console.log("could not load csv file");
-                        spinner.stop();    
-                    }
-                });
+                            json_data = csvjson.csv2json(data);
+                          
+                            initialization();
+                            
+                        },
+                        error: function() {
+                            console.log("could not load csv file");
+                            spinner.stop();    
+                        }
+                    });
+                    } else {
+                        console.log("nothing to see here");
+                        spinner.stop();
+                    }        
                 } else {
-                    console.log("nothing to see here");
-                    spinner.stop();
-                }        
+                  var json_data_array = [];
+                  var ajax_requests = [];
+                  for(var i in file_name) {
+                   ajax_requests[i] = (function(i){
+                         return $.ajax("./uploads/" + file_name[i], {
+                                          success: function(data) {
+                                            json_data_array[i] = csvjson.csv2json(data);
+                                          },
+                                          error: function() {
+                                              console.log("could not load csv file");
+                                          }
+                                      });
+                      })(i);
+                  } 
+                  $.when.apply($, ajax_requests ).done( function() {
+                        function mergeDatasetsYC(dataset1, dataset2) {
+                          var obj = {};
+                          obj.headers = dataset1.headers.concat(_.without(dataset2.headers,"name"));
+                          obj.prettynames = _.extend(dataset1.prettynames,_.omit(dataset2.prettynames,"name"));
+                          obj.rows = [];
+                          var dataset2Rows = {};
+                          for(var i in dataset2.rows){
+                            dataset2Rows[dataset2.rows[i].name] = i;
+                          }
+                          for(var i in dataset1.rows){ 
+                            obj.rows[i] = _.extend(dataset1.rows[i],_.omit(dataset2.rows[dataset2Rows[dataset1.rows[i].name]],"name"));
+                          }
+                          return obj;
+                        }
+
+                        json_data = mergeDatasetsYC(json_data_array[0],json_data_array[1]);
+                        initialization();
+                  });
+                }
+                
+                
             }
             
             
