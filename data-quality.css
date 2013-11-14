@@ -617,16 +617,16 @@ cursor: hand;
 
 #searchBox {
   
-  display: block;
+  display: inline;
   width: 50%;
   margin: 0px;
-  margin-top: 2px;
+  margin-top: 4px;
   margin-bottom: 10px;
   padding: 2px;
   background-color: #fff;
   font-size: 12px;
   border: 1px solid #c8c8c8;
-  
+  border-radius: 3px;
   
 }
 
@@ -1017,13 +1017,25 @@ div.span9.explain-query {
     margin-left: 10px !important;
 }
 #explainBox {
-    display: block;
+    display: inline;
     width: 50%;
     margin: 0px;
-    margin-top: 2px;
+    margin-top: 4px;
     padding: 2px;
     background-color: #fff;
     font-size: 12px;
     border: 1px solid #c8c8c8;
     margin-left: 4px;
+    border-radius: 3px;
+}
+span.recordcount-holder {
+
+    margin-left: 40px;
+    border: 1px solid #ccc;
+    padding: 4px;
+    border-radius: 3px;
+
+}
+span.recordcount-holder.viz {
+    vertical-align: sub;
 }

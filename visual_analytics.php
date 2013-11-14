@@ -86,6 +86,8 @@
 
             <div  class="span8 data-wrangling" >
                  <input id="searchBox" size="400" placeholder="Enter any query"/>
+                 <span class="recordcount-holder"></span>
+
                  <div id="myGrid" style="width:100%;height:600px;"
               data-step="2" 
               data-intro="This is the data grid where you can interact whith your data. 
@@ -140,6 +142,7 @@
             </div>
             <div class="span9 explain-query">
             <input id="explainBox" size="400" placeholder="Enter any question about your data" autocomplete="off">
+            <span class="recordcount-holder viz"></span>
             </div>
             
 
@@ -1000,7 +1003,7 @@
                 },
                 'keep-only-records-where': {
                   tag_id: 'keep-only-records-where' ,
-                  applyTo: ["cell", "cellContent","column"],
+                  applyTo: [""], // ["cell", "cellContent","column"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Filter rows where <span args="filter">' + args.filter + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Keep records if</a><input type="text" args="filter"></div>'},
                   action: function(args){
@@ -1041,7 +1044,7 @@
                 },
                 'apply-type-on-variable': {
                   tag_id: 'apply-type-on-variable' ,
-                  applyTo: ["column","columns"],
+                  applyTo: ["column","columns", "date"],
                   writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">Convert column <span args="selectedVariable">' + args.selectedVariable + '</span>  type to <span args="newType">' + args.newType + '</span></div>');},
                   html: function() { return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">Convert to </a><select class="type" args="newType"><option selected="selected">number</option><option>string</option><option>date</option></select></div>'},                    
                   action: function(args){
@@ -1050,6 +1053,31 @@
                    if(newType.length > 0) {
                     for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
                     dataset.applyType(args.selectedVariable[i],newType);
+                    } 
+                    refreshData();
+                    this.writeALog(args);
+                   }
+
+                  }
+                },
+                'get-value-from-variable': {
+                  tag_id: 'get-value-from-variable' ,
+                  applyTo: ["column", "date"],
+                  writeALog: function(args) { return $('#stepsList').append('<div class="step" action="' + this.tag_id +'">When <span args="selectedVariable">' + args.selectedVariable + '</span>  is missing, get value from <span args="otherVariable">' + args.otherVariable + '</span></div>');},
+                  html: function() { 
+                    var listVars = {"list":[]};
+                    for(var i in dataset.columns) {
+                      if(dataset.columns[i].type == dataset.columns[selectedColumns[0]].type) {
+                        listVars.list = listVars.list.concat({id: i, name:dataset.columns[i].name});
+                      }
+                    }
+                    return '<div class="suggestion" action="' + this.tag_id +'"><a href="#">When the value is missing, take it from </a><select class="type" args="otherVariable" style="width:100px;">'+Mustache.render('{{#list}}<option value="{{id}}">{{name}}</option>{{/list}}',listVars)+'</select></div>'},                    
+                  action: function(args){
+                   
+                   var otherVariable = args.otherVariable;
+                   if(otherVariable.length > 0) {
+                    for(var i = 0, len = args.selectedVariable.length; i < len; i++) {
+                    dataset.applyFunction(args.selectedVariable[i],"return row."+args.selectedVariable[i]+ " == null ? row."+otherVariable+ " : row."+args.selectedVariable[i]);
                     } 
                     refreshData();
                     this.writeALog(args);
@@ -1695,6 +1723,15 @@
               refreshData();
             }
 
+            function displayNofRecords() {
+                var nofRecords = '' + dataView.getLength();
+                var numberToDisplay = '';
+                for(var i in nofRecords) {
+                  numberToDisplay = nofRecords[nofRecords.length - i - 1] + (numberToDisplay.length % 3 == 0 && numberToDisplay.length > 0 ? ',' : '') + numberToDisplay;
+                }
+                $('span.recordcount-holder').text(numberToDisplay + " records");
+            }
+
             function refreshData() {
                 var currentCell = slickGrid.getActiveCell();
                 if(currentCell !== null) slickGrid.resetActiveCell(); 
@@ -1729,6 +1766,7 @@
                 if(currentCell !== null) slickGrid.setActiveCell(currentCell.row,currentCell.cell);
                 ndx = crossfilter(dataView.getRows());
                 all = ndx.groupAll();     
+                displayNofRecords();
             }
 
             function protectStringForRegExp(str) {
@@ -2175,6 +2213,7 @@
                     status = dataView.getLength() + ' OF ' + dataView.getItems().length + ' RECORDS FOUND';
                 }
                 //$('#status-label').text(status);
+                displayNofRecords();
               });
 
               filterPlugin.onCommand.subscribe(function (e, args) {
@@ -2639,8 +2678,11 @@
                 
 
                 dataset = new Dataset(json_data);
+
                 transformation = defineTransformation();
                 addSlickGrid(dataset);
+                displayNofRecords();
+
                 availableTags = defineTags();
                 addJQEvents();
                 addContextMenu();
@@ -2654,7 +2696,7 @@
 
                 addVariableList(dataset);
                 spinner.stop();
-           
+                
 
                 var oinoiCookie = $.cookie('oinoi-analysis');
                 var currentDate = new Date().toString("yyyy-MM-dd hh:mm:ss");
@@ -2767,10 +2809,10 @@
                           obj.rows = [];
                           var dataset2Rows = {};
                           for(var i in dataset2.rows){
-                            dataset2Rows[dataset2.rows[i].name] = i;
+                            dataset2Rows[dataset2.rows[i].name.trim().toLowerCase()] = i;
                           }
                           for(var i in dataset1.rows){ 
-                            obj.rows[i] = _.extend(dataset1.rows[i],_.omit(dataset2.rows[dataset2Rows[dataset1.rows[i].name]],"name"));
+                            obj.rows[i] = _.extend(dataset1.rows[i],_.omit(dataset2.rows[dataset2Rows[dataset1.rows[i].name.trim().toLowerCase()]],"name"));
                           }
                           return obj;
                         }
